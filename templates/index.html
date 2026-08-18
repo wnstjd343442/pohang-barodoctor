@@ -41,7 +41,21 @@
     padding: 22px 20px 20px;
     text-align: center;
     border-radius: 0 0 20px 20px;
+    position: relative;
   }
+  #resetBtn {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    border: none;
+    background: rgba(255, 255, 255, 0.18);
+    color: #fff;
+    font-size: 11px;
+    padding: 4px 9px;
+    border-radius: 999px;
+    cursor: pointer;
+  }
+  #resetBtn:hover { background: rgba(255, 255, 255, 0.3); }
   header .title {
     font-size: 17px;
     font-weight: 700;
@@ -242,6 +256,7 @@
   <header>
     <div class="title">🏥 포항 병원 찾기</div>
     <div class="subtitle">증상과 원하는 날짜를 말씀해주세요</div>
+    <button id="resetBtn" title="대화 초기화">↺ 초기화</button>
   </header>
 
   <div id="chat"></div>
@@ -257,23 +272,54 @@
   const chatEl = document.getElementById('chat');
   const inputEl = document.getElementById('msgInput');
   const sendBtn = document.getElementById('sendBtn');
+  const resetBtn = document.getElementById('resetBtn');
 
-  function addBotBubble(text) {
+  // ── 새로고침해도 대화가 남아있도록 localStorage에 저장 ──────────
+  const HISTORY_KEY = 'pohangChatHistory';
+
+  function loadHistory() {
+    try {
+      const raw = localStorage.getItem(HISTORY_KEY);
+      return raw ? JSON.parse(raw) : [];
+    } catch (e) {
+      return [];
+    }
+  }
+
+  function saveHistory() {
+    try {
+      localStorage.setItem(HISTORY_KEY, JSON.stringify(chatHistory));
+    } catch (e) {
+      // 저장 공간이 꽉 찼거나 localStorage를 못 쓰는 환경이면 그냥 무시
+    }
+  }
+
+  let chatHistory = loadHistory();
+
+  function addBotBubble(text, record = true) {
     const row = document.createElement('div');
     row.className = 'row bot';
     row.innerHTML = `<div class="bubble bot"></div>`;
     row.querySelector('.bubble').textContent = text;
     chatEl.appendChild(row);
     scrollToBottom();
+    if (record) {
+      chatHistory.push({ kind: 'bot', text });
+      saveHistory();
+    }
   }
 
-  function addUserBubble(text) {
+  function addUserBubble(text, record = true) {
     const row = document.createElement('div');
     row.className = 'row user';
     row.innerHTML = `<div class="bubble user"></div>`;
     row.querySelector('.bubble').textContent = text;
     chatEl.appendChild(row);
     scrollToBottom();
+    if (record) {
+      chatHistory.push({ kind: 'user', text });
+      saveHistory();
+    }
   }
 
   function addTyping() {
@@ -292,7 +338,7 @@
     return div.innerHTML;
   }
 
-  function addResultBlock(reply, hospitals) {
+  function addResultBlock(reply, hospitals, record = true) {
     const row = document.createElement('div');
     row.className = 'row bot';
 
@@ -344,6 +390,11 @@
     });
 
     scrollToBottom();
+
+    if (record) {
+      chatHistory.push({ kind: 'result', reply, hospitals });
+      saveHistory();
+    }
   }
 
   function scrollToBottom() {
@@ -480,8 +531,33 @@
     if (e.key === 'Enter') handleSend();
   });
 
-  // 첫 인사말
-  addBotBubble('안녕하세요! 포항 병원 찾기입니다. 😊\n어디가 불편하신지, 그리고 언제쯤 방문하고 싶으신지 말씀해주세요.');
+  const GREETING = '안녕하세요! 포항 병원 찾기입니다. 😊\n어디가 불편하신지, 그리고 언제쯤 방문하고 싶으신지 말씀해주세요.';
+
+  function showGreeting() {
+    addBotBubble(GREETING);
+  }
+
+  // 저장된 대화가 있으면 그대로 복원, 없으면 첫 인사말만 표시
+  if (chatHistory.length) {
+    const saved = chatHistory;
+    chatHistory = []; // 복원하면서 다시 push되지 않도록 비워두고, record=false로 재생
+    saved.forEach((entry) => {
+      if (entry.kind === 'bot') addBotBubble(entry.text, false);
+      else if (entry.kind === 'user') addUserBubble(entry.text, false);
+      else if (entry.kind === 'result') addResultBlock(entry.reply, entry.hospitals, false);
+    });
+    chatHistory = saved;
+  } else {
+    showGreeting();
+  }
+
+  resetBtn.addEventListener('click', () => {
+    if (!confirm('대화 내용을 전부 지울까요?')) return;
+    localStorage.removeItem(HISTORY_KEY);
+    chatHistory = [];
+    chatEl.innerHTML = '';
+    showGreeting();
+  });
 </script>
 
 </body>

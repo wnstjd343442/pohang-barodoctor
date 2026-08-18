@@ -370,4 +370,5 @@ def api_hospitals():
 
 
 if __name__ == "__main__":
-    app.run(debug=True, port=5000)
+    # host="0.0.0.0"으로 열어야 같은 와이파이의 다른 기기(휴대폰 등)에서 접속 가능
+    app.run(debug=True, port=5000, host="0.0.0.0")
