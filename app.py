@@ -236,22 +236,54 @@ SYMPTOM_CATEGORIES = {
         "advice": "🩹 피부 질환 증상으로 판단됩니다. 미용 시술 위주가 아닌 질환/보험치료 전문 피부과 및 알레르기 항히스타민 수액 처방이 가능한 의원을 추천합니다."
     },
     "orthopedic": {
-        "title": "관절 / 척추 / 염좌 / 골절",
-        "keywords": ["허리", "무릎", "관절", "삐", "접질", "골절", "어깨", "다리", "발목", "손목", "담", "근육통", "통증", "정형외과"],
+        "title": "관절 / 척추 / 염좌 / 골절 / 근육통",
+        "keywords": [
+            "팔", "다리", "손", "발", "손가락", "발가락", "손목", "발목", "어깨", "허리", "무릎", "골반", "등", "갈비뼈",
+            "뼈", "관절", "염좌", "골절", "접질", "삐", "담", "근육통", "인대", "통증", "아파", "정형외과", "통증의학과", "도수치료",
+            "깁스", "물리치료", "팔아파", "다리아파", "허리아파", "무릎아파", "어깨아파", "발목아파", "손목아파"
+        ],
         "primary_depts": ["정형외과", "마취통증의학과", "재활의학과"],
         "alt_depts": ["외과", "가정의학과"],
         "advice": "🦴 근골격계/관절 통증으로 판단됩니다. X-ray 검사 및 물리치료, 도수치료가 가능한 정형외과/통증의학과를 추천합니다."
     },
+    "ophthalmology": {
+        "title": "안과 질환 / 눈 통증 / 충혈",
+        "keywords": ["눈", "충혈", "시력", "안과", "다래끼", "눈물", "뻑뻑", "눈통증", "결막염", "눈아파"],
+        "primary_depts": ["안과"],
+        "alt_depts": ["내과", "가정의학과"],
+        "advice": "👁️ 안과 질환으로 판단됩니다. 정밀 시력/안압 검사 및 안약 처방이 가능한 안과의원을 추천합니다."
+    },
+    "dental": {
+        "title": "치과 질환 / 잇몸 / 치통 / 턱관절",
+        "keywords": ["치아", "이빨", "잇몸", "치통", "사랑니", "턱", "스케일링", "치과", "이아파", "이빨아파"],
+        "primary_depts": ["치과"],
+        "alt_depts": [],
+        "advice": "🦷 치과 질환으로 판단됩니다. 발치, 충치 치료 및 턱관절 치료가 가능한 치과의원을 추천합니다."
+    },
+    "urology": {
+        "title": "비뇨기 / 방광염 / 결석 / 요로",
+        "keywords": ["소변", "오줌", "방광염", "결석", "요로", "비뇨", "비뇨기과", "비뇨의학과"],
+        "primary_depts": ["비뇨의학과", "내과"],
+        "alt_depts": ["가정의학과"],
+        "advice": "💧 비뇨의학과 질환으로 판단됩니다. 요로결석 쇄석술 및 방광염 소변 검사가 가능한 의원을 추천합니다."
+    },
     "neuro": {
         "title": "어지럼증 / 두통 / 신경 질환",
-        "keywords": ["어지럼", "저림", "마비", "두통", "편두통", "뇌", "실신", "핑", "어지러", "신경과"],
+        "keywords": ["어지럼", "저림", "마비", "두통", "편두통", "뇌", "실신", "핑", "어지러", "신경과", "머리아파"],
         "primary_depts": ["신경과", "신경외과", "내과"],
         "alt_depts": ["응급의학과"],
         "advice": "🤕 신경 및 두통 증상으로 판단됩니다. 지속적인 급성 두통이나 심한 어지럼증 시 정밀 진단이 가능한 병원을 추천합니다."
     },
+    "cardio_chest": {
+        "title": "흉통 / 가슴 답답 / 호흡곤란 / 심혈관",
+        "keywords": ["가슴", "흉통", "숨", "숨쉬", "호흡", "심장", "답답", "두근", "맥박", "조여", "찔려", "콕콕", "순환기", "흉부", "가슴아파"],
+        "primary_depts": ["내과", "흉부외과"],
+        "alt_depts": ["응급의학과", "가정의학과"],
+        "advice": "🫀 흉통 및 흉부 이상 증상으로 판단됩니다. 지속적인 흉통이나 호흡곤란 시 정밀 심전도/엑스레이 검사가 가능한 내과 또는 24시간 응급의료센터를 방문하세요."
+    },
     "trauma": {
         "title": "외상 / 찢어짐 / 출혈 / 화상",
-        "keywords": ["상처", "베인", "화상", "찢어짐", "출혈", "피", "봉합", "꿰매", "외과"],
+        "keywords": ["상처", "베인", "화상", "찢어짐", "출혈", "피", "봉합", "꿰매", "외과", "피나", "베였어", "데였어", "다쳤어"],
         "primary_depts": ["외과", "정형외과", "응급의학과"],
         "alt_depts": ["가정의학과"],
         "advice": "🩸 외상 및 상처 치료가 필요합니다. 상처 소독, 봉합 처치 및 화상 치료가 가능한 외과 및 응급의료기관을 추천합니다."
@@ -267,6 +299,49 @@ SYMPTOM_CATEGORIES = {
 
 WEEKDAYS_KR = ["월", "화", "수", "목", "금", "토", "일"]
 WEEKDAY_NAMES = {"월요일": 0, "화요일": 1, "수요일": 2, "목요일": 3, "금요일": 4, "토요일": 5, "일요일": 6}
+
+def analyze_symptom_with_gemini(text):
+    """키워드에 없는 비정형 증상(예: '팔이 아파', '숨쉬기 힘들어', '귀가 멍멍해')을 Gemini가 직접 진료과 및 조언으로 판별"""
+    client = get_gemini_client()
+    if not client:
+        return None
+        
+    prompt = f"""너는 한국 응급의료 및 1차 진료 트리아지 전문가야.
+사용자 입력: "{text}"
+
+사용자의 입력이 의학적 증상/통증/건강 고민/병원 찾기인지 분석해서 반드시 아래 JSON 포맷으로만 답변해줘:
+{{
+  "is_medical": true,
+  "category_title": "증상 요약 (예: 가슴 통증 / 호흡기·심혈관 질환)",
+  "primary_depts": ["내과", "흉부외과"],
+  "alt_depts": ["가정의학과", "응급의학과"],
+  "advice": "환자를 위한 1~2문장의 전문적인 대처 조언"
+}}
+
+만약 단순 일상 대화나 비의료 인사/장난(예: '바보', '안녕', '반가워', '너 누구야')인 경우:
+{{
+  "is_medical": false,
+  "category_title": "일반 대화",
+  "primary_depts": [],
+  "alt_depts": [],
+  "advice": ""
+}}
+반드시 JSON 문자열만 출력해. 설명이나 마크다운 백틱 없이 순수 JSON만 반환해."""
+
+    try:
+        res = client.models.generate_content(
+            model="gemini-3.6-flash",
+            contents=prompt
+        )
+        raw_text = (res.text or "").strip()
+        raw_text = re.sub(r"^```json\s*", "", raw_text)
+        raw_text = re.sub(r"^```\s*", "", raw_text)
+        raw_text = re.sub(r"\s*```$", "", raw_text).strip()
+        data = json.loads(raw_text)
+        return data
+    except Exception as e:
+        print("Gemini symptom analysis error:", e)
+        return None
 
 def analyze_symptom_and_intent(text):
     text_lower = text.lower().strip()
@@ -354,7 +429,10 @@ def analyze_symptom_and_intent(text):
         "피부과": (["피부과"], ["가정의학과"], "피부과 질환/진료 의원을 안내합니다."),
         "정형외과": (["정형외과", "마취통증의학과"], ["외과"], "정형외과/통증의학과 전문 의원을 안내합니다."),
         "소아과": (["소아청소년과"], ["이비인후과"], "소아청소년과 전문 의원을 안내합니다."),
-        "외과": (["외과", "정형외과"], ["응급의학과"], "외과/상처치료 전문 의원을 안내합니다.")
+        "외과": (["외과", "정형외과"], ["응급의학과"], "외과/상처치료 전문 의원을 안내합니다."),
+        "안과": (["안과"], ["내과", "가정의학과"], "안과 질환 전문 의원을 안내합니다."),
+        "치과": (["치과"], [], "치과 전문 의원을 안내합니다."),
+        "비뇨기과": (["비뇨의학과", "내과"], ["가정의학과"], "비뇨의학과 전문 의원을 안내합니다.")
     }
     for dept_kw, (pri, alt, adv) in dept_map.items():
         if dept_kw in text_lower:
@@ -371,9 +449,42 @@ def analyze_symptom_and_intent(text):
                 "target_district": target_district
             }
 
-    # 증상 키워드가 없는 경우
+    # 룰 기반 키워드가 없는 경우 -> Gemini 동적 AI 트리아지 호출
     if matched_cat_key is None:
-        if any(w in text_lower for w in ["병원", "의원", "진료", "가까운", "문 연", "응급실", "포사카", "일요일", "야간", "어디", "추천"]):
+        is_clear_non_medical = text_lower in ["바보", "안녕", "안녕하세요", "ㅎㅇ", "하이", "ㅋㅋ", "ㅎㅎ", "테스트", "test"]
+        if not is_clear_non_medical:
+            ai_triage = analyze_symptom_with_gemini(text)
+            if ai_triage and ai_triage.get("is_medical") and ai_triage.get("primary_depts"):
+                return {
+                    "category_key": "ai_dynamic",
+                    "is_medical_symptom": True,
+                    "category_title": ai_triage.get("category_title", "의료 진료 안내"),
+                    "primary_depts": ai_triage.get("primary_depts", ["내과", "가정의학과"]),
+                    "alt_depts": ai_triage.get("alt_depts", ["응급의학과"]),
+                    "advice": ai_triage.get("advice", "가까운 진료 가능 병의원을 방문해 보세요."),
+                    "target_date_str": target_date_str,
+                    "is_sunday": is_sunday,
+                    "is_night": is_night,
+                    "target_district": target_district
+                }
+
+        # 일반적인 신체 통증/불편 호소 키워드 감지 (예: "아파", "통증", "쑤셔", "결려", "몸이 안 좋아")
+        pain_words = ["아파", "통증", "쑤셔", "결려", "이상해", "불편", "괴로워", "저려", "따가워", "욱신", "부었", "다쳤", "쓰려", "답답"]
+        if any(pw in text_lower for pw in pain_words):
+            return {
+                "category_key": "general_pain",
+                "is_medical_symptom": True,
+                "category_title": "신체 통증 / 1차 진료 안내",
+                "primary_depts": ["내과", "가정의학과", "정형외과"],
+                "alt_depts": ["응급의학과"],
+                "advice": "신체 통증 및 불편감에 대해 1차 진료가 가능한 가까운 내과/가정의학과/정형외과를 안내합니다.",
+                "target_date_str": target_date_str,
+                "is_sunday": is_sunday,
+                "is_night": is_night,
+                "target_district": target_district
+            }
+
+        if any(w in text_lower for w in ["병원", "의원", "진료", "가까운", "문 연", "응급실", "일요일", "야간", "어디", "추천"]):
             return {
                 "category_key": "general_hospital",
                 "is_medical_symptom": True,
@@ -387,7 +498,7 @@ def analyze_symptom_and_intent(text):
                 "target_district": target_district
             }
         else:
-            # 비의료 일상 대화 또는 짧은 텍스트 (예: 바보, 안녕, 하이 등)
+            # 비의료 일상 대화 또는 짧은 텍스트 (예: 바보, 안녕 등)
             return {
                 "category_key": "non_medical",
                 "is_medical_symptom": False,
