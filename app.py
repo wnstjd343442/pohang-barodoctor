@@ -505,9 +505,8 @@ def generate_gemini_conversational_reply(user_message, analysis, top_hospitals):
         
     hospital_summary = []
     for h in top_hospitals[:4]:
-        dist_str = f"({h['distance_text']})" if h.get("distance_text") else ""
         er_live = f"[실시간 응급병상: {h['live_public_data']['available_beds']}석]" if h.get("live_public_data") else ""
-        hospital_summary.append(f"- {h['name']} ({h['district']}{dist_str}): {h.get('hours_summary', '')} {er_live} 특징: {', '.join(h.get('features', [])[:2])}")
+        hospital_summary.append(f"- {h['name']} ({h.get('district', '')}): {h.get('hours_summary', '')} {er_live} 특징: {', '.join(h.get('features', [])[:2])}")
         
     hosp_text = "\n".join(hospital_summary) if hospital_summary else "진료 가능 병원"
     
