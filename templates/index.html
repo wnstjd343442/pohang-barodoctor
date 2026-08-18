@@ -1258,11 +1258,13 @@
   function addResultBlock(data) {
     lastResultData = data;
 
-    // 1. AI 대화형 답변 말풍선 추가
-    const botRow = document.createElement('div');
-    botRow.className = 'row bot';
-    botRow.innerHTML = `<div class="bubble bot ai-live">${formatMarkdown(data.reply)}</div>`;
-    chatEl.appendChild(botRow);
+    // 1. AI 대화형 답변 말풍선 추가 (AI 생성 답변이 있을 때만 말풍선 표시)
+    if (data.reply && data.reply.trim()) {
+      const botRow = document.createElement('div');
+      botRow.className = 'row bot';
+      botRow.innerHTML = `<div class="bubble bot ai-live">${formatMarkdown(data.reply)}</div>`;
+      chatEl.appendChild(botRow);
+    }
 
     // 2. 병원 카드 리스트 컨테이너 (추천 병원이 있을 때만 추가)
     if (data.hospitals && data.hospitals.length > 0) {
