@@ -712,7 +712,22 @@ def api_chat():
                 "error": "⚠️ 현재 AI 사용량이 초과되었습니다. 찾으시는 질환이나 증상(예: 배 아파, 감기)을 입력해 주세요.",
                 "hospitals": []
             }), 200
-        ai_reply = None
+
+        # Gemini 호출이 실패해도(할당량 초과 등) 증상 분석/추천 진료과 설명은 계속 보여준다.
+        primary_str = ", ".join(analysis.get("primary_depts", [])) if analysis.get("primary_depts") else "일반 진료"
+        alt_str = ", ".join(analysis.get("alt_depts", []))
+        loc_guide = " (📍 내 위치 기준 가까운 거리순)" if user_lat else ""
+
+        reply_lines = [
+            "⚡ **AI 실시간 의료 안내 (공공데이터 실시간 연동)**",
+            "",
+            f"🔍 **증상 분석**: [{analysis.get('category_title', '진료 안내')}]",
+            f"👉 **추천 진료과**: 1순위 `{primary_str}`" + (f" (대안: `{alt_str}`)" if alt_str else ""),
+            f"📅 **진료 기준**: {analysis.get('target_date_str', '오늘')}{loc_guide}",
+            "",
+            analysis.get("advice", "진료시간을 확인하시고 아래 지도 길찾기 또는 전화 문의 후 방문하세요.")
+        ]
+        ai_reply = "\n".join(reply_lines)
     
     return jsonify({
         "status": "success",
