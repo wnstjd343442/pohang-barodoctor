@@ -6,3 +6,4 @@ pydub
 audioop-lts
 python-dotenv
 gunicorn
+serverless-wsgi
