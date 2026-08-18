@@ -536,14 +536,14 @@ def generate_gemini_conversational_reply(user_message, analysis, top_hospitals):
         return None, "Gemini API 키가 설정되지 않았습니다."
         
     if analysis.get("category_key") == "non_medical":
-        prompt = f"""너는 포항 시민과 학생들을 위한 친절한 AI 의료 안내 비서 "포항 바로닥터"야.
+        prompt = f"""너는 포항 시민과 학생들을 위한 AI 의료 안내 비서 "포항 바로닥터"야.
 사용자가 "{user_message}"라고 입력했어.
-의학적 진단 없이, 친절하고 부드럽게 인사하며 "어디가 아프시거나 불편하신 곳이 있으신가요? 증상(예: 장염, 감기, 어지럼증)이나 원하시는 병원을 말씀해 주시면 빠르게 안내해 드릴게요! 😊"라고 1~2문장으로 상냥하게 응답해줘."""
+상투적인 "안녕하세요" 첫인사를 반복하지 말고, 사용자의 말에 짧고 자연스럽게 한 문장으로 반응한 뒤 "어디가 불편하시거나 찾으시는 병원이 있으신가요? (예: 배 아파, 목감기, 일요일 정형외과)"라고 1~2문장으로 간결하게 물어봐줘."""
         try:
             res = client.models.generate_content(model="gemini-3.6-flash", contents=prompt)
             return (res.text or "").strip(), None
         except Exception as e:
-            return "현재 AI 실시간 상담 트래픽이 많아 일시적으로 지연되고 있습니다. 잠시 후 다시 시도해 주세요. 😊\n\n(어디가 아프신지 증상이나 원하시는 진료과를 말씀해 주시면 가장 가까운 병원을 즉시 찾아드립니다!)", None
+            return "💡 **포항 바로닥터 빠른 안내**\n\n몸이 불편하시거나 찾으시는 병원이 있으신가요? 증상(예: *'배 아파'*, *'목 아프고 열나'*, *'일요일 이비인후과'*)을 입력하시면 가장 가까운 병원을 즉시 찾아드립니다!", None
         
     hospital_summary = []
     for h in top_hospitals[:4]:
@@ -552,7 +552,7 @@ def generate_gemini_conversational_reply(user_message, analysis, top_hospitals):
         
     hosp_text = "\n".join(hospital_summary) if hospital_summary else "진료 가능 병원"
     
-    prompt = f"""너는 포항 시민과 한동대학교/양덕동 학생들을 위한 친절하고 전문적인 AI 의료 안내 비서 "포항 바로닥터"야.
+    prompt = f"""너는 포항 시민과 한동대학교/양덕동 학생들을 위한 전문 AI 의료 안내 비서 "포항 바로닥터"야.
 
 [사용자 입력]
 "{user_message}"
@@ -565,11 +565,11 @@ def generate_gemini_conversational_reply(user_message, analysis, top_hospitals):
 [추천 병원 목록]
 {hosp_text}
 
-[엄격한 할루시네이션 방지 지침]
-1. 반드시 위에 제공된 [추천 병원 목록]에 존재하는 실제 병원 이름과 정보만 언급할 것. 존재하지 않는 병원이나 지어낸 주소를 절대 말하지 마.
-2. 환자의 아픔과 불안에 진심으로 따뜻하게 공감해줘.
+[엄격한 답변 지침]
+1. "안녕하세요"라는 형식적인 첫인사를 절대 반복하지 말 것. 대화가 이미 진행 중이므로 환자의 증상에 대한 따뜻한 공감과 긴급도/수액 치료 등 의학적 행동 요령으로 바로 본론을 시작해.
+2. 반드시 위에 제공된 [추천 병원 목록]에 존재하는 실제 병원 이름과 정보만 언급할 것.
 3. 환자의 상황(예: 일요일, 야간, 장염 탈수, 고열 등)에 맞춰 수액 치료나 행동 요령을 명확하고 친절하게 설명해줘.
-4. 모바일 화면에서 빠르게 읽을 수 있도록 읽기 쉬운 한국어 대화체(3~4문단, 250자 내외)로 작성해줘. 마크다운 볼드(**강조**)를 적절히 사용해줘."""
+4. 모바일 화면에서 빠르게 읽을 수 있도록 읽기 쉬운 한국어 대화체(3~4문단, 200~250자 내외)로 작성하고 마크다운 볼드(**강조**)를 적절히 사용해줘."""
 
     try:
         res = client.models.generate_content(
@@ -580,7 +580,7 @@ def generate_gemini_conversational_reply(user_message, analysis, top_hospitals):
     except Exception as e:
         err_str = str(e)
         if "429" in err_str or "RESOURCE_EXHAUSTED" in err_str:
-            err_msg = "⚠️ Gemini API 무료 사용량(분당 20회) 한도에 일시적으로 도달했습니다. (약 20초 후 자동 복구됩니다)"
+            err_msg = "⚠️ Gemini API 무료 사용량 한도에 일시 도달하여 공공데이터 분석 모드로 즉시 전환합니다."
         else:
             err_msg = f"⚠️ Gemini API 오류: {err_str[:80]}"
         print("Gemini generate error:", e)
@@ -636,17 +636,16 @@ def api_chat():
     if not ai_reply:
         primary_str = ", ".join(analysis["primary_depts"]) if analysis.get("primary_depts") else "일반 진료"
         alt_str = ", ".join(analysis.get("alt_depts", []))
-        loc_guide = " (📍 내 위치 기준 가까운 거리순 정렬)" if user_lat else ""
+        loc_guide = " (📍 내 위치 기준 가까운 거리순)" if user_lat else ""
         
         reply_lines = [
-            "현재 AI 실시간 상담 트래픽이 많아 대화 생성이 지연되고 있습니다. 🙇‍♂️",
-            "대신 입력해 주신 증상에 맞춰 **내 위치에서 가장 가까운 진료 가능 병원 목록을 먼저 바로 안내해 드릴게요!** 📍",
+            "⚡ **AI 실시간 의료 안내 (공공데이터 실시간 연동)**",
             "",
-            f"🔍 **증상 분류**: [{analysis.get('category_title', '의료 안내')}]",
+            f"🔍 **증상 분석**: [{analysis.get('category_title', '진료 안내')}]",
             f"👉 **추천 진료과**: 1순위 `{primary_str}`" + (f" (대안: `{alt_str}`)" if alt_str else ""),
             f"📅 **진료 기준**: {analysis.get('target_date_str', '오늘')}{loc_guide}",
             "",
-            analysis.get("advice", "아래 추천 병원 카드를 확인하시고 바로 카카오맵/네이버 지도 길찾기나 전화 문의를 이용해 보세요.")
+            analysis.get("advice", "진료시간을 확인하시고 아래 지도 길찾기 또는 전화 문의 후 방문하세요.")
         ]
         ai_reply = "\n".join(reply_lines)
     
