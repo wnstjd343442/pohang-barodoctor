@@ -1025,7 +1025,6 @@
       });
       updateCurrentCardsDisplay(lastResultData);
     } else {
-      // 만약 아직 검색 결과가 없으면 기본 검색 실행
       handleSend('지금 문 연 가장 가까운 병원');
     }
   });
@@ -1034,6 +1033,10 @@
     toastEl.textContent = msg;
     toastEl.classList.add('show');
     setTimeout(() => { toastEl.classList.remove('show'); }, 2200);
+  }
+
+  function copyToClipboard(text) {
+    navigator.clipboard.writeText(text).then(() => showToast('📋 주소가 복사되었습니다!')).catch(() => showToast('복사 실패'));
   }
 
   function escapeHtml(str) {
@@ -1070,8 +1073,13 @@
   }
 
   function addTyping() {
+    document.querySelectorAll('.typing-indicator-row').forEach(el => {
+      if (el.dataset.intervalId) clearInterval(parseInt(el.dataset.intervalId));
+      el.remove();
+    });
+
     const row = document.createElement('div');
-    row.className = 'row bot';
+    row.className = 'row bot typing-indicator-row';
     row.innerHTML = `
       <div class="bubble bot typing-indicator" style="font-weight:600; color:#2563eb; display:flex; align-items:center; gap:4px;">
         <span>⚡ AI가 생각 중</span><span class="thinking-dots" style="display:inline-block; min-width:42px; letter-spacing:2px; font-weight:800;">.</span>
@@ -1107,27 +1115,40 @@
     if (h.live_public_data && h.live_public_data.is_connected) {
       const beds = h.live_public_data.available_beds;
       const ped = h.live_public_data.pediatric_beds;
-      let pedText = ped !== null ? ` (소아응급 ${ped}석)` : '';
-      publicDataBadgeHtml = `<div class="public-data-badge">🟢 <strong>실시간 공공데이터</strong> 응급실: ${beds}병상${pedText}</div>`;
+      let pedText = ped !== null ? ` (소아 ${ped}석)` : '';
+      publicDataBadgeHtml = `<div class="public-data-badge">🟢 <strong>공공데이터</strong> 응급실: ${beds}병상${pedText}</div>`;
     }
 
+    const seenBadges = new Set();
+
     if (h.posaka === 'O') {
+      seenBadges.add('포항사랑');
+      seenBadges.add('포사카');
       badgesHtml += `<span class="meta-tag posaka">💳 포항사랑카드 O</span>`;
     } else if (h.posaka === 'X') {
+      seenBadges.add('포항사랑');
+      seenBadges.add('포사카');
       badgesHtml += `<span class="meta-tag default">💳 포사카 불가</span>`;
     }
 
     if (h.fever_status === 'possible') {
+      seenBadges.add('발열');
       badgesHtml += `<span class="meta-tag fever-possible">${escapeHtml(h.fever_badge || '🔥 발열 진료 가능')}</span>`;
     } else if (h.fever_status === 'caution') {
-      badgesHtml += `<span class="meta-tag fever-caution">${escapeHtml(h.fever_badge || '⚠️ 사전문의')}</span>`;
+      seenBadges.add('발열');
+      badgesHtml += `<span class="meta-tag fever-caution">${escapeHtml(h.fever_badge || '⚠️ 발열 사전문의')}</span>`;
     } else if (h.fever_status === 'impossible') {
+      seenBadges.add('발열');
       badgesHtml += `<span class="meta-tag fever-impossible">${escapeHtml(h.fever_badge || '⛔ 발열 불가')}</span>`;
     }
 
     if (h.is_emergency) {
+      seenBadges.add('응급');
+      seenBadges.add('24시간');
+      seenBadges.add('일요일');
       badgesHtml += `<span class="meta-tag fever-possible">🚨 24시간 응급실</span>`;
     } else if (h.sunday_open) {
+      seenBadges.add('일요일');
       badgesHtml += `<span class="meta-tag sun">☀️ 일요일 진료</span>`;
     }
 
@@ -1135,14 +1156,18 @@
       badgesHtml += `<span class="meta-tag skin">${escapeHtml(h.skin_badge)}</span>`;
     }
 
-    (h.features || []).slice(0, 2).forEach(f => {
-      badgesHtml += `<span class="meta-tag default">${escapeHtml(f)}</span>`;
+    (h.features || []).forEach(f => {
+      const isDuplicate = Array.from(seenBadges).some(kw => f.includes(kw));
+      if (!isDuplicate && seenBadges.size < 6) {
+        seenBadges.add(f);
+        badgesHtml += `<span class="meta-tag default">${escapeHtml(f)}</span>`;
+      }
     });
 
     const isEr = h.is_emergency ? ' er' : '';
 
     return `
-      <div class="hcard" data-hid="${h.id}">
+      <div class="hcard" data-hid="${escapeHtml(h.id)}">
         <div class="hcard-top">
           <div class="hcard-name">${escapeHtml(h.name)}</div>
           <span class="district-badge${isEr}">${escapeHtml(h.district)}</span>
@@ -1170,23 +1195,19 @@
         ${h.description ? `<div class="info-line desc">💡 ${escapeHtml(h.description)}</div>` : ''}
 
         <div class="card-actions">
-          <!-- A. 네이버 지도 웹으로 보내기 -->
           <a href="${h.naver_map_url}" target="_blank" rel="noopener noreferrer" class="btn-naver-map">
             <span>🗺️ 네이버 지도에서 보기</span>
           </a>
           
-          <!-- 원터치 주소 복사 -->
           <button class="sub-action-btn copy-btn" data-addr="${escapeHtml(h.address)}">
             📋 주소 복사
           </button>
           
-          <!-- 전화 연결 -->
-          <a href="tel:${h.tel}" class="sub-action-btn">
+          <a href="tel:${escapeHtml(h.tel)}" class="sub-action-btn tel-btn">
             📞 전화 걸기
           </a>
           
-          <!-- 사용자 제보하기 -->
-          <button class="sub-action-btn report report-btn" data-hid="${h.id}" data-hname="${escapeHtml(h.name)}">
+          <button class="sub-action-btn report-btn" data-hid="${escapeHtml(h.id)}" data-hname="${escapeHtml(h.name)}">
             📢 제보하기
           </button>
         </div>
@@ -1194,29 +1215,33 @@
     `;
   }
 
-  const bindCardEvents = (container) => {
+  function bindCardEvents(container) {
     container.querySelectorAll('.copy-btn').forEach(btn => {
-      btn.onclick = async () => {
-        try {
-          await navigator.clipboard.writeText(btn.dataset.addr);
-          showToast('📋 주소가 클립보드에 복사되었습니다!');
-        } catch (e) {
-          showToast('주소 복사: ' + btn.dataset.addr);
-        }
-      };
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const addr = btn.dataset.addr;
+        copyToClipboard(addr);
+      });
     });
 
     container.querySelectorAll('.report-btn').forEach(btn => {
-      btn.onclick = () => {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
         openReportModal(btn.dataset.hid, btn.dataset.hname);
-      };
+      });
     });
-  };
+  }
 
   function updateCurrentCardsDisplay(data) {
-    if (!lastResultListRow) return;
-    const allHospitals = data.hospitals || [];
-    let visibleCount = Math.min(3, allHospitals.length);
+    if (!data || !lastResultListRow) return;
+
+    allHospitals = (data.hospitals || []).slice();
+    visibleCount = Math.min(3, allHospitals.length);
+
+    if (allHospitals.length === 0) {
+      lastResultListRow.innerHTML = '';
+      return;
+    }
 
     const renderBatchCards = (start, count) => {
       return allHospitals.slice(start, start + count).map(h => renderHospitalCard(h)).join('');
@@ -1272,6 +1297,8 @@
     scrollToBottom();
   }
 
+  let isProcessing = false;
+
   function addResultBlock(data) {
     lastResultData = data;
 
@@ -1281,22 +1308,30 @@
     botRow.innerHTML = `<div class="bubble bot ai-live">${formatMarkdown(data.reply)}</div>`;
     chatEl.appendChild(botRow);
 
-    // 2. 병원 카드 리스트 컨테이너
-    const listRow = document.createElement('div');
-    listRow.className = 'row bot';
-    chatEl.appendChild(listRow);
-    lastResultListRow = listRow;
-
-    updateCurrentCardsDisplay(data);
+    // 2. 병원 카드 리스트 컨테이너 (추천 병원이 있을 때만 추가)
+    if (data.hospitals && data.hospitals.length > 0) {
+      const listRow = document.createElement('div');
+      listRow.className = 'row bot';
+      chatEl.appendChild(listRow);
+      lastResultListRow = listRow;
+      updateCurrentCardsDisplay(data);
+    } else {
+      lastResultListRow = null;
+      scrollToBottom();
+    }
   }
 
   async function handleSend(customText = null) {
+    if (isProcessing) return;
+
     const text = (customText || inputEl.value).trim();
     if (!text) return;
 
+    isProcessing = true;
     addUserBubble(text);
     if (!customText) inputEl.value = '';
     sendBtn.disabled = true;
+    inputEl.disabled = true;
 
     const typingRow = addTyping();
 
@@ -1312,8 +1347,8 @@
         })
       });
       const data = await res.json();
-      if (typingRow.dataset.intervalId) clearInterval(typingRow.dataset.intervalId);
-      typingRow.remove();
+      if (typingRow && typingRow.dataset.intervalId) clearInterval(parseInt(typingRow.dataset.intervalId));
+      if (typingRow && typingRow.parentNode) typingRow.remove();
 
       if (data.error) {
         const errRow = document.createElement('div');
@@ -1325,15 +1360,19 @@
         addResultBlock(data);
       }
     } catch (e) {
-      if (typingRow.dataset.intervalId) clearInterval(typingRow.dataset.intervalId);
-      typingRow.remove();
+      if (typingRow && typingRow.dataset.intervalId) clearInterval(parseInt(typingRow.dataset.intervalId));
+      if (typingRow && typingRow.parentNode) typingRow.remove();
       const errRow = document.createElement('div');
       errRow.className = 'row bot';
       errRow.innerHTML = `<div class="bubble bot">⚠️ 연결에 실패했습니다: ${e.message}</div>`;
       chatEl.appendChild(errRow);
       scrollToBottom();
     } finally {
+      if (typingRow && typingRow.dataset.intervalId) clearInterval(parseInt(typingRow.dataset.intervalId));
+      if (typingRow && typingRow.parentNode) typingRow.remove();
+      isProcessing = false;
       sendBtn.disabled = false;
+      inputEl.disabled = false;
       inputEl.focus();
     }
   }

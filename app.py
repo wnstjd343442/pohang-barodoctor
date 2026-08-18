@@ -165,66 +165,62 @@ def format_distance_and_time(dist_km):
         return None
     if dist_km < 1.0:
         dist_str = f"{int(dist_km * 1000)}m"
+        car_mins = max(1, round((dist_km * 1.25) / 25 * 60))
+        walk_mins = max(1, round(dist_km / 4 * 60))
+        return f"{dist_str} (차로 {car_mins}분 / 도보 {walk_mins}분)"
     else:
         dist_str = f"{dist_km:.1f}km"
-    
-    car_mins = max(1, round(dist_km / 35 * 60))
-    walk_mins = round(dist_km / 4 * 60)
-    
-    if dist_km <= 2.0:
-        time_str = f"차로 {car_mins}분 / 도보 {walk_mins}분"
-    else:
-        time_str = f"차로 약 {car_mins}분"
-        
-    return f"{dist_str} ({time_str})"
+        car_mins = max(2, round((dist_km * 1.25) / 30 * 60))
+        walk_mins = round(dist_km / 4 * 60)
+        return f"{dist_str} (차로 약 {car_mins}분 / 도보 {walk_mins}분)"
 
 # 증상 카테고리 정의 및 대안 진료과 매핑
 SYMPTOM_CATEGORIES = {
     "gastro": {
         "title": "장염 / 급성 복통 / 소화기 질환",
-        "keywords": ["배", "복통", "설사", "구토", "속쓰림", "체함", "장염", "미식", "위경련", "식중독", "더부룩", "토", "소화"],
+        "keywords": ["배", "복통", "설사", "구토", "속쓰림", "체함", "장염", "미식", "위경련", "식중독", "더부룩", "토", "소화", "소화제", "위염"],
         "primary_depts": ["내과", "소화기내과"],
         "alt_depts": ["가정의학과", "이비인후과", "응급의학과"],
         "advice": "🤢 장염/소화기 증상으로 판단됩니다. 탈수 예방 및 통증 완화를 위해 수액 치료가 가능한 병원을 안내해 드립니다. 휴일이나 야간에는 수액실이 완비된 가정의학과 또는 24시간 응급의료센터를 방문하세요."
     },
     "fever_cold": {
         "title": "감기 / 발열 / 호흡기 질환",
-        "keywords": ["열", "고열", "기침", "감기", "몸살", "오한", "콧물", "인후통", "목", "독감", "코로나", "가래", "편도"],
+        "keywords": ["열", "고열", "기침", "감기", "몸살", "오한", "콧물", "인후통", "목", "독감", "코로나", "가래", "편도", "이비인후과", "목아파"],
         "primary_depts": ["이비인후과", "내과", "가정의학과"],
         "alt_depts": ["응급의학과", "소아청소년과"],
         "advice": "🤒 발열/호흡기 증상으로 판단됩니다. 발열 환자 대면 진료 및 신속항원검사가 가능한 병의원을 우선 매칭했습니다. (발열 시 진료 제한 병원은 주의 안내)"
     },
     "skin": {
         "title": "피부 질환 / 알레르기 / 두드러기",
-        "keywords": ["피부", "두드러기", "가려움", "발진", "아토피", "습진", "대상포진", "알레르기", "뾰루지", "여드름", "점", "레이저"],
+        "keywords": ["피부", "두드러기", "가려움", "발진", "아토피", "습진", "대상포진", "알레르기", "뾰루지", "여드름", "점", "레이저", "피부과"],
         "primary_depts": ["피부과"],
         "alt_depts": ["내과", "가정의학과"],
         "advice": "🩹 피부 질환 증상으로 판단됩니다. 미용 시술 위주가 아닌 질환/보험치료 전문 피부과 및 알레르기 항히스타민 수액 처방이 가능한 의원을 추천합니다."
     },
     "orthopedic": {
         "title": "관절 / 척추 / 염좌 / 골절",
-        "keywords": ["허리", "무릎", "관절", "삐", "접질", "골절", "어깨", "다리", "발목", "손목", "담", "근육통", "통증"],
+        "keywords": ["허리", "무릎", "관절", "삐", "접질", "골절", "어깨", "다리", "발목", "손목", "담", "근육통", "통증", "정형외과"],
         "primary_depts": ["정형외과", "통증의학과", "재활의학과"],
         "alt_depts": ["외과", "가정의학과"],
         "advice": "🦴 근골격계/관절 통증으로 판단됩니다. X-ray 검사 및 물리치료, 도수치료가 가능한 정형외과/통증의학과를 추천합니다."
     },
     "neuro": {
         "title": "어지럼증 / 두통 / 신경 질환",
-        "keywords": ["어지럼", "저림", "마비", "두통", "편두통", "뇌", "실신", "핑"],
+        "keywords": ["어지럼", "저림", "마비", "두통", "편두통", "뇌", "실신", "핑", "어지러", "신경과"],
         "primary_depts": ["신경과", "신경외과", "내과"],
         "alt_depts": ["응급의학과"],
         "advice": "🤕 신경 및 두통 증상으로 판단됩니다. 지속적인 급성 두통이나 심한 어지럼증 시 정밀 진단이 가능한 병원을 추천합니다."
     },
     "trauma": {
         "title": "외상 / 찢어짐 / 출혈 / 화상",
-        "keywords": ["상처", "베인", "화상", "찢어짐", "출혈", "피", "봉합", "꿰매"],
+        "keywords": ["상처", "베인", "화상", "찢어짐", "출혈", "피", "봉합", "꿰매", "외과"],
         "primary_depts": ["외과", "정형외과", "응급의학과"],
         "alt_depts": ["가정의학과"],
         "advice": "🩸 외상 및 상처 치료가 필요합니다. 상처 소독, 봉합 처치 및 화상 치료가 가능한 외과 및 응급의료기관을 추천합니다."
     },
     "pediatric": {
         "title": "소아 / 영유아 질환",
-        "keywords": ["아이", "소아", "아기", "신생아", "유아", "어린이"],
+        "keywords": ["아이", "소아", "아기", "신생아", "유아", "어린이", "소아과"],
         "primary_depts": ["소아청소년과", "소아과"],
         "alt_depts": ["이비인후과", "가정의학과", "내과", "응급의학과"],
         "advice": "👶 소아 질환 증상입니다. 소아 전문 진료 의원 및 야간 소아 응급 진료가 가능한 권역응급의료센터를 추천합니다."
@@ -235,9 +231,9 @@ WEEKDAYS_KR = ["월", "화", "수", "목", "금", "토", "일"]
 WEEKDAY_NAMES = {"월요일": 0, "화요일": 1, "수요일": 2, "목요일": 3, "금요일": 4, "토요일": 5, "일요일": 6}
 
 def analyze_symptom_and_intent(text):
-    text_lower = text.lower()
+    text_lower = text.lower().strip()
     
-    matched_cat_key = "gastro"
+    matched_cat_key = None
     max_score = 0
     
     for cat_key, cat_data in SYMPTOM_CATEGORIES.items():
@@ -249,8 +245,6 @@ def analyze_symptom_and_intent(text):
             max_score = score
             matched_cat_key = cat_key
             
-    cat_info = SYMPTOM_CATEGORIES[matched_cat_key]
-    
     today = datetime.now().date()
     is_sunday = False
     is_night = False
@@ -294,7 +288,7 @@ def analyze_symptom_and_intent(text):
                 target_date_str = "오늘"
                 is_sunday = (today.weekday() == 6)
                 
-    if any(k in text for k in ["야간", "밤", "저녁", "새벽", "늦게", "5시", "6시", "7시", "8시", "9시"]):
+    if any(k in text for k in ["야간", "밤", "저녁", "새벽", "늦게", "5시", "6시", "7시", "8시", "9시", "24시"]):
         is_night = True
     if any(k in text for k in ["일요일", "휴일", "주말"]):
         is_sunday = True
@@ -315,8 +309,40 @@ def analyze_symptom_and_intent(text):
     elif "이동" in text:
         target_district = "이동"
 
+    # 증상 키워드가 없는 경우
+    if matched_cat_key is None:
+        if any(w in text_lower for w in ["병원", "의원", "진료", "가까운", "문 연", "응급실", "포사카", "일요일", "야간", "어디", "추천"]):
+            return {
+                "category_key": "general_hospital",
+                "is_medical_symptom": False,
+                "category_title": "가까운 진료 가능 병의원",
+                "primary_depts": ["내과", "가정의학과", "이비인후과"],
+                "alt_depts": ["응급의학과"],
+                "advice": "내 위치 기준 진료 가능한 가까운 포항 병의원을 안내합니다.",
+                "target_date_str": target_date_str,
+                "is_sunday": is_sunday,
+                "is_night": is_night,
+                "target_district": target_district
+            }
+        else:
+            # 비의료 일상 대화 또는 짧은 텍스트 (예: 바보, 안녕, 하이 등)
+            return {
+                "category_key": "non_medical",
+                "is_medical_symptom": False,
+                "category_title": "일반 대화",
+                "primary_depts": [],
+                "alt_depts": [],
+                "advice": "",
+                "target_date_str": target_date_str,
+                "is_sunday": is_sunday,
+                "is_night": is_night,
+                "target_district": target_district
+            }
+
+    cat_info = SYMPTOM_CATEGORIES[matched_cat_key]
     return {
         "category_key": matched_cat_key,
+        "is_medical_symptom": True,
         "category_title": cat_info["title"],
         "primary_depts": cat_info["primary_depts"],
         "alt_depts": cat_info["alt_depts"],
@@ -328,6 +354,9 @@ def analyze_symptom_and_intent(text):
     }
 
 def rank_and_filter_hospitals(hospitals, analysis, user_lat=None, user_lng=None, sort_by="recommend"):
+    if analysis.get("category_key") == "non_medical":
+        return []
+        
     primary_depts = set(analysis["primary_depts"])
     alt_depts = set(analysis["alt_depts"])
     is_sunday = analysis["is_sunday"]
@@ -427,10 +456,20 @@ def rank_and_filter_hospitals(hospitals, analysis, user_lat=None, user_lng=None,
     return scored_list
 
 def generate_gemini_conversational_reply(user_message, analysis, top_hospitals):
-    """Gemini 3.6 Flash를 활용해 실제 따뜻하고 전문적인 의료 대화 답변 생성"""
+    """Gemini 3.6 Flash를 활용해 실제 따뜻하고 전문적인 의료 대화 답변 생성 (할루시네이션 방지 엄격 적용)"""
     client = get_gemini_client()
     if not client:
         return None
+        
+    if analysis.get("category_key") == "non_medical":
+        prompt = f"""너는 포항 시민과 학생들을 위한 친절한 AI 의료 안내 비서 "포항 바로닥터"야.
+사용자가 "{user_message}"라고 입력했어.
+의학적 진단 없이, 친절하고 부드럽게 인사하며 "어디가 아프시거나 불편하신 곳이 있으신가요? 증상(예: 장염, 감기, 어지럼증)이나 원하시는 병원을 말씀해 주시면 빠르게 안내해 드릴게요! 😊"라고 1~2문장으로 상냥하게 응답해줘."""
+        try:
+            res = client.models.generate_content(model="gemini-3.6-flash", contents=prompt)
+            return (res.text or "").strip()
+        except Exception:
+            return "안녕하세요! 포항 바로닥터입니다. 😊 어디가 아프시거나 불편하신가요? 증상이나 원하시는 진료과를 말씀해 주시면 포항에서 가장 적합한 병원을 찾아드릴게요!"
         
     hospital_summary = []
     for h in top_hospitals[:4]:
@@ -453,11 +492,21 @@ def generate_gemini_conversational_reply(user_message, analysis, top_hospitals):
 [추천 병원 목록]
 {hosp_text}
 
-[지침]
-1. 환자의 아픔과 불안에 진심으로 따뜻하게 공감해줘.
-2. 환자의 상황(예: 일요일, 야간, 장염 탈수, 고열 등)에 맞춰 왜 이 진료과나 병원을 가야 하는지, 수액 치료나 행동 요령을 명확하고 친절하게 설명해줘.
-3. 추천된 병원 중 핵심 병원 1~2곳을 언급하며 자연스럽게 안내해줘.
-4. 모바일 화면에서 빠르게 읽을 수 있도록 읽기 쉬운 한국어 대화체(3~4문단, 300자 내외)로 작성해줘. 마크다운 볼드(**강조**)를 적절히 사용해줘."""
+[엄격한 할루시네이션 방지 지침]
+1. 반드시 위에 제공된 [추천 병원 목록]에 존재하는 실제 병원 이름과 정보만 언급할 것. 존재하지 않는 병원이나 지어낸 주소를 절대 말하지 마.
+2. 환자의 아픔과 불안에 진심으로 따뜻하게 공감해줘.
+3. 환자의 상황(예: 일요일, 야간, 장염 탈수, 고열 등)에 맞춰 수액 치료나 행동 요령을 명확하고 친절하게 설명해줘.
+4. 모바일 화면에서 빠르게 읽을 수 있도록 읽기 쉬운 한국어 대화체(3~4문단, 250자 내외)로 작성해줘. 마크다운 볼드(**강조**)를 적절히 사용해줘."""
+
+    try:
+        res = client.models.generate_content(
+            model="gemini-3.6-flash",
+            contents=prompt
+        )
+        return (res.text or "").strip()
+    except Exception as e:
+        print("Gemini generate error:", e)
+        return None
 
     try:
         res = client.models.generate_content(
