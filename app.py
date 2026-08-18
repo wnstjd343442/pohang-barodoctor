@@ -814,18 +814,38 @@ def api_tts():
 def catch_all_routes(path):
     if request.method == "OPTIONS":
         return jsonify({"status": "ok"}), 200
-    if "chat" in path:
+
+    real_path = (
+        request.headers.get("x-forwarded-url") or
+        request.headers.get("x-matched-path") or
+        request.headers.get("x-vercel-path") or
+        request.environ.get("HTTP_X_FORWARDED_URI") or
+        request.environ.get("REQUEST_URI") or
+        path
+    )
+
+    if request.method == "POST":
+        payload = request.get_json(force=True, silent=True) or {}
+        if "report_type" in payload:
+            return api_report()
+        elif "action" in payload:
+            return api_admin_toggle()
+        else:
+            return api_chat()
+
+    if "chat" in real_path:
         return api_chat()
-    elif "report" in path:
+    elif "report" in real_path:
         return api_report()
-    elif "admin" in path:
+    elif "admin" in real_path:
         return api_admin_toggle()
-    elif "hospital" in path:
+    elif "hospital" in real_path:
         return api_hospitals()
-    elif "tts" in path:
+    elif "tts" in real_path:
         return api_tts()
-    elif "stt" in path:
+    elif "stt" in real_path:
         return api_stt()
+
     return render_template("index.html")
 
 @app.errorhandler(404)
@@ -834,12 +854,12 @@ def handle_custom_404(e):
         return jsonify({"status": "ok"}), 200
     if request.method == "POST":
         payload = request.get_json(force=True, silent=True) or {}
-        if "message" in payload or "sort_by" in payload:
-            return api_chat()
-        elif "report_type" in payload:
+        if "report_type" in payload:
             return api_report()
         elif "action" in payload:
             return api_admin_toggle()
+        else:
+            return api_chat()
     return render_template("index.html")
 
 if __name__ == "__main__":
