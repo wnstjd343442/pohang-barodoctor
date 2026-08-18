@@ -654,7 +654,7 @@ def generate_gemini_conversational_reply(user_message, analysis, top_hospitals):
             res = client.models.generate_content(model="gemini-3.6-flash", contents=prompt)
             return (res.text or "").strip(), None
         except Exception as e:
-            return "💡 **포항 바로닥터 빠른 안내**\n\n몸이 불편하시거나 찾으시는 병원이 있으신가요? 증상(예: *'배 아파'*, *'목 아프고 열나'*, *'일요일 이비인후과'*)을 입력하시면 가장 가까운 병원을 즉시 찾아드립니다!", None
+            return None, "AI 토큰 소진"
         
     hospital_summary = []
     for h in top_hospitals[:4]:
@@ -745,20 +745,13 @@ def api_chat():
     ai_reply, ai_error = generate_gemini_conversational_reply(message, analysis, top_hospitals)
     
     if not ai_reply:
-        primary_str = ", ".join(analysis["primary_depts"]) if analysis.get("primary_depts") else "일반 진료"
-        alt_str = ", ".join(analysis.get("alt_depts", []))
-        loc_guide = " (📍 내 위치 기준 가까운 거리순)" if user_lat else ""
-        
-        reply_lines = [
-            "⚡ **AI 실시간 의료 안내 (공공데이터 실시간 연동)**",
-            "",
-            f"🔍 **증상 분석**: [{analysis.get('category_title', '진료 안내')}]",
-            f"👉 **추천 진료과**: 1순위 `{primary_str}`" + (f" (대안: `{alt_str}`)" if alt_str else ""),
-            f"📅 **진료 기준**: {analysis.get('target_date_str', '오늘')}{loc_guide}",
-            "",
-            analysis.get("advice", "진료시간을 확인하시고 아래 지도 길찾기 또는 전화 문의 후 방문하세요.")
-        ]
-        ai_reply = "\n".join(reply_lines)
+        if not top_hospitals:
+            return jsonify({
+                "status": "error",
+                "error": "⚠️ 현재 AI 사용량이 초과되었습니다. 찾으시는 질환이나 증상(예: 배 아파, 감기)을 입력해 주세요.",
+                "hospitals": []
+            }), 200
+        ai_reply = None
     
     return jsonify({
         "status": "success",
