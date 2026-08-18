@@ -544,14 +544,34 @@ def generate_gemini_conversational_reply(user_message, analysis, top_hospitals):
         print("Gemini generate error:", e)
         return None, err_msg
 
-@app.route("/")
-@app.route("/index.html")
+@app.after_request
+def add_cors_headers(response):
+    response.headers["Access-Control-Allow-Origin"] = "*"
+    response.headers["Access-Control-Allow-Methods"] = "GET, POST, OPTIONS, PUT, DELETE"
+    response.headers["Access-Control-Allow-Headers"] = "Content-Type, Authorization"
+    return response
+
+@app.route("/", methods=["GET", "POST", "OPTIONS"])
+@app.route("/index.html", methods=["GET"])
 def index():
+    if request.method == "OPTIONS":
+        return jsonify({"status": "ok"}), 200
+    if request.method == "POST":
+        payload = request.get_json(force=True, silent=True) or {}
+        if "message" in payload or "sort_by" in payload:
+            return api_chat()
+        elif "report_type" in payload:
+            return api_report()
+        elif "action" in payload:
+            return api_admin_toggle()
     return render_template("index.html")
 
-@app.route("/api/chat", methods=["POST"])
-@app.route("/chat", methods=["POST"])
+@app.route("/api/chat", methods=["GET", "POST", "OPTIONS"])
+@app.route("/chat", methods=["GET", "POST", "OPTIONS"])
 def api_chat():
+    if request.method == "OPTIONS":
+        return jsonify({"status": "ok"}), 200
+        
     payload = request.get_json(force=True, silent=True) or {}
     message = (payload.get("message") or "").strip()
     user_lat = payload.get("lat")
@@ -641,9 +661,12 @@ def api_hospitals():
         
     return jsonify({"count": len(filtered), "hospitals": filtered})
 
-@app.route("/api/report", methods=["POST"])
-@app.route("/report", methods=["POST"])
+@app.route("/api/report", methods=["GET", "POST", "OPTIONS"])
+@app.route("/report", methods=["GET", "POST", "OPTIONS"])
 def api_report():
+    if request.method == "OPTIONS":
+        return jsonify({"status": "ok"}), 200
+        
     payload = request.get_json(force=True, silent=True) or {}
     hospital_id = payload.get("hospital_id", "").strip()
     hospital_name = payload.get("hospital_name", "").strip()
@@ -680,9 +703,11 @@ def api_get_reports():
     reports = load_reports()
     return jsonify({"reports": reports})
 
-@app.route("/api/admin/toggle", methods=["POST"])
-@app.route("/admin/toggle", methods=["POST"])
+@app.route("/api/admin/toggle", methods=["GET", "POST", "OPTIONS"])
+@app.route("/admin/toggle", methods=["GET", "POST", "OPTIONS"])
 def api_admin_toggle():
+    if request.method == "OPTIONS":
+        return jsonify({"status": "ok"}), 200
     payload = request.get_json(force=True, silent=True) or {}
     hospital_id = payload.get("hospital_id")
     action = payload.get("action")
