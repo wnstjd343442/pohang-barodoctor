@@ -545,9 +545,6 @@ def generate_gemini_conversational_reply(user_message, analysis, top_hospitals):
         return None, err_msg
 
 @app.route("/")
-@app.route("/api/index.py")
-@app.route("/api/index")
-@app.route("/api")
 @app.route("/index.html")
 def index():
     return render_template("index.html")
