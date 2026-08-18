@@ -386,6 +386,7 @@ def rank_and_filter_hospitals(hospitals, analysis, user_lat=None, user_lng=None,
     is_sunday = analysis["is_sunday"]
     is_night = analysis["is_night"]
     target_district = analysis["target_district"]
+    is_medical = analysis.get("is_medical_symptom", False)
     
     scored_list = []
     
@@ -398,29 +399,34 @@ def rank_and_filter_hospitals(hospitals, analysis, user_lat=None, user_lng=None,
         h_depts = set(h.get("departments", []))
         
         common_primary = h_depts.intersection(primary_depts)
+        common_alt = h_depts.intersection(alt_depts)
+        is_er = bool(h.get("is_emergency"))
+        
+        # 의학적 증상이 명시된 경우 관련 없는 진료과(예: 배 아픈데 피부과)는 원천 배제!
+        if is_medical and not common_primary and not common_alt and not is_er:
+            continue
+            
         if common_primary:
             score += 50
             match_reasons.append(f"1차 추천: {', '.join(common_primary)}")
+        elif common_alt:
+            score += 35
+            match_reasons.append(f"대안 진료: {', '.join(common_alt)}")
+        elif is_er:
+            score += 30
+            match_reasons.append("24시간 응급진료")
         else:
-            common_alt = h_depts.intersection(alt_depts)
-            if common_alt:
-                score += 35
-                match_reasons.append(f"대안 진료: {', '.join(common_alt)}")
-            elif h.get("is_emergency"):
-                score += 30
-                match_reasons.append("24시간 응급진료")
-            else:
-                score += 5
+            score += 5
                 
         if is_sunday:
-            if h.get("sunday_open") or h.get("is_emergency"):
+            if h.get("sunday_open") or is_er:
                 score += 40
                 match_reasons.append("일요일 진료 가능")
             else:
                 score -= 35
                 
         if is_night:
-            if h.get("night_open") or h.get("is_emergency"):
+            if h.get("night_open") or is_er:
                 score += 35
                 match_reasons.append("야간/24시간 운영")
             else:
@@ -485,7 +491,7 @@ def generate_gemini_conversational_reply(user_message, analysis, top_hospitals):
     """Gemini 3.6 Flash를 활용해 실제 따뜻하고 전문적인 의료 대화 답변 생성 (할루시네이션 방지 엄격 적용)"""
     client = get_gemini_client()
     if not client:
-        return None
+        return None, "Gemini API 키가 설정되지 않았습니다."
         
     if analysis.get("category_key") == "non_medical":
         prompt = f"""너는 포항 시민과 학생들을 위한 친절한 AI 의료 안내 비서 "포항 바로닥터"야.
@@ -493,9 +499,9 @@ def generate_gemini_conversational_reply(user_message, analysis, top_hospitals):
 의학적 진단 없이, 친절하고 부드럽게 인사하며 "어디가 아프시거나 불편하신 곳이 있으신가요? 증상(예: 장염, 감기, 어지럼증)이나 원하시는 병원을 말씀해 주시면 빠르게 안내해 드릴게요! 😊"라고 1~2문장으로 상냥하게 응답해줘."""
         try:
             res = client.models.generate_content(model="gemini-3.6-flash", contents=prompt)
-            return (res.text or "").strip()
-        except Exception:
-            return "안녕하세요! 포항 바로닥터입니다. 😊 어디가 아프시거나 불편하신가요? 증상이나 원하시는 진료과를 말씀해 주시면 포항에서 가장 적합한 병원을 찾아드릴게요!"
+            return (res.text or "").strip(), None
+        except Exception as e:
+            return "안녕하세요! 포항 바로닥터입니다. 😊 어디가 아프시거나 불편하신가요? 증상이나 원하시는 진료과를 말씀해 주시면 포항에서 가장 적합한 병원을 찾아드릴게요!", None
         
     hospital_summary = []
     for h in top_hospitals[:4]:
@@ -503,7 +509,7 @@ def generate_gemini_conversational_reply(user_message, analysis, top_hospitals):
         er_live = f"[실시간 응급병상: {h['live_public_data']['available_beds']}석]" if h.get("live_public_data") else ""
         hospital_summary.append(f"- {h['name']} ({h['district']}{dist_str}): {h.get('hours_summary', '')} {er_live} 특징: {', '.join(h.get('features', [])[:2])}")
         
-    hosp_text = "\n".join(hospital_summary)
+    hosp_text = "\n".join(hospital_summary) if hospital_summary else "진료 가능 병원"
     
     prompt = f"""너는 포항 시민과 한동대학교/양덕동 학생들을 위한 친절하고 전문적인 AI 의료 안내 비서 "포항 바로닥터"야.
 
@@ -529,20 +535,15 @@ def generate_gemini_conversational_reply(user_message, analysis, top_hospitals):
             model="gemini-3.6-flash",
             contents=prompt
         )
-        return (res.text or "").strip()
+        return (res.text or "").strip(), None
     except Exception as e:
+        err_str = str(e)
+        if "429" in err_str or "RESOURCE_EXHAUSTED" in err_str:
+            err_msg = "⚠️ Gemini API 무료 사용량(분당 20회) 한도에 일시적으로 도달했습니다. (약 20초 후 자동 복구됩니다)"
+        else:
+            err_msg = f"⚠️ Gemini API 오류: {err_str[:80]}"
         print("Gemini generate error:", e)
-        return None
-
-    try:
-        res = client.models.generate_content(
-            model="gemini-3.6-flash",
-            contents=prompt
-        )
-        return (res.text or "").strip()
-    except Exception as e:
-        print("Gemini generate error:", e)
-        return None
+        return None, err_msg
 
 @app.route("/")
 @app.route("/api/index.py")
@@ -575,16 +576,16 @@ def api_chat():
     top_hospitals = recommended[:15]
 
     # 실제 Gemini 3.6 Flash 대화형 응답 생성 시도
-    ai_reply = generate_gemini_conversational_reply(message, analysis, top_hospitals)
+    ai_reply, ai_error = generate_gemini_conversational_reply(message, analysis, top_hospitals)
     
     if not ai_reply:
-        # Fallback heuristic
         primary_str = ", ".join(analysis["primary_depts"])
         alt_str = ", ".join(analysis["alt_depts"])
         loc_guide = f" (📍 내 위치 기준 {('거리순' if sort_by == 'distance' else '스마트 추천순')} 정렬)" if user_lat else ""
+        err_banner = f"{ai_error}\n\n" if ai_error else ""
         reply_lines = [
-            f"🔍 **증상 분석**: [{analysis['category_title']}]",
-            f"👉 **추천 진료과**: 1순위 `{primary_str}` (대안: `{alt_str}`)",
+            f"{err_banner}🔍 **증상 분석**: [{analysis['category_title']}]",
+            f"👉 **추천 진료과**: 1순위 `{primary_str}`" + (f" (대안: `{alt_str}`)" if alt_str else ""),
             f"📅 **진료 기준**: {analysis['target_date_str']}" + loc_guide,
             "",
             analysis["advice"]
@@ -599,7 +600,7 @@ def api_chat():
         "total_matched": len(recommended),
         "user_has_location": bool(user_lat and user_lng),
         "public_data_active": True,
-        "is_ai_generated": bool(ai_reply)
+        "is_ai_generated": bool(not ai_error and ai_reply)
     })
 
 @app.route("/api/hospitals", methods=["GET"])
