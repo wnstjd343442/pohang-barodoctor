@@ -1,0 +1,8 @@
+[build]
+  publish = "templates"
+  command = "echo 'Building Pohang BaroDoctor...'"
+
+[[redirects]]
+  from = "/"
+  to = "/index.html"
+  status = 200
