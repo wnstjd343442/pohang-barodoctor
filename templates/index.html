@@ -928,18 +928,13 @@
 
   <!-- Controls & Quick Symptom Chips -->
   <div class="controls-bar">
-    <div class="segmented-sort-bar">
-      <button class="sort-tab active" id="sortRecommendBtn" data-sort="recommend">⭐ 스마트 추천순</button>
-      <button class="sort-tab" id="sortDistanceBtn" data-sort="distance">📍 가까운 거리순</button>
-    </div>
-
     <!-- Quick Filter Toggles -->
     <div class="filter-toggles-wrap">
       <button class="filter-toggle-btn" id="filterSundayBtn" data-filter="sunday">☀️ 일요일 진료</button>
       <button class="filter-toggle-btn" id="filterHolidayBtn" data-filter="holiday">🎌 공휴일 진료</button>
       <button class="filter-toggle-btn" id="filterNightBtn" data-filter="night">🌙 야간진료</button>
       <button class="filter-toggle-btn" id="filterErBtn" data-filter="er">🚨 24시 응급실</button>
-      <button class="filter-toggle-btn" id="filterPosakaBtn" data-filter="posaka">💳 포사카 확인된 곳</button>
+      <button class="filter-toggle-btn" id="filterPosakaBtn" data-filter="posaka">💳 포사카 가맹점</button>
     </div>
 
     <div class="quick-chips-section">
@@ -1087,38 +1082,7 @@
   refreshGpsBtn.addEventListener('click', requestUserLocation);
   requestUserLocation();
 
-  const sortRecommendBtn = document.getElementById('sortRecommendBtn');
-  const sortDistanceBtn = document.getElementById('sortDistanceBtn');
-
-  sortRecommendBtn.addEventListener('click', () => {
-    currentSortBy = 'recommend';
-    sortRecommendBtn.classList.add('active');
-    sortDistanceBtn.classList.remove('active');
-    showToast('⭐ 스마트 추천순으로 정렬합니다.');
-
-    if (lastResultData && lastResultData.hospitals && lastResultData.hospitals.length > 0) {
-      lastResultData.hospitals.sort((a, b) => (b.match_score || 0) - (a.match_score || 0));
-      updateCurrentCardsDisplay(lastResultData);
-    }
-  });
-
-  sortDistanceBtn.addEventListener('click', () => {
-    currentSortBy = 'distance';
-    sortDistanceBtn.classList.add('active');
-    sortRecommendBtn.classList.remove('active');
-    showToast('📍 가장 가까운 거리순으로 정렬합니다.');
-
-    if (lastResultData && lastResultData.hospitals && lastResultData.hospitals.length > 0) {
-      lastResultData.hospitals.sort((a, b) => {
-        const da = a.distance_km === null ? 999 : a.distance_km;
-        const db = b.distance_km === null ? 999 : b.distance_km;
-        return da - db;
-      });
-      updateCurrentCardsDisplay(lastResultData);
-    } else {
-      handleSend('지금 문 연 가장 가까운 병원');
-    }
-  });
+  let currentSortBy = 'distance';
 
   const activeFilters = {
     posaka: false,

@@ -522,7 +522,7 @@ def rank_and_filter_hospitals(hospitals, analysis, user_lat=None, user_lng=None,
             "kakao_map_url": kakao_map_url
         })
         
-    if sort_by == "distance" and user_lat is not None:
+    if user_lat is not None:
         scored_list.sort(key=lambda x: (x.get("distance_km") is None, x.get("distance_km") or 999))
     else:
         scored_list.sort(key=lambda x: x["match_score"], reverse=True)
@@ -543,7 +543,7 @@ def generate_gemini_conversational_reply(user_message, analysis, top_hospitals):
             res = client.models.generate_content(model="gemini-3.6-flash", contents=prompt)
             return (res.text or "").strip(), None
         except Exception as e:
-            return "안녕하세요! 포항 바로닥터입니다. 😊 어디가 아프시거나 불편하신가요? 증상이나 원하시는 진료과를 말씀해 주시면 포항에서 가장 적합한 병원을 찾아드릴게요!", None
+            return "현재 AI 실시간 상담 트래픽이 많아 일시적으로 지연되고 있습니다. 잠시 후 다시 시도해 주세요. 😊\n\n(어디가 아프신지 증상이나 원하시는 진료과를 말씀해 주시면 가장 가까운 병원을 즉시 찾아드립니다!)", None
         
     hospital_summary = []
     for h in top_hospitals[:4]:
@@ -618,10 +618,7 @@ def api_chat():
     message = (payload.get("message") or "").strip()
     user_lat = payload.get("lat")
     user_lng = payload.get("lng")
-    sort_by = payload.get("sort_by", "recommend")
-
-    if any(kw in message for kw in ["가까운", "거리순", "가장 가까운", "가까이", "근처"]):
-        sort_by = "distance"
+    sort_by = payload.get("sort_by", "distance")
 
     if not message:
         return jsonify({"error": "증상이나 상황을 입력해주세요. (예: 일요일 5시에 장염 걸렸어)"}), 400
@@ -639,17 +636,17 @@ def api_chat():
     if not ai_reply:
         primary_str = ", ".join(analysis["primary_depts"]) if analysis.get("primary_depts") else "일반 진료"
         alt_str = ", ".join(analysis.get("alt_depts", []))
-        loc_guide = f" (📍 내 위치 기준 {('거리순' if sort_by == 'distance' else '스마트 추천순')} 정렬)" if user_lat else ""
+        loc_guide = " (📍 내 위치 기준 가까운 거리순 정렬)" if user_lat else ""
         
         reply_lines = [
-            "죄송합니다! 🙇‍♂️ 현재 AI 상담 트래픽이 일시적으로 많아 대화형 답변 생성이 지연되었습니다.",
-            "대신 말씀해 주신 증상에 맞춰 **실시간 공공데이터로 검증된 진료 가능 병원 목록을 먼저 바로 안내해 드릴게요!** 😊",
+            "현재 AI 실시간 상담 트래픽이 많아 대화 생성이 지연되고 있습니다. 🙇‍♂️",
+            "대신 입력해 주신 증상에 맞춰 **내 위치에서 가장 가까운 진료 가능 병원 목록을 먼저 바로 안내해 드릴게요!** 📍",
             "",
             f"🔍 **증상 분류**: [{analysis.get('category_title', '의료 안내')}]",
             f"👉 **추천 진료과**: 1순위 `{primary_str}`" + (f" (대안: `{alt_str}`)" if alt_str else ""),
             f"📅 **진료 기준**: {analysis.get('target_date_str', '오늘')}{loc_guide}",
             "",
-            analysis.get("advice", "아래 추천 병원 카드를 확인하시고 바로 내비 길찾기나 전화 문의를 이용해 보세요.")
+            analysis.get("advice", "아래 추천 병원 카드를 확인하시고 바로 카카오맵/네이버 지도 길찾기나 전화 문의를 이용해 보세요.")
         ]
         ai_reply = "\n".join(reply_lines)
     
