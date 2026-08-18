@@ -935,10 +935,11 @@
 
     <!-- Quick Filter Toggles -->
     <div class="filter-toggles-wrap">
-      <button class="filter-toggle-btn" id="filterPosakaBtn" data-filter="posaka">💳 포항사랑카드 O</button>
       <button class="filter-toggle-btn" id="filterSundayBtn" data-filter="sunday">☀️ 일요일 진료</button>
+      <button class="filter-toggle-btn" id="filterHolidayBtn" data-filter="holiday">🎌 공휴일 진료</button>
+      <button class="filter-toggle-btn" id="filterNightBtn" data-filter="night">🌙 야간진료</button>
       <button class="filter-toggle-btn" id="filterErBtn" data-filter="er">🚨 24시 응급실</button>
-      <button class="filter-toggle-btn" id="filterFeverBtn" data-filter="fever">🔥 발열진료</button>
+      <button class="filter-toggle-btn" id="filterPosakaBtn" data-filter="posaka">💳 포사카 확인된 곳</button>
     </div>
 
     <div class="quick-chips-section">
@@ -1122,8 +1123,9 @@
   const activeFilters = {
     posaka: false,
     sunday: false,
-    er: false,
-    fever: false
+    holiday: false,
+    night: false,
+    er: false
   };
 
   document.querySelectorAll('.filter-toggle-btn').forEach(btn => {
@@ -1243,7 +1245,7 @@
     } else if (h.posaka === 'X') {
       seenBadges.add('포항사랑');
       seenBadges.add('포사카');
-      badgesHtml += `<span class="meta-tag default">💳 포사카 불가</span>`;
+      badgesHtml += `<span class="meta-tag default">💳 포사카 불가 (확인됨)</span>`;
     }
 
     if (h.fever_status === 'possible') {
@@ -1267,6 +1269,11 @@
       badgesHtml += `<span class="meta-tag sun">☀️ 일요일 진료</span>`;
     }
 
+    if (h.moonlight_clinic) {
+      seenBadges.add('달빛');
+      badgesHtml += `<span class="meta-tag fever-possible">🌙 달빛어린이병원</span>`;
+    }
+
     if (h.skin_badge) {
       badgesHtml += `<span class="meta-tag skin">${escapeHtml(h.skin_badge)}</span>`;
     }
@@ -1285,7 +1292,7 @@
       <div class="hcard" data-hid="${escapeHtml(h.id)}">
         <div class="hcard-top">
           <div class="hcard-name">${escapeHtml(h.name)}</div>
-          <span class="district-badge${isEr}">${escapeHtml(h.district)}</span>
+          <span class="district-badge${isEr}">${escapeHtml(h.district || h.gu || '포항')}</span>
         </div>
 
         <div class="badges-row">
@@ -1361,8 +1368,9 @@
     allHospitals = sourceHospitals.filter(h => {
       if (activeFilters.posaka && h.posaka !== 'O') return false;
       if (activeFilters.sunday && !(h.sunday_open || h.is_emergency)) return false;
+      if (activeFilters.holiday && !(h.holiday_open || h.is_emergency)) return false;
+      if (activeFilters.night && !(h.night_open || h.is_emergency)) return false;
       if (activeFilters.er && !h.is_emergency) return false;
-      if (activeFilters.fever && h.fever_status !== 'possible') return false;
       return true;
     });
 

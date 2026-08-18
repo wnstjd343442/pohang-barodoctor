@@ -54,6 +54,7 @@ def get_gemini_client():
 
 DB_FILE = os.path.join(os.path.dirname(__file__), "data", "pohang_hospitals_db.json")
 REPORTS_FILE = os.path.join(os.path.dirname(__file__), "data", "reports.json")
+OVERRIDE_FILE = os.path.join(os.path.dirname(__file__), "data", "pohang_overrides.json")
 
 # ─────────────────────────────────────────────────────────────
 # 🏥 공공데이터포털 (국립중앙의료원) 실시간 응급실 가용병상 캐시 & 조회
@@ -84,27 +85,19 @@ def fetch_realtime_public_er_data():
             if isinstance(items, dict):
                 items = [items]
             for item in items:
-                name = item.get("dutyName") or ""
+                # hpid(기관코드)는 DB의 id와 동일한 국립중앙의료원 기관코드라 그대로 매칭한다
+                hpid = item.get("hpid")
+                if not hpid:
+                    continue
                 hvec = item.get("hvec")  # 가용 병상수
                 hv28 = item.get("hv28")  # 소아 응급 가용수
-                
-                info = {
+
+                er_mapping[hpid] = {
                     "live_beds": int(hvec) if (hvec and str(hvec).lstrip('-').isdigit()) else 0,
                     "pediatric_beds": int(hv28) if (hv28 and str(hv28).lstrip('-').isdigit()) else None,
                     "updated_at": datetime.now().strftime("%H:%M")
                 }
-                
-                if "좋은선린" in name:
-                    er_mapping["ph-er-01"] = info
-                elif "포항의료원" in name:
-                    er_mapping["ph-er-02"] = info
-                elif "세명기독" in name:
-                    er_mapping["ph-er-03"] = info
-                elif "성모병원" in name:
-                    er_mapping["ph-er-04"] = info
-                elif "에스포항" in name:
-                    er_mapping["ph-er-05"] = info
-                    
+
             _public_er_cache["data"] = er_mapping
             _public_er_cache["fetched_at"] = now
     except Exception as e:
@@ -112,12 +105,61 @@ def fetch_realtime_public_er_data():
         
     return _public_er_cache["data"]
 
+DAY_FIELDS = ["mon", "tue", "wed", "thu", "fri", "sat", "sun"]
+
+
+def hours_for_weekday(hospital, weekday):
+    """E-Gen 원본 요일별 진료시간에서 해당 요일 값을 꺼낸다. (weekday: 월=0 … 일=6)"""
+    return (hospital.get("hours") or {}).get(DAY_FIELDS[weekday])
+
+
+def enrich_runtime_status(hospital, now=None):
+    """오늘 진료 여부를 저장값이 아니라 공공데이터 진료시간에서 매번 계산한다."""
+    now = now or datetime.now()
+    today_hours = hours_for_weekday(hospital, now.weekday())
+    hospital["today_hours"] = today_hours
+    hospital["is_open_today"] = bool(today_hours) or bool(hospital.get("is_emergency"))
+
+    open_now = None
+    if today_hours:
+        m = re.match(r"(\d{2}):(\d{2})~(\d{2}):(\d{2})", today_hours)
+        if m:
+            sh, sm, eh, em = (int(x) for x in m.groups())
+            minutes = now.hour * 60 + now.minute
+            open_now = (sh * 60 + sm) <= minutes <= (eh * 60 + em)
+    if hospital.get("is_emergency"):
+        open_now = True
+    hospital["open_now"] = open_now
+    return hospital
+
+
+def load_overrides():
+    """사람이 직접 전화/방문으로 확인한 값만 담는 파일. 공공데이터 DB와 분리해서 관리한다."""
+    if os.path.exists(OVERRIDE_FILE):
+        try:
+            with open(OVERRIDE_FILE, "r", encoding="utf-8") as f:
+                return json.load(f)
+        except Exception:
+            return {}
+    return {}
+
+
+def save_overrides(data):
+    os.makedirs(os.path.dirname(OVERRIDE_FILE), exist_ok=True)
+    with open(OVERRIDE_FILE, "w", encoding="utf-8") as f:
+        json.dump(data, f, ensure_ascii=False, indent=2)
+
+
 def load_hospitals_db():
     if os.path.exists(DB_FILE):
         with open(DB_FILE, "r", encoding="utf-8") as f:
             hospitals = json.load(f)
             er_live = fetch_realtime_public_er_data()
+            overrides = load_overrides()
             for h in hospitals:
+                enrich_runtime_status(h)
+                if h["id"] in overrides:
+                    h.update(overrides[h["id"]])
                 if h["id"] in er_live:
                     live_info = er_live[h["id"]]
                     h["live_public_data"] = {
@@ -131,10 +173,6 @@ def load_hospitals_db():
                     h["live_public_data"] = None
             return hospitals
     return []
-
-def save_hospitals_db(data):
-    with open(DB_FILE, "w", encoding="utf-8") as f:
-        json.dump(data, f, ensure_ascii=False, indent=2)
 
 def load_reports():
     if os.path.exists(REPORTS_FILE):
@@ -179,7 +217,7 @@ SYMPTOM_CATEGORIES = {
     "gastro": {
         "title": "장염 / 급성 복통 / 소화기 질환",
         "keywords": ["배", "복통", "설사", "구토", "속쓰림", "체함", "장염", "미식", "위경련", "식중독", "더부룩", "토", "소화", "소화제", "위염"],
-        "primary_depts": ["내과", "소화기내과"],
+        "primary_depts": ["내과"],
         "alt_depts": ["가정의학과", "이비인후과", "응급의학과"],
         "advice": "🤢 장염/소화기 증상으로 판단됩니다. 탈수 예방 및 통증 완화를 위해 수액 치료가 가능한 병원을 안내해 드립니다. 휴일이나 야간에는 수액실이 완비된 가정의학과 또는 24시간 응급의료센터를 방문하세요."
     },
@@ -200,7 +238,7 @@ SYMPTOM_CATEGORIES = {
     "orthopedic": {
         "title": "관절 / 척추 / 염좌 / 골절",
         "keywords": ["허리", "무릎", "관절", "삐", "접질", "골절", "어깨", "다리", "발목", "손목", "담", "근육통", "통증", "정형외과"],
-        "primary_depts": ["정형외과", "통증의학과", "재활의학과"],
+        "primary_depts": ["정형외과", "마취통증의학과", "재활의학과"],
         "alt_depts": ["외과", "가정의학과"],
         "advice": "🦴 근골격계/관절 통증으로 판단됩니다. X-ray 검사 및 물리치료, 도수치료가 가능한 정형외과/통증의학과를 추천합니다."
     },
@@ -221,7 +259,7 @@ SYMPTOM_CATEGORIES = {
     "pediatric": {
         "title": "소아 / 영유아 질환",
         "keywords": ["아이", "소아", "아기", "신생아", "유아", "어린이", "소아과"],
-        "primary_depts": ["소아청소년과", "소아과"],
+        "primary_depts": ["소아청소년과"],
         "alt_depts": ["이비인후과", "가정의학과", "내과", "응급의학과"],
         "advice": "👶 소아 질환 증상입니다. 소아 전문 진료 의원 및 야간 소아 응급 진료가 가능한 권역응급의료센터를 추천합니다."
     }
@@ -311,11 +349,11 @@ def analyze_symptom_and_intent(text):
 
     # 특정 진료과 직접 검색 (예: 양덕동 내과, 소아과, 이비인후과 등)
     dept_map = {
-        "내과": (["내과", "소화기내과", "가정의학과"], ["응급의학과"], "내과 전문 진료 의원을 안내합니다."),
+        "내과": (["내과", "가정의학과"], ["응급의학과"], "내과 전문 진료 의원을 안내합니다."),
         "이비인후과": (["이비인후과"], ["내과", "가정의학과"], "이비인후과 호흡기/이비인후 질환 전문 의원을 안내합니다."),
         "피부과": (["피부과"], ["가정의학과"], "피부과 질환/진료 의원을 안내합니다."),
-        "정형외과": (["정형외과", "통증의학과"], ["외과"], "정형외과/통증의학과 전문 의원을 안내합니다."),
-        "소아과": (["소아청소년과", "소아과"], ["이비인후과"], "소아청소년과 전문 의원을 안내합니다."),
+        "정형외과": (["정형외과", "마취통증의학과"], ["외과"], "정형외과/통증의학과 전문 의원을 안내합니다."),
+        "소아과": (["소아청소년과"], ["이비인후과"], "소아청소년과 전문 의원을 안내합니다."),
         "외과": (["외과", "정형외과"], ["응급의학과"], "외과/상처치료 전문 의원을 안내합니다.")
     }
     for dept_kw, (pri, alt, adv) in dept_map.items():
@@ -433,11 +471,12 @@ def rank_and_filter_hospitals(hospitals, analysis, user_lat=None, user_lng=None,
                 score -= 25
                 
         if target_district:
-            if target_district in h.get("district", "") or target_district in h.get("address", ""):
+            place = f"{h.get('district') or ''} {h.get('address') or ''}"
+            if target_district in place:
                 score += 30
                 match_reasons.append(f"{target_district} 생활권")
         else:
-            if "양덕동" in h.get("district", "") or "장량동" in h.get("district", ""):
+            if (h.get("district") or "") in ("양덕동", "장성동"):
                 score += 10
                 
         dist_km = None
@@ -457,15 +496,18 @@ def rank_and_filter_hospitals(hospitals, analysis, user_lat=None, user_lng=None,
                 else:
                     score -= min(30, int(dist_km * 2))
                     
+        # 포항사랑상품권 가맹 여부는 검증된 원본이 없으므로 직접 확인한 곳만 가점한다
         if h.get("posaka") == "O":
             score += 5
-            
-        if analysis["category_key"] == "fever_cold":
-            if h.get("fever_status") == "possible":
-                score += 15
-            elif h.get("fever_status") == "impossible":
-                score -= 50
-                
+
+        # 공휴일/달빛어린이병원은 E-Gen 원본 값이라 그대로 반영한다
+        if h.get("holiday_open"):
+            score += 8
+        if analysis["category_key"] == "pediatric" and h.get("moonlight_clinic"):
+            score += 30
+            match_reasons.append("달빛어린이병원 (야간·휴일 소아진료)")
+
+
         query = h.get("naver_search_query") or f"{h['name']} 포항"
         naver_map_url = f"https://map.naver.com/p/search/{requests.utils.quote(query)}"
         kakao_map_url = f"https://map.kakao.com/link/to/{requests.utils.quote(h['name'])},{h.get('lat')},{h.get('lng')}"
@@ -628,6 +670,9 @@ def api_hospitals():
     district = request.args.get("district", "").strip()
     tag = request.args.get("tag", "").strip()
     sunday_only = request.args.get("sunday", "").lower() == "true"
+    holiday_only = request.args.get("holiday", "").lower() == "true"
+    night_only = request.args.get("night", "").lower() == "true"
+    er_only = request.args.get("er", "").lower() == "true"
     posaka_only = request.args.get("posaka", "").lower() == "true"
     user_lat = request.args.get("lat")
     user_lng = request.args.get("lng")
@@ -637,10 +682,17 @@ def api_hospitals():
     filtered = []
     
     for h in hospitals:
-        if district and district not in h.get("district", "") and district not in h.get("address", ""):
+        if district and district not in f"{h.get('district') or ''} {h.get('address') or ''}":
             continue
         if sunday_only and not (h.get("sunday_open") or h.get("is_emergency")):
             continue
+        if holiday_only and not (h.get("holiday_open") or h.get("is_emergency")):
+            continue
+        if night_only and not (h.get("night_open") or h.get("is_emergency")):
+            continue
+        if er_only and not h.get("is_emergency"):
+            continue
+        # 포항사랑상품권은 직접 확인해서 오버라이드에 기록한 곳만 O 이다
         if posaka_only and h.get("posaka") != "O":
             continue
         if tag and tag not in h.get("features", []) and tag not in h.get("departments", []):
@@ -725,24 +777,38 @@ def api_admin_toggle():
     if not target:
         return jsonify({"error": "해당 병원을 찾을 수 없습니다."}), 404
 
+    patch = {}
     if action == "toggle_open":
-        target["is_open_today"] = not target.get("is_open_today", True)
+        patch["is_open_today"] = not target.get("is_open_today", True)
     elif action == "toggle_fever":
-        current = target.get("fever_status", "possible")
-        if current == "possible":
-            target["fever_status"] = "caution"
-            target["fever_badge"] = "⚠️ 37.5도 이상 사전문의"
-        elif current == "caution":
-            target["fever_status"] = "impossible"
-            target["fever_badge"] = "⛔ 발열 시 진료 불가"
-        else:
-            target["fever_status"] = "possible"
-            target["fever_badge"] = "🔥 발열 진료 가능"
+        # 발열진료 가능 여부는 공공데이터에 없는 항목이라, 전화로 직접 확인한 값만 기록한다
+        order = ["unknown", "possible", "caution", "impossible"]
+        badges = {
+            "unknown": None,
+            "possible": "🔥 발열 진료 가능 (직접 확인)",
+            "caution": "⚠️ 37.5도 이상 사전문의 (직접 확인)",
+            "impossible": "⛔ 발열 시 진료 불가 (직접 확인)",
+        }
+        current = target.get("fever_status", "unknown")
+        nxt = order[(order.index(current) + 1) % len(order)] if current in order else "unknown"
+        patch["fever_status"] = nxt
+        patch["fever_badge"] = badges[nxt]
     elif action == "toggle_posaka":
-        current = target.get("posaka", "O")
-        target["posaka"] = "X" if current == "O" else "O"
+        # 포항사랑상품권 가맹 여부도 공개 원본이 없어 확인한 값만 기록한다
+        order = ["unknown", "O", "X"]
+        current = target.get("posaka", "unknown")
+        patch["posaka"] = order[(order.index(current) + 1) % len(order)] if current in order else "unknown"
+    else:
+        return jsonify({"error": f"알 수 없는 action: {action}"}), 400
 
-    save_hospitals_db(hospitals)
+    # 공공데이터로 생성한 DB 파일은 건드리지 않고, 사람이 확인한 값만 오버라이드에 쌓는다
+    overrides = load_overrides()
+    entry = overrides.setdefault(hospital_id, {})
+    entry.update(patch)
+    entry["manual_verified_at"] = datetime.now().isoformat(timespec="seconds")
+    save_overrides(overrides)
+
+    target.update(entry)
     return jsonify({"status": "success", "hospital": target})
 
 @app.route("/api/stt", methods=["POST"])
