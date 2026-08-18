@@ -480,6 +480,9 @@ def api_chat():
     user_lng = payload.get("lng")
     sort_by = payload.get("sort_by", "recommend")
 
+    if any(kw in message for kw in ["가까운", "거리순", "가장 가까운", "가까이", "근처"]):
+        sort_by = "distance"
+
     if not message:
         return jsonify({"error": "증상이나 상황을 입력해주세요. (예: 일요일 5시에 장염 걸렸어)"}), 400
 

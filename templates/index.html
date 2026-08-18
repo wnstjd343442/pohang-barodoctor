@@ -188,9 +188,9 @@
     border: 1px solid #cbd5e1;
     background: #f8fafc;
     color: #475569;
-    padding: 3px 8px;
+    padding: 4px 10px;
     border-radius: 6px;
-    font-size: 11px;
+    font-size: 11.5px;
     font-weight: 600;
     cursor: pointer;
     transition: all 0.15s;
@@ -199,7 +199,8 @@
     background: #eff6ff;
     border-color: var(--primary);
     color: var(--primary);
-    font-weight: 700;
+    font-weight: 800;
+    box-shadow: 0 0 0 1px var(--primary);
   }
 
   .quick-chips-wrap {
@@ -820,14 +821,6 @@
     border-radius: 6px;
     cursor: pointer;
   }
-
-  .typing-indicator {
-    display: flex;
-    align-items: center;
-    gap: 4px;
-    font-size: 12.5px;
-    color: var(--text-muted);
-  }
 </style>
 </head>
 <body>
@@ -856,18 +849,18 @@
   <!-- Controls & Quick Symptom Chips -->
   <div class="controls-bar">
     <div class="sort-toggle-row">
-      <span style="color:#64748b; font-weight:600;">정렬 및 빠른 증상:</span>
+      <span style="color:#64748b; font-weight:600;">정렬 방식:</span>
       <div class="sort-chips">
-        <button class="sort-chip active" id="sortRecommendBtn" data-sort="recommend">⭐ 추천순</button>
+        <button class="sort-chip active" id="sortRecommendBtn" data-sort="recommend">⭐ 스마트 추천순</button>
         <button class="sort-chip" id="sortDistanceBtn" data-sort="distance">📍 가까운 거리순</button>
       </div>
     </div>
 
     <div class="quick-chips-wrap">
+      <button class="chip-btn" data-msg="지금 문 연 가장 가까운 양덕동 병원">📍 가장 가까운 양덕 병원</button>
+      <button class="chip-btn" data-msg="목 아프고 열나 이비인후과 가고 싶어">🤒 목통증·열(이비인후과)</button>
       <button class="chip-btn" data-msg="아침부터 어지럽고 속이 미식거려 일요일인데 어디가?">🤢 어지럼·속 미식거림</button>
       <button class="chip-btn" data-msg="장염 때문에 일요일 5시에 문 연 곳 찾고 있어">🤢 일요일 5시 장염</button>
-      <button class="chip-btn" data-msg="열나고 기침나는데 발열 진료 가능한 내과 알려줘">🤒 감기·고열(발열진료)</button>
-      <button class="chip-btn" data-msg="지금 문 연 가장 가까운 양덕동 병원">📍 양덕동 가까운 병원</button>
       <button class="chip-btn" data-msg="피부 두드러기 질환 치료 전문 병원">🩹 피부질환(치료전문)</button>
       <button class="chip-btn" data-msg="포항사랑카드 결제 가능한 병원">💳 포사카 가맹점</button>
       <button class="chip-btn" data-msg="야간 24시간 응급실">🚨 24시간 응급실</button>
@@ -879,13 +872,13 @@
     <div class="welcome-card">
       <div class="title">✨ 안녕하세요! 포항 바로닥터입니다. 😊</div>
       <div class="text">
-        몸이 어떻게 불편하신가요? 증상이나 상황을 편하게 말씀해 주시면, <strong>대화형 AI</strong>가 1차 진료과와 함께 <strong>내 위치에서 가장 가까운 병원</strong>, <strong>공공데이터 실시간 응급실 병상</strong>까지 딱 맞는 해결책을 찾아드립니다.
+        몸이 어떻게 불편하신가요? 증상이나 상황을 말씀해 주시면 <strong>대화형 AI</strong>가 1차 진료과와 함께 <strong>내 위치에서 가장 가까운 병원</strong>, <strong>공공데이터 실시간 응급실 병상</strong>까지 딱 맞게 찾아드립니다.
       </div>
       <div class="points">
-        <div>• <strong>3곳 먼저 추천</strong> 후 원하시면 [더보기]로 추가 탐색</div>
-        <div>• <strong>공공데이터포털 실시간 API</strong> 연동 (응급실 실시간 잔여석)</div>
+        <div>• <strong>가까운 거리순 / 스마트 추천순</strong> 상단 탭으로 즉시 전환</div>
+        <div>• <strong>3곳 먼저 추천</strong> 후 원하시면 [더보기]로 추가 확인</div>
+        <div>• <strong>국립중앙의료원 공공데이터</strong> 실시간 응급실 가용병상 연동</div>
         <div>• <strong>네이버 지도</strong> 원터치 연결로 길찾기/내비 즉시 이동</div>
-        <div>• 타자칠 기운이 없을 땐 아래 <strong>🎤 마이크</strong>를 누르고 말씀하세요!</div>
       </div>
     </div>
   </div>
@@ -893,7 +886,7 @@
   <!-- Floating Input Bar -->
   <div id="inputbar">
     <button id="micBtn" title="음성으로 말하기">🎤</button>
-    <input id="msgInput" type="text" placeholder="예) 아침부터 어지럽고 속이 미식거려 일요일인데 어디가?" />
+    <input id="msgInput" type="text" placeholder="예) 지금 문 연 가장 가까운 병원 찾아줘" />
     <button id="sendBtn">↑</button>
   </div>
 
@@ -947,10 +940,10 @@
     <select class="admin-select" id="adminHospitalSelect">
       <option value="ph-yd-01">양덕속편한내과의원</option>
       <option value="ph-yd-02">포항양덕연합의원</option>
+      <option value="ph-ent-01">우리이비인후과의원</option>
       <option value="ph-jr-03">장량365의원</option>
       <option value="ph-er-01">의료법인은성의료재단 좋은선린병원</option>
       <option value="ph-er-02">경상북도포항의료원</option>
-      <option value="ph-er-03">포항세명기독병원</option>
     </select>
     <div class="admin-btn-group">
       <button class="admin-action-btn" data-action="toggle_open">🚫 휴진/영업 토글</button>
@@ -972,6 +965,8 @@
   let userCoords = { lat: 36.0825, lng: 129.3982, isGpsReal: false };
   let currentSortBy = 'recommend';
   let currentReportHospital = null;
+  let lastResultData = null;
+  let lastResultListRow = null;
 
   function requestUserLocation() {
     if ('geolocation' in navigator) {
@@ -1008,14 +1003,31 @@
     currentSortBy = 'recommend';
     sortRecommendBtn.classList.add('active');
     sortDistanceBtn.classList.remove('active');
-    showToast('⭐ 스마트 추천순 정렬로 변경되었습니다.');
+    showToast('⭐ 스마트 추천순으로 정렬합니다.');
+
+    if (lastResultData && lastResultData.hospitals && lastResultData.hospitals.length > 0) {
+      lastResultData.hospitals.sort((a, b) => (b.match_score || 0) - (a.match_score || 0));
+      updateCurrentCardsDisplay(lastResultData);
+    }
   });
 
   sortDistanceBtn.addEventListener('click', () => {
     currentSortBy = 'distance';
     sortDistanceBtn.classList.add('active');
     sortRecommendBtn.classList.remove('active');
-    showToast('📍 가장 가까운 거리순 정렬로 변경되었습니다.');
+    showToast('📍 가장 가까운 거리순으로 정렬합니다.');
+
+    if (lastResultData && lastResultData.hospitals && lastResultData.hospitals.length > 0) {
+      lastResultData.hospitals.sort((a, b) => {
+        const da = a.distance_km === null ? 999 : a.distance_km;
+        const db = b.distance_km === null ? 999 : b.distance_km;
+        return da - db;
+      });
+      updateCurrentCardsDisplay(lastResultData);
+    } else {
+      // 만약 아직 검색 결과가 없으면 기본 검색 실행
+      handleSend('지금 문 연 가장 가까운 병원');
+    }
   });
 
   function showToast(msg) {
@@ -1034,9 +1046,7 @@
   function formatMarkdown(text) {
     if (!text) return '';
     let formatted = escapeHtml(text);
-    // 볼드 변환
     formatted = formatted.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
-    // 줄바꿈 변환
     formatted = formatted.replace(/\n/g, '<br/>');
     return formatted;
   }
@@ -1064,7 +1074,7 @@
     row.className = 'row bot';
     row.innerHTML = `
       <div class="bubble bot typing-indicator" style="font-weight:600; color:#2563eb; display:flex; align-items:center; gap:4px;">
-        <span>⚡ AI가 최적의 병원을 생각 중</span><span class="thinking-dots" style="display:inline-block; min-width:42px; letter-spacing:2px; font-weight:800;">.</span>
+        <span>⚡ AI가 생각 중</span><span class="thinking-dots" style="display:inline-block; min-width:42px; letter-spacing:2px; font-weight:800;">.</span>
       </div>
     `;
     chatEl.appendChild(row);
@@ -1184,19 +1194,29 @@
     `;
   }
 
-  function addResultBlock(data) {
+  const bindCardEvents = (container) => {
+    container.querySelectorAll('.copy-btn').forEach(btn => {
+      btn.onclick = async () => {
+        try {
+          await navigator.clipboard.writeText(btn.dataset.addr);
+          showToast('📋 주소가 클립보드에 복사되었습니다!');
+        } catch (e) {
+          showToast('주소 복사: ' + btn.dataset.addr);
+        }
+      };
+    });
+
+    container.querySelectorAll('.report-btn').forEach(btn => {
+      btn.onclick = () => {
+        openReportModal(btn.dataset.hid, btn.dataset.hname);
+      };
+    });
+  };
+
+  function updateCurrentCardsDisplay(data) {
+    if (!lastResultListRow) return;
     const allHospitals = data.hospitals || [];
-    let visibleCount = Math.min(3, allHospitals.length); // 먼저 3가지 보여주기
-
-    // 1. AI 대화형 답변 말풍선 추가
-    const botRow = document.createElement('div');
-    botRow.className = 'row bot';
-    botRow.innerHTML = `<div class="bubble bot ai-live">${formatMarkdown(data.reply)}</div>`;
-    chatEl.appendChild(botRow);
-
-    // 2. 병원 카드 리스트 컨테이너
-    const listRow = document.createElement('div');
-    listRow.className = 'row bot';
+    let visibleCount = Math.min(3, allHospitals.length);
 
     const renderBatchCards = (start, count) => {
       return allHospitals.slice(start, start + count).map(h => renderHospitalCard(h)).join('');
@@ -1206,7 +1226,7 @@
     const hasMore = allHospitals.length > visibleCount;
     const remainingCount = allHospitals.length - visibleCount;
 
-    listRow.innerHTML = `
+    lastResultListRow.innerHTML = `
       <div class="result-container">
         <div class="hospital-cards-list">
           ${initialCardsHtml}
@@ -1219,39 +1239,16 @@
       </div>
     `;
 
-    chatEl.appendChild(listRow);
+    bindCardEvents(lastResultListRow);
 
-    // 이벤트 바인딩 헬퍼
-    const bindCardEvents = (container) => {
-      container.querySelectorAll('.copy-btn').forEach(btn => {
-        btn.onclick = async () => {
-          try {
-            await navigator.clipboard.writeText(btn.dataset.addr);
-            showToast('📋 주소가 클립보드에 복사되었습니다!');
-          } catch (e) {
-            showToast('주소 복사: ' + btn.dataset.addr);
-          }
-        };
-      });
-
-      container.querySelectorAll('.report-btn').forEach(btn => {
-        btn.onclick = () => {
-          openReportModal(btn.dataset.hid, btn.dataset.hname);
-        };
-      });
-    };
-
-    bindCardEvents(listRow);
-
-    // 더보기 버튼 이벤트
-    const loadMoreBtn = listRow.querySelector('.load-more-btn');
+    const loadMoreBtn = lastResultListRow.querySelector('.load-more-btn');
     if (loadMoreBtn) {
       loadMoreBtn.addEventListener('click', () => {
         const nextBatchCount = 3;
         const nextCardsHtml = renderBatchCards(visibleCount, nextBatchCount);
         visibleCount += nextBatchCount;
 
-        const cardsList = listRow.querySelector('.hospital-cards-list');
+        const cardsList = lastResultListRow.querySelector('.hospital-cards-list');
         const tempDiv = document.createElement('div');
         tempDiv.innerHTML = nextCardsHtml;
 
@@ -1269,12 +1266,28 @@
         }
 
         scrollToBottom();
-        setTimeout(() => scrollToBottom(), 150);
       });
     }
 
     scrollToBottom();
-    setTimeout(() => scrollToBottom(), 150);
+  }
+
+  function addResultBlock(data) {
+    lastResultData = data;
+
+    // 1. AI 대화형 답변 말풍선 추가
+    const botRow = document.createElement('div');
+    botRow.className = 'row bot';
+    botRow.innerHTML = `<div class="bubble bot ai-live">${formatMarkdown(data.reply)}</div>`;
+    chatEl.appendChild(botRow);
+
+    // 2. 병원 카드 리스트 컨테이너
+    const listRow = document.createElement('div');
+    listRow.className = 'row bot';
+    chatEl.appendChild(listRow);
+    lastResultListRow = listRow;
+
+    updateCurrentCardsDisplay(data);
   }
 
   async function handleSend(customText = null) {
@@ -1388,7 +1401,7 @@
   function stopRecording() {
     micBtn.classList.remove('recording');
     micBtn.textContent = '🎤';
-    inputEl.placeholder = '예) 아침부터 어지럽고 속이 미식거려 일요일인데 어디가?';
+    inputEl.placeholder = '예) 지금 문 연 가장 가까운 병원 찾아줘';
   }
 
   micBtn.addEventListener('click', () => {
