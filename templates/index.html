@@ -502,31 +502,56 @@
   /* Action Buttons Grid */
   .card-actions {
     display: grid;
-    grid-template-columns: 1.4fr 1fr 1fr;
+    grid-template-columns: 1fr 1fr 1fr;
     gap: 6px;
     margin-top: 10px;
     padding-top: 10px;
     border-top: 1px solid #f1f5f9;
   }
 
-  .btn-naver-map {
+  .map-actions-row {
     grid-column: span 3;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 6px;
+  }
+
+  .btn-naver-map {
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 6px;
+    gap: 4px;
     background: var(--naver-green);
     color: #ffffff;
-    font-size: 13px;
+    font-size: 12px;
     font-weight: 700;
-    padding: 9px 12px;
-    border-radius: 10px;
+    padding: 9px 8px;
+    border-radius: 9px;
     text-decoration: none;
     transition: all 0.15s;
-    box-shadow: 0 2px 6px rgba(3, 199, 90, 0.25);
+    box-shadow: 0 2px 5px rgba(3, 199, 90, 0.2);
   }
   .btn-naver-map:hover {
     background: var(--naver-hover);
+  }
+
+  .btn-kakao-map {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    background: #fee500;
+    color: #191919;
+    font-size: 12px;
+    font-weight: 700;
+    padding: 9px 8px;
+    border-radius: 9px;
+    text-decoration: none;
+    transition: all 0.15s;
+    box-shadow: 0 2px 5px rgba(254, 229, 0, 0.3);
+  }
+  .btn-kakao-map:hover {
+    background: #fada0a;
   }
 
   .sub-action-btn {
@@ -1215,9 +1240,14 @@
         ${h.description ? `<div class="info-line desc">💡 ${escapeHtml(h.description)}</div>` : ''}
 
         <div class="card-actions">
-          <a href="${h.naver_map_url}" target="_blank" rel="noopener noreferrer" class="btn-naver-map">
-            <span>🗺️ 네이버 지도에서 보기</span>
-          </a>
+          <div class="map-actions-row">
+            <a href="${h.naver_map_url}" target="_blank" rel="noopener noreferrer" class="btn-naver-map">
+              <span>🗺️ 네이버 지도</span>
+            </a>
+            <a href="${h.kakao_map_url || ('https://map.kakao.com/link/search/' + encodeURIComponent(h.name))}" target="_blank" rel="noopener noreferrer" class="btn-kakao-map">
+              <span>🟡 카카오맵 길찾기</span>
+            </a>
+          </div>
           
           <button class="sub-action-btn copy-btn" data-addr="${escapeHtml(h.address)}">
             📋 주소 복사

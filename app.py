@@ -438,6 +438,7 @@ def rank_and_filter_hospitals(hospitals, analysis, user_lat=None, user_lng=None,
                 
         query = h.get("naver_search_query") or f"{h['name']} 포항"
         naver_map_url = f"https://map.naver.com/p/search/{requests.utils.quote(query)}"
+        kakao_map_url = f"https://map.kakao.com/link/to/{requests.utils.quote(h['name'])},{h.get('lat')},{h.get('lng')}"
         
         scored_list.append({
             **h,
@@ -445,7 +446,8 @@ def rank_and_filter_hospitals(hospitals, analysis, user_lat=None, user_lng=None,
             "match_reasons": match_reasons,
             "distance_km": dist_km,
             "distance_text": dist_text,
-            "naver_map_url": naver_map_url
+            "naver_map_url": naver_map_url,
+            "kakao_map_url": kakao_map_url
         })
         
     if sort_by == "distance" and user_lat is not None:
@@ -608,6 +610,7 @@ def api_hospitals():
             
         query = h.get("naver_search_query") or f"{h['name']} 포항"
         h["naver_map_url"] = f"https://map.naver.com/p/search/{requests.utils.quote(query)}"
+        h["kakao_map_url"] = f"https://map.kakao.com/link/to/{requests.utils.quote(h['name'])},{h.get('lat')},{h.get('lng')}"
         h["distance_km"] = dist_km
         h["distance_text"] = dist_text
         filtered.append(h)
