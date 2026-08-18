@@ -166,41 +166,58 @@
   .controls-bar {
     background: #ffffff;
     border-bottom: 1px solid var(--border);
-    padding: 8px 12px;
+    padding: 10px 14px;
     display: flex;
     flex-direction: column;
-    gap: 6px;
+    gap: 8px;
     flex-shrink: 0;
   }
 
-  .sort-toggle-row {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    font-size: 11.5px;
+  .segmented-sort-bar {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    background: #f1f5f9;
+    padding: 3px;
+    border-radius: 10px;
+    gap: 3px;
   }
 
-  .sort-chips {
+  .sort-tab {
+    border: none;
+    background: transparent;
+    color: #64748b;
+    padding: 8px 10px;
+    border-radius: 8px;
+    font-size: 12.5px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
     display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+  }
+
+  .sort-tab.active {
+    background: #ffffff;
+    color: var(--primary);
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.08), 0 1px 2px rgba(0, 0, 0, 0.04);
+    font-weight: 800;
+  }
+
+  .quick-chips-section {
+    display: flex;
+    flex-direction: column;
     gap: 4px;
   }
-  .sort-chip {
-    border: 1px solid #cbd5e1;
-    background: #f8fafc;
-    color: #475569;
-    padding: 4px 10px;
-    border-radius: 6px;
-    font-size: 11.5px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.15s;
-  }
-  .sort-chip.active {
-    background: #eff6ff;
-    border-color: var(--primary);
-    color: var(--primary);
-    font-weight: 800;
-    box-shadow: 0 0 0 1px var(--primary);
+
+  .quick-chips-header {
+    font-size: 11px;
+    font-weight: 700;
+    color: #64748b;
+    display: flex;
+    align-items: center;
+    gap: 4px;
   }
 
   .quick-chips-wrap {
@@ -209,7 +226,7 @@
     overflow-x: auto;
     scrollbar-width: none;
     -webkit-overflow-scrolling: touch;
-    padding-bottom: 2px;
+    padding: 2px 2px 4px 2px;
   }
   .quick-chips-wrap::-webkit-scrollbar { display: none; }
 
@@ -220,14 +237,15 @@
     color: #334155;
     font-size: 11.5px;
     font-weight: 600;
-    padding: 5px 10px;
+    padding: 6px 12px;
     border-radius: 999px;
     cursor: pointer;
     transition: all 0.15s ease;
     box-shadow: var(--shadow-sm);
-    display: flex;
+    display: inline-flex;
     align-items: center;
-    gap: 3px;
+    gap: 4px;
+    flex-shrink: 0;
   }
   .chip-btn:hover, .chip-btn:active {
     background: var(--primary-light);
@@ -848,22 +866,24 @@
 
   <!-- Controls & Quick Symptom Chips -->
   <div class="controls-bar">
-    <div class="sort-toggle-row">
-      <span style="color:#64748b; font-weight:600;">정렬 방식:</span>
-      <div class="sort-chips">
-        <button class="sort-chip active" id="sortRecommendBtn" data-sort="recommend">⭐ 스마트 추천순</button>
-        <button class="sort-chip" id="sortDistanceBtn" data-sort="distance">📍 가까운 거리순</button>
-      </div>
+    <div class="segmented-sort-bar">
+      <button class="sort-tab active" id="sortRecommendBtn" data-sort="recommend">⭐ 스마트 추천순</button>
+      <button class="sort-tab" id="sortDistanceBtn" data-sort="distance">📍 가까운 거리순</button>
     </div>
 
-    <div class="quick-chips-wrap">
-      <button class="chip-btn" data-msg="지금 문 연 가장 가까운 양덕동 병원">📍 가장 가까운 양덕 병원</button>
-      <button class="chip-btn" data-msg="목 아프고 열나 이비인후과 가고 싶어">🤒 목통증·열(이비인후과)</button>
-      <button class="chip-btn" data-msg="아침부터 어지럽고 속이 미식거려 일요일인데 어디가?">🤢 어지럼·속 미식거림</button>
-      <button class="chip-btn" data-msg="장염 때문에 일요일 5시에 문 연 곳 찾고 있어">🤢 일요일 5시 장염</button>
-      <button class="chip-btn" data-msg="피부 두드러기 질환 치료 전문 병원">🩹 피부질환(치료전문)</button>
-      <button class="chip-btn" data-msg="포항사랑카드 결제 가능한 병원">💳 포사카 가맹점</button>
-      <button class="chip-btn" data-msg="야간 24시간 응급실">🚨 24시간 응급실</button>
+    <div class="quick-chips-section">
+      <div class="quick-chips-header">
+        <span>💡 빠른 증상 선택</span>
+      </div>
+      <div class="quick-chips-wrap">
+        <button class="chip-btn" data-msg="지금 문 연 가장 가까운 양덕동 병원">📍 가장 가까운 양덕 병원</button>
+        <button class="chip-btn" data-msg="목 아프고 열나 이비인후과 가고 싶어">🤒 목통증·열(이비인후과)</button>
+        <button class="chip-btn" data-msg="아침부터 어지럽고 속이 미식거려 일요일인데 어디가?">🤢 어지럼·속 미식거림</button>
+        <button class="chip-btn" data-msg="장염 때문에 일요일 5시에 문 연 곳 찾고 있어">🤢 일요일 5시 장염</button>
+        <button class="chip-btn" data-msg="피부 두드러기 질환 치료 전문 병원">🩹 피부질환(치료전문)</button>
+        <button class="chip-btn" data-msg="포항사랑카드 결제 가능한 병원">💳 포사카 가맹점</button>
+        <button class="chip-btn" data-msg="야간 24시간 응급실">🚨 24시간 응급실</button>
+      </div>
     </div>
   </div>
 
