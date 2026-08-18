@@ -3,7 +3,6 @@ requests
 xmltodict
 google-genai
 pydub
-audioop-lts
 python-dotenv
 gunicorn
 serverless-wsgi
