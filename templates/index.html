@@ -242,54 +242,6 @@
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
   }
 
-  .quick-chips-section {
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-  }
-
-  .quick-chips-header {
-    font-size: 11px;
-    font-weight: 700;
-    color: #64748b;
-    display: flex;
-    align-items: center;
-    gap: 4px;
-  }
-
-  .quick-chips-wrap {
-    display: flex;
-    gap: 6px;
-    overflow-x: auto;
-    scrollbar-width: none;
-    -webkit-overflow-scrolling: touch;
-    padding: 2px 2px 4px 2px;
-  }
-  .quick-chips-wrap::-webkit-scrollbar { display: none; }
-
-  .chip-btn {
-    white-space: nowrap;
-    border: 1px solid #cbd5e1;
-    background: #ffffff;
-    color: #334155;
-    font-size: 11.5px;
-    font-weight: 600;
-    padding: 6px 12px;
-    border-radius: 999px;
-    cursor: pointer;
-    transition: all 0.15s ease;
-    box-shadow: var(--shadow-sm);
-    display: inline-flex;
-    align-items: center;
-    gap: 4px;
-    flex-shrink: 0;
-  }
-  .chip-btn:hover, .chip-btn:active {
-    background: var(--primary-light);
-    border-color: var(--primary);
-    color: var(--primary);
-  }
-
   /* Chat Area */
   #chat {
     flex: 1;
@@ -848,59 +800,6 @@
     font-weight: 700;
     cursor: pointer;
   }
-
-  /* Admin Drawer */
-  #adminDrawer {
-    position: fixed;
-    bottom: 70px;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 92%;
-    max-width: 480px;
-    background: #1e293b;
-    color: #fff;
-    border-radius: 16px;
-    padding: 14px;
-    box-shadow: var(--shadow-lg);
-    display: none;
-    z-index: 50;
-    border: 1px solid #334155;
-  }
-  #adminDrawer.active { display: block; }
-  .admin-drawer-title {
-    font-size: 13px;
-    font-weight: 700;
-    color: #38bdf8;
-    margin-bottom: 6px;
-    display: flex;
-    justify-content: space-between;
-  }
-  .admin-select {
-    width: 100%;
-    background: #0f172a;
-    color: #fff;
-    border: 1px solid #475569;
-    padding: 7px;
-    border-radius: 8px;
-    font-size: 12.5px;
-    margin-bottom: 8px;
-    outline: none;
-  }
-  .admin-btn-group {
-    display: grid;
-    grid-template-columns: 1fr 1fr 1fr;
-    gap: 6px;
-  }
-  .admin-action-btn {
-    background: #334155;
-    color: #f8fafc;
-    border: 1px solid #475569;
-    font-size: 11px;
-    font-weight: 600;
-    padding: 7px 3px;
-    border-radius: 6px;
-    cursor: pointer;
-  }
 </style>
 </head>
 <body>
@@ -913,7 +812,6 @@
         <span>🏥 포항 바로닥터</span>
         <span class="brand-tag">대화형 AI & 공공데이터</span>
       </div>
-      <button class="admin-toggle-btn" id="adminToggleBtn" title="시연/해커톤용 실시간 상태 토글">🛠️ 데모 모드</button>
     </div>
     
     <!-- GPS Location Banner -->
@@ -926,35 +824,14 @@
     </div>
   </header>
 
-  <!-- Controls & Quick Symptom Chips -->
+  <!-- Controls Bar -->
   <div class="controls-bar">
-    <div class="segmented-sort-bar">
-      <button class="sort-tab active" id="sortRecommendBtn" data-sort="recommend">⭐ 스마트 추천순</button>
-      <button class="sort-tab" id="sortDistanceBtn" data-sort="distance">📍 가까운 거리순</button>
-    </div>
-
     <!-- Quick Filter Toggles -->
     <div class="filter-toggles-wrap">
       <button class="filter-toggle-btn" id="filterSundayBtn" data-filter="sunday">☀️ 일요일 진료</button>
       <button class="filter-toggle-btn" id="filterHolidayBtn" data-filter="holiday">🎌 공휴일 진료</button>
       <button class="filter-toggle-btn" id="filterNightBtn" data-filter="night">🌙 야간진료</button>
       <button class="filter-toggle-btn" id="filterErBtn" data-filter="er">🚨 24시 응급실</button>
-      <button class="filter-toggle-btn" id="filterPosakaBtn" data-filter="posaka">💳 포사카 확인된 곳</button>
-    </div>
-
-    <div class="quick-chips-section">
-      <div class="quick-chips-header">
-        <span>💡 빠른 증상 선택</span>
-      </div>
-      <div class="quick-chips-wrap">
-        <button class="chip-btn" data-msg="지금 문 연 가장 가까운 양덕동 병원">📍 가장 가까운 양덕 병원</button>
-        <button class="chip-btn" data-msg="목 아프고 열나 이비인후과 가고 싶어">🤒 목통증·열(이비인후과)</button>
-        <button class="chip-btn" data-msg="아침부터 어지럽고 속이 미식거려 일요일인데 어디가?">🤢 어지럼·속 미식거림</button>
-        <button class="chip-btn" data-msg="장염 때문에 일요일 5시에 문 연 곳 찾고 있어">🤢 일요일 5시 장염</button>
-        <button class="chip-btn" data-msg="피부 두드러기 질환 치료 전문 병원">🩹 피부질환(치료전문)</button>
-        <button class="chip-btn" data-msg="포항사랑카드 결제 가능한 병원">💳 포사카 가맹점</button>
-        <button class="chip-btn" data-msg="야간 24시간 응급실">🚨 24시간 응급실</button>
-      </div>
     </div>
   </div>
 
@@ -966,10 +843,10 @@
         몸이 어떻게 불편하신가요? 증상이나 상황을 말씀해 주시면 <strong>대화형 AI</strong>가 1차 진료과와 함께 <strong>내 위치에서 가장 가까운 병원</strong>, <strong>공공데이터 실시간 응급실 병상</strong>까지 딱 맞게 찾아드립니다.
       </div>
       <div class="points">
-        <div>• <strong>가까운 거리순 / 스마트 추천순</strong> 상단 탭으로 즉시 전환</div>
-        <div>• <strong>3곳 먼저 추천</strong> 후 원하시면 [더보기]로 추가 확인</div>
+        <div>• <strong>내 위치(GPS) 기준 가장 가까운 병원</strong> 최단거리순 자동 정렬</div>
+        <div>• <strong>휴일·야간·24시 응급실</strong> 상단 퀵 필터 즉시 적용</div>
         <div>• <strong>국립중앙의료원 공공데이터</strong> 실시간 응급실 가용병상 연동</div>
-        <div>• <strong>네이버 지도</strong> 원터치 연결로 길찾기/내비 즉시 이동</div>
+        <div>• <strong>네이버/카카오 지도</strong> 원터치 내비 길찾기 연동</div>
       </div>
     </div>
   </div>
@@ -999,47 +876,14 @@
           <input type="radio" name="repType" value="오늘 임시 휴진" checked> ⚠️ 오늘 임시 휴진이에요
         </label>
         <label class="report-radio-label">
-          <input type="radio" name="repType" value="발열 진료 가능 확인"> 🔥 발열 진료(신속검사) 가능 확인
-        </label>
-        <label class="report-radio-label">
-          <input type="radio" name="repType" value="열나면 진료 거부"> ⛔ 37.5도 이상 열나면 진료 안해줌
-        </label>
-        <label class="report-radio-label">
-          <input type="radio" name="repType" value="포항사랑카드 가맹 여부"> 💳 포항사랑카드 가맹 여부 제보
-        </label>
-        <label class="report-radio-label">
           <input type="radio" name="repType" value="수액실/영양제 처방"> 💧 수액실/장염 수액 처방 쾌적함
         </label>
         <label class="report-radio-label">
           <input type="radio" name="repType" value="기타 의견/특징 제보"> 📝 기타 의견 및 병원 특징 제보
         </label>
       </div>
-      <textarea class="modal-textarea" id="reportContent" placeholder="사용자 경험이나 확인된 특징을 자유롭게 적어주세요. (데모용 의견 작성)"></textarea>
+      <textarea class="modal-textarea" id="reportContent" placeholder="사용자 경험이나 확인된 특징을 자유롭게 적어주세요."></textarea>
       <button class="modal-submit-btn" id="submitReportBtn">제보 제출하기</button>
-    </div>
-  </div>
-
-  <!-- Admin Demo Drawer -->
-  <div id="adminDrawer">
-    <div class="admin-drawer-title">
-      <span>🛠️ 심사위원/시연용 관리자 모드</span>
-      <span style="cursor:pointer;" id="closeAdminDrawer">✕</span>
-    </div>
-    <div style="font-size:11.5px; color:#94a3b8; margin-bottom:6px;">
-      "오늘 갑자기 휴진인 병원이면 어떡하나요?" 질문에 즉시 대응하는 실시간 토글:
-    </div>
-    <select class="admin-select" id="adminHospitalSelect">
-      <option value="ph-yd-01">양덕속편한내과의원</option>
-      <option value="ph-yd-02">포항양덕연합의원</option>
-      <option value="ph-ent-01">우리이비인후과의원</option>
-      <option value="ph-jr-03">장량365의원</option>
-      <option value="ph-er-01">의료법인은성의료재단 좋은선린병원</option>
-      <option value="ph-er-02">경상북도포항의료원</option>
-    </select>
-    <div class="admin-btn-group">
-      <button class="admin-action-btn" data-action="toggle_open">🚫 휴진/영업 토글</button>
-      <button class="admin-action-btn" data-action="toggle_fever">🔥 발열진료 토글</button>
-      <button class="admin-action-btn" data-action="toggle_posaka">💳 포사카 토글</button>
     </div>
   </div>
 </div>
@@ -1054,7 +898,7 @@
   const refreshGpsBtn = document.getElementById('refreshGpsBtn');
 
   let userCoords = { lat: 36.0825, lng: 129.3982, isGpsReal: false };
-  let currentSortBy = 'recommend';
+  let currentSortBy = 'distance';
   let currentReportHospital = null;
   let lastResultData = null;
   let lastResultListRow = null;
@@ -1087,41 +931,7 @@
   refreshGpsBtn.addEventListener('click', requestUserLocation);
   requestUserLocation();
 
-  const sortRecommendBtn = document.getElementById('sortRecommendBtn');
-  const sortDistanceBtn = document.getElementById('sortDistanceBtn');
-
-  sortRecommendBtn.addEventListener('click', () => {
-    currentSortBy = 'recommend';
-    sortRecommendBtn.classList.add('active');
-    sortDistanceBtn.classList.remove('active');
-    showToast('⭐ 스마트 추천순으로 정렬합니다.');
-
-    if (lastResultData && lastResultData.hospitals && lastResultData.hospitals.length > 0) {
-      lastResultData.hospitals.sort((a, b) => (b.match_score || 0) - (a.match_score || 0));
-      updateCurrentCardsDisplay(lastResultData);
-    }
-  });
-
-  sortDistanceBtn.addEventListener('click', () => {
-    currentSortBy = 'distance';
-    sortDistanceBtn.classList.add('active');
-    sortRecommendBtn.classList.remove('active');
-    showToast('📍 가장 가까운 거리순으로 정렬합니다.');
-
-    if (lastResultData && lastResultData.hospitals && lastResultData.hospitals.length > 0) {
-      lastResultData.hospitals.sort((a, b) => {
-        const da = a.distance_km === null ? 999 : a.distance_km;
-        const db = b.distance_km === null ? 999 : b.distance_km;
-        return da - db;
-      });
-      updateCurrentCardsDisplay(lastResultData);
-    } else {
-      handleSend('지금 문 연 가장 가까운 병원');
-    }
-  });
-
   const activeFilters = {
-    posaka: false,
     sunday: false,
     holiday: false,
     night: false,
@@ -1366,7 +1176,6 @@
 
     // 활성화된 필터 조건 적용
     allHospitals = sourceHospitals.filter(h => {
-      if (activeFilters.posaka && h.posaka !== 'O') return false;
       if (activeFilters.sunday && !(h.sunday_open || h.is_emergency)) return false;
       if (activeFilters.holiday && !(h.holiday_open || h.is_emergency)) return false;
       if (activeFilters.night && !(h.night_open || h.is_emergency)) return false;
@@ -1398,7 +1207,7 @@
       <div class="result-container">
         <div style="font-size:11.5px; font-weight:700; color:#64748b; margin-bottom:6px; display:flex; justify-content:space-between; align-items:center;">
           <span>📋 진료 가능 병원 (${allHospitals.length}곳)</span>
-          <span style="color:var(--primary);">${currentSortBy === 'distance' ? '📍 가까운 거리순' : '⭐ 추천순'}</span>
+          <span style="color:var(--primary);">📍 가장 가까운 거리순</span>
         </div>
         <div class="hospital-cards-list">
           ${initialCardsHtml}
@@ -1532,13 +1341,6 @@
     setTimeout(() => scrollToBottom(), 300);
   });
 
-  // Quick Chips Click Event
-  document.querySelectorAll('.chip-btn').forEach(chip => {
-    chip.addEventListener('click', () => {
-      handleSend(chip.dataset.msg);
-    });
-  });
-
   // ── 🎤 음성 인식 ─────────────────────────────────────────────
   let recognition = null;
   let isWebSpeechSupported = ('webkitSpeechRecognition' in window) || ('SpeechRecognition' in window);
@@ -1641,38 +1443,6 @@
     } catch (e) {
       showToast('제보 전송 실패: ' + e.message);
     }
-  });
-
-  // ── 🛠️ 관리자 데모 패널 ──────────────────────────────────────────
-  const adminToggleBtn = document.getElementById('adminToggleBtn');
-  const adminDrawer = document.getElementById('adminDrawer');
-  const closeAdminDrawer = document.getElementById('closeAdminDrawer');
-
-  adminToggleBtn.addEventListener('click', () => {
-    adminDrawer.classList.toggle('active');
-  });
-  closeAdminDrawer.addEventListener('click', () => {
-    adminDrawer.classList.remove('active');
-  });
-
-  document.querySelectorAll('.admin-action-btn').forEach(btn => {
-    btn.addEventListener('click', async () => {
-      const hid = document.getElementById('adminHospitalSelect').value;
-      const action = btn.dataset.action;
-      try {
-        const res = await fetch('/api/admin/toggle', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ hospital_id: hid, action: action })
-        });
-        const data = await res.json();
-        if (data.status === 'success') {
-          showToast(`⚡ ${data.hospital.name} 상태가 실시간 변경되었습니다!`);
-        }
-      } catch (e) {
-        showToast('관리자 변경 실패: ' + e.message);
-      }
-    });
   });
 </script>
 
