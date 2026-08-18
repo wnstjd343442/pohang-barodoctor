@@ -558,12 +558,12 @@ def index():
         return jsonify({"status": "ok"}), 200
     if request.method == "POST":
         payload = request.get_json(force=True, silent=True) or {}
-        if "message" in payload or "sort_by" in payload:
-            return api_chat()
-        elif "report_type" in payload:
+        if "report_type" in payload:
             return api_report()
         elif "action" in payload:
             return api_admin_toggle()
+        else:
+            return api_chat()
     return render_template("index.html")
 
 @app.route("/api/chat", methods=["GET", "POST", "OPTIONS"])
