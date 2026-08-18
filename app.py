@@ -595,16 +595,19 @@ def api_chat():
     ai_reply, ai_error = generate_gemini_conversational_reply(message, analysis, top_hospitals)
     
     if not ai_reply:
-        primary_str = ", ".join(analysis["primary_depts"])
-        alt_str = ", ".join(analysis["alt_depts"])
+        primary_str = ", ".join(analysis["primary_depts"]) if analysis.get("primary_depts") else "일반 진료"
+        alt_str = ", ".join(analysis.get("alt_depts", []))
         loc_guide = f" (📍 내 위치 기준 {('거리순' if sort_by == 'distance' else '스마트 추천순')} 정렬)" if user_lat else ""
-        err_banner = f"{ai_error}\n\n" if ai_error else ""
+        
         reply_lines = [
-            f"{err_banner}🔍 **증상 분석**: [{analysis['category_title']}]",
-            f"👉 **추천 진료과**: 1순위 `{primary_str}`" + (f" (대안: `{alt_str}`)" if alt_str else ""),
-            f"📅 **진료 기준**: {analysis['target_date_str']}" + loc_guide,
+            "죄송합니다! 🙇‍♂️ 현재 AI 상담 트래픽이 일시적으로 많아 대화형 답변 생성이 지연되었습니다.",
+            "대신 말씀해 주신 증상에 맞춰 **실시간 공공데이터로 검증된 진료 가능 병원 목록을 먼저 바로 안내해 드릴게요!** 😊",
             "",
-            analysis["advice"]
+            f"🔍 **증상 분류**: [{analysis.get('category_title', '의료 안내')}]",
+            f"👉 **추천 진료과**: 1순위 `{primary_str}`" + (f" (대안: `{alt_str}`)" if alt_str else ""),
+            f"📅 **진료 기준**: {analysis.get('target_date_str', '오늘')}{loc_guide}",
+            "",
+            analysis.get("advice", "아래 추천 병원 카드를 확인하시고 바로 내비 길찾기나 전화 문의를 이용해 보세요.")
         ]
         ai_reply = "\n".join(reply_lines)
     
