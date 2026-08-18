@@ -810,5 +810,37 @@ def api_tts():
     except Exception as e:
         return jsonify({"error": f"TTS 요청 실패: {e}"}), 502
 
+@app.route("/<path:path>", methods=["GET", "POST", "OPTIONS"])
+def catch_all_routes(path):
+    if request.method == "OPTIONS":
+        return jsonify({"status": "ok"}), 200
+    if "chat" in path:
+        return api_chat()
+    elif "report" in path:
+        return api_report()
+    elif "admin" in path:
+        return api_admin_toggle()
+    elif "hospital" in path:
+        return api_hospitals()
+    elif "tts" in path:
+        return api_tts()
+    elif "stt" in path:
+        return api_stt()
+    return render_template("index.html")
+
+@app.errorhandler(404)
+def handle_custom_404(e):
+    if request.method == "OPTIONS":
+        return jsonify({"status": "ok"}), 200
+    if request.method == "POST":
+        payload = request.get_json(force=True, silent=True) or {}
+        if "message" in payload or "sort_by" in payload:
+            return api_chat()
+        elif "report_type" in payload:
+            return api_report()
+        elif "action" in payload:
+            return api_admin_toggle()
+    return render_template("index.html")
+
 if __name__ == "__main__":
     app.run(debug=True, port=5000)
