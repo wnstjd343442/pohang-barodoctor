@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>🏥 포항 병원 찾기</title>
+<style>
+  :root {
+    --purple-1: #7c6ff0;
+    --purple-2: #5b4fd6;
+    --bg: #eef0fa;
+    --bubble-bot: #ffffff;
+    --bubble-user: #6f63e8;
+    --text: #26243a;
+    --muted: #8b899b;
+    --border: #e6e5f2;
+    --tag-bg: #f2f1fb;
+    --tag-text: #5b4fd6;
+    --card-shadow: 0 2px 10px rgba(60, 50, 130, 0.08);
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: "Pretendard", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    display: flex;
+    justify-content: center;
+  }
+  #app {
+    width: 100%;
+    max-width: 480px;
+    min-height: 100vh;
+    background: var(--bg);
+    display: flex;
+    flex-direction: column;
+  }
+  header {
+    background: linear-gradient(135deg, var(--purple-1), var(--purple-2));
+    color: #fff;
+    padding: 22px 20px 20px;
+    text-align: center;
+    border-radius: 0 0 20px 20px;
+  }
+  header .title {
+    font-size: 17px;
+    font-weight: 700;
+    margin-bottom: 4px;
+  }
+  header .subtitle {
+    font-size: 12px;
+    opacity: 0.85;
+  }
+  #chat {
+    flex: 1;
+    overflow-y: auto;
+    padding: 18px 14px 90px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+  .row {
+    display: flex;
+    width: 100%;
+  }
+  .row.bot { justify-content: flex-start; }
+  .row.user { justify-content: flex-end; }
+
+  .bubble {
+    max-width: 78%;
+    padding: 12px 14px;
+    border-radius: 16px;
+    font-size: 14px;
+    line-height: 1.5;
+    box-shadow: var(--card-shadow);
+    white-space: pre-line;
+  }
+  .bubble.bot {
+    background: var(--bubble-bot);
+    border-bottom-left-radius: 4px;
+  }
+  .bubble.user {
+    background: var(--bubble-user);
+    color: #fff;
+    border-bottom-right-radius: 4px;
+  }
+
+  .result-block {
+    background: var(--bubble-bot);
+    border-radius: 16px;
+    border-bottom-left-radius: 4px;
+    padding: 14px;
+    max-width: 92%;
+    box-shadow: var(--card-shadow);
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  .result-block .intro {
+    font-size: 14px;
+    line-height: 1.5;
+  }
+
+  .hcard {
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 12px 14px;
+  }
+  .hcard + .hcard { margin-top: 2px; }
+  .hcard .name {
+    font-weight: 700;
+    font-size: 14.5px;
+    color: var(--purple-2);
+    margin-bottom: 8px;
+  }
+  .hcard .line {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 13px;
+    color: var(--text);
+    margin-bottom: 6px;
+  }
+  .hcard .line .icon { flex-shrink: 0; }
+  .hcard .copy-btn {
+    border: none;
+    background: var(--tag-bg);
+    color: var(--tag-text);
+    font-size: 11px;
+    padding: 2px 8px;
+    border-radius: 999px;
+    cursor: pointer;
+    margin-left: auto;
+  }
+  .hcard .copy-btn:active { transform: scale(0.96); }
+  .hcard .tel a { color: var(--text); text-decoration: none; }
+  .hcard .tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: 8px;
+  }
+  .tag {
+    font-size: 11.5px;
+    background: var(--tag-bg);
+    color: var(--tag-text);
+    border-radius: 999px;
+    padding: 3px 10px;
+    font-weight: 600;
+  }
+  .tag.hours {
+    background: #eafaf0;
+    color: #1f9d55;
+  }
+
+  #inputbar {
+    position: fixed;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100%;
+    max-width: 480px;
+    background: var(--bg);
+    padding: 10px 14px 16px;
+    display: flex;
+    gap: 8px;
+    align-items: center;
+  }
+  #msgInput {
+    flex: 1;
+    border: none;
+    border-radius: 999px;
+    padding: 13px 16px;
+    font-size: 14px;
+    outline: none;
+    box-shadow: var(--card-shadow);
+  }
+  #sendBtn {
+    flex-shrink: 0;
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    border: none;
+    background: var(--purple-2);
+    color: #fff;
+    font-size: 16px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: var(--card-shadow);
+  }
+  #sendBtn:disabled { opacity: 0.5; cursor: default; }
+
+  #micBtn {
+    flex-shrink: 0;
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    border: none;
+    background: #fff;
+    color: var(--purple-2);
+    font-size: 16px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: var(--card-shadow);
+  }
+  #micBtn.recording {
+    background: #e0453f;
+    color: #fff;
+    animation: pulse 1s infinite;
+  }
+  @keyframes pulse {
+    0% { box-shadow: 0 0 0 0 rgba(224, 69, 63, 0.5); }
+    70% { box-shadow: 0 0 0 8px rgba(224, 69, 63, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(224, 69, 63, 0); }
+  }
+
+  .speak-btn {
+    border: none;
+    background: var(--tag-bg);
+    color: var(--tag-text);
+    font-size: 12px;
+    padding: 4px 10px;
+    border-radius: 999px;
+    cursor: pointer;
+    align-self: flex-start;
+  }
+  .speak-btn:disabled { opacity: 0.5; cursor: default; }
+
+  .typing {
+    font-size: 13px;
+    color: var(--muted);
+  }
+</style>
+</head>
+<body>
+
+<div id="app">
+  <header>
+    <div class="title">🏥 포항 병원 찾기</div>
+    <div class="subtitle">증상과 원하는 날짜를 말씀해주세요</div>
+  </header>
+
+  <div id="chat"></div>
+
+  <div id="inputbar">
+    <button id="micBtn" title="음성으로 말하기">🎤</button>
+    <input id="msgInput" type="text" placeholder="증상과 날짜를 입력해주세요. 예) 장염 때문에 내일 오후에 가고 싶어" />
+    <button id="sendBtn">↑</button>
+  </div>
+</div>
+
+<script>
+  const chatEl = document.getElementById('chat');
+  const inputEl = document.getElementById('msgInput');
+  const sendBtn = document.getElementById('sendBtn');
+
+  function addBotBubble(text) {
+    const row = document.createElement('div');
+    row.className = 'row bot';
+    row.innerHTML = `<div class="bubble bot"></div>`;
+    row.querySelector('.bubble').textContent = text;
+    chatEl.appendChild(row);
+    scrollToBottom();
+  }
+
+  function addUserBubble(text) {
+    const row = document.createElement('div');
+    row.className = 'row user';
+    row.innerHTML = `<div class="bubble user"></div>`;
+    row.querySelector('.bubble').textContent = text;
+    chatEl.appendChild(row);
+    scrollToBottom();
+  }
+
+  function addTyping() {
+    const row = document.createElement('div');
+    row.className = 'row bot';
+    row.dataset.typing = '1';
+    row.innerHTML = `<div class="bubble bot typing">병원을 찾고 있어요...</div>`;
+    chatEl.appendChild(row);
+    scrollToBottom();
+    return row;
+  }
+
+  function escapeHtml(str) {
+    const div = document.createElement('div');
+    div.textContent = str || '';
+    return div.innerHTML;
+  }
+
+  function addResultBlock(reply, hospitals) {
+    const row = document.createElement('div');
+    row.className = 'row bot';
+
+    const cardsHtml = hospitals.map((h, idx) => {
+      const tags = (h.departments || []).map((d) => `<span class="tag">${escapeHtml(d)}</span>`).join('');
+      const hoursTag = h.hours ? `<span class="tag hours">${escapeHtml(h.hours)}</span>` : '';
+      return `
+        <div class="hcard">
+          <div class="name">${escapeHtml(h.name)}</div>
+          <div class="line">
+            <span class="icon">📍</span>
+            <span>${escapeHtml(h.address)}</span>
+            <button class="copy-btn" data-addr="${escapeHtml(h.address)}">복사</button>
+          </div>
+          <div class="line tel">
+            <span class="icon">📞</span>
+            <a href="tel:${h.tel || ''}">${escapeHtml(h.tel || '-')}</a>
+          </div>
+          <div class="tags">${hoursTag}${tags}</div>
+        </div>
+      `;
+    }).join('');
+
+    const speechText = [reply, ...hospitals.map((h) => h.name)].join('. ');
+
+    row.innerHTML = `
+      <div class="result-block">
+        <div class="intro">${escapeHtml(reply)}</div>
+        <button class="speak-btn" data-text="${escapeHtml(speechText)}">🔊 읽어주기</button>
+        ${cardsHtml || '<div class="intro">조건에 맞는 병원을 찾지 못했어요.</div>'}
+      </div>
+    `;
+    chatEl.appendChild(row);
+
+    const speakBtn = row.querySelector('.speak-btn');
+    speakBtn.addEventListener('click', () => speakText(speakBtn.dataset.text, speakBtn));
+
+    row.querySelectorAll('.copy-btn').forEach((btn) => {
+      btn.addEventListener('click', async () => {
+        try {
+          await navigator.clipboard.writeText(btn.dataset.addr);
+          const original = btn.textContent;
+          btn.textContent = '복사됨';
+          setTimeout(() => { btn.textContent = original; }, 1200);
+        } catch (e) {
+          alert('복사에 실패했어요: ' + e);
+        }
+      });
+    });
+
+    scrollToBottom();
+  }
+
+  function scrollToBottom() {
+    chatEl.scrollTop = chatEl.scrollHeight;
+  }
+
+  // ── 🔊 음성 출력 (TTS) ──────────────────────────────────
+  async function speakText(text, btn) {
+    const original = btn.textContent;
+    btn.disabled = true;
+    btn.textContent = '🔊 만드는 중...';
+    try {
+      const res = await fetch('/api/tts', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ text }),
+      });
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({}));
+        throw new Error(err.error || `HTTP ${res.status}`);
+      }
+      const blob = await res.blob();
+      const audio = new Audio(URL.createObjectURL(blob));
+      audio.play();
+      btn.textContent = original;
+    } catch (e) {
+      alert('음성 생성 실패: ' + e.message);
+      btn.textContent = original;
+    } finally {
+      btn.disabled = false;
+    }
+  }
+
+  // ── 🎤 음성 입력 (STT) ──────────────────────────────────
+  const micBtn = document.getElementById('micBtn');
+  let mediaRecorder = null;
+  let recordedChunks = [];
+  let isRecording = false;
+
+  async function startRecording() {
+    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+    recordedChunks = [];
+    mediaRecorder = new MediaRecorder(stream);
+    mediaRecorder.ondataavailable = (e) => {
+      if (e.data.size > 0) recordedChunks.push(e.data);
+    };
+    mediaRecorder.onstop = async () => {
+      stream.getTracks().forEach((track) => track.stop());
+      const blob = new Blob(recordedChunks, { type: mediaRecorder.mimeType || 'audio/webm' });
+      await sendAudioForTranscription(blob);
+    };
+    mediaRecorder.start();
+    isRecording = true;
+    micBtn.classList.add('recording');
+    micBtn.textContent = '■';
+  }
+
+  function stopRecording() {
+    if (mediaRecorder && isRecording) {
+      mediaRecorder.stop();
+    }
+    isRecording = false;
+    micBtn.classList.remove('recording');
+    micBtn.textContent = '🎤';
+  }
+
+  async function sendAudioForTranscription(blob) {
+    inputEl.placeholder = '음성을 텍스트로 바꾸는 중...';
+    micBtn.disabled = true;
+    try {
+      const form = new FormData();
+      form.append('audio', blob, 'recording.webm');
+      const res = await fetch('/api/stt', { method: 'POST', body: form });
+      const data = await res.json();
+      if (data.error) {
+        alert('음성 인식 실패: ' + data.error);
+      } else if (data.text) {
+        inputEl.value = data.text;
+        inputEl.focus();
+      } else {
+        alert('음성에서 텍스트를 못 찾았어요. 다시 말씀해주세요.');
+      }
+    } catch (e) {
+      alert('음성 인식 요청 실패: ' + e.message);
+    } finally {
+      inputEl.placeholder = '증상과 날짜를 입력해주세요. 예) 장염 때문에 내일 오후에 가고 싶어';
+      micBtn.disabled = false;
+    }
+  }
+
+  micBtn.addEventListener('click', () => {
+    if (isRecording) {
+      stopRecording();
+    } else {
+      startRecording().catch((e) => alert('마이크를 사용할 수 없어요: ' + e.message));
+    }
+  });
+
+  async function handleSend() {
+    const text = inputEl.value.trim();
+    if (!text) return;
+
+    addUserBubble(text);
+    inputEl.value = '';
+    sendBtn.disabled = true;
+
+    const typingRow = addTyping();
+
+    try {
+      const res = await fetch('/api/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ message: text }),
+      });
+      const data = await res.json();
+      typingRow.remove();
+
+      if (data.error) {
+        addBotBubble('에러: ' + data.error);
+      } else {
+        addResultBlock(data.reply, data.hospitals || []);
+      }
+    } catch (e) {
+      typingRow.remove();
+      addBotBubble('요청에 실패했어요: ' + e);
+    } finally {
+      sendBtn.disabled = false;
+      inputEl.focus();
+    }
+  }
+
+  sendBtn.addEventListener('click', handleSend);
+  inputEl.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') handleSend();
+  });
+
+  // 첫 인사말
+  addBotBubble('안녕하세요! 포항 병원 찾기입니다. 😊\n어디가 불편하신지, 그리고 언제쯤 방문하고 싶으신지 말씀해주세요.');
+</script>
+
+</body>
+</html>
