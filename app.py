@@ -18,7 +18,8 @@ from pydub import AudioSegment
 # .env 파일 로드
 load_dotenv()
 
-app = Flask(__name__)
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+app = Flask(__name__, template_folder=os.path.join(BASE_DIR, "templates"))
 
 # FFmpeg 경로 자동 탐색 (Windows/Mac 호환)
 def _ensure_ffmpeg_on_path():
@@ -469,10 +470,15 @@ def generate_gemini_conversational_reply(user_message, analysis, top_hospitals):
         return None
 
 @app.route("/")
+@app.route("/api/index.py")
+@app.route("/api/index")
+@app.route("/api")
+@app.route("/index.html")
 def index():
     return render_template("index.html")
 
 @app.route("/api/chat", methods=["POST"])
+@app.route("/chat", methods=["POST"])
 def api_chat():
     payload = request.get_json(force=True, silent=True) or {}
     message = (payload.get("message") or "").strip()
@@ -522,6 +528,7 @@ def api_chat():
     })
 
 @app.route("/api/hospitals", methods=["GET"])
+@app.route("/hospitals", methods=["GET"])
 def api_hospitals():
     district = request.args.get("district", "").strip()
     tag = request.args.get("tag", "").strip()
@@ -562,6 +569,7 @@ def api_hospitals():
     return jsonify({"count": len(filtered), "hospitals": filtered})
 
 @app.route("/api/report", methods=["POST"])
+@app.route("/report", methods=["POST"])
 def api_report():
     payload = request.get_json(force=True, silent=True) or {}
     hospital_id = payload.get("hospital_id", "").strip()
@@ -594,11 +602,13 @@ def api_report():
     })
 
 @app.route("/api/reports", methods=["GET"])
+@app.route("/reports", methods=["GET"])
 def api_get_reports():
     reports = load_reports()
     return jsonify({"reports": reports})
 
 @app.route("/api/admin/toggle", methods=["POST"])
+@app.route("/admin/toggle", methods=["POST"])
 def api_admin_toggle():
     payload = request.get_json(force=True, silent=True) or {}
     hospital_id = payload.get("hospital_id")
@@ -635,6 +645,7 @@ def api_admin_toggle():
     return jsonify({"status": "success", "hospital": target})
 
 @app.route("/api/stt", methods=["POST"])
+@app.route("/stt", methods=["POST"])
 def api_stt():
     audio_file = request.files.get("audio")
     if not audio_file:
@@ -664,6 +675,7 @@ def api_stt():
         return jsonify({"error": f"음성 변환 실패: {e}"}), 500
 
 @app.route("/api/tts", methods=["POST"])
+@app.route("/tts", methods=["POST"])
 def api_tts():
     payload = request.get_json(force=True, silent=True) or {}
     text = (payload.get("text") or "").strip()
