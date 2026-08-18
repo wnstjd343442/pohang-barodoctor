@@ -3,5 +3,6 @@ requests
 xmltodict
 google-genai
 pydub
-audioop-lts  # Python 3.13+에서 audioop 모듈이 빠져서 pydub이 필요로 하는 대체 패키지
+audioop-lts
 python-dotenv
+gunicorn

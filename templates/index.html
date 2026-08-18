@@ -2,63 +2,250 @@
 <html lang="ko">
 <head>
 <meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>🏥 포항 병원 찾기</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+<title>🏥 포항 바로닥터 - 대화형 AI 병원 안내 & 공공데이터 실시간 연동</title>
+<link rel="preconnect" href="https://cdn.jsdelivr.net">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css">
 <style>
   :root {
-    --purple-1: #7c6ff0;
-    --purple-2: #5b4fd6;
-    --bg: #eef0fa;
-    --bubble-bot: #ffffff;
-    --bubble-user: #6f63e8;
-    --text: #26243a;
-    --muted: #8b899b;
-    --border: #e6e5f2;
-    --tag-bg: #f2f1fb;
-    --tag-text: #5b4fd6;
-    --card-shadow: 0 2px 10px rgba(60, 50, 130, 0.08);
+    --primary: #2563eb;
+    --primary-hover: #1d4ed8;
+    --primary-light: #eff6ff;
+    --primary-glow: rgba(37, 99, 235, 0.25);
+    
+    --naver-green: #03c75a;
+    --naver-hover: #02b150;
+    
+    --bg: #f1f5f9;
+    --card-bg: #ffffff;
+    --header-bg: linear-gradient(135deg, #1e3a8a 0%, #2563eb 50%, #0284c7 100%);
+    
+    --text-main: #0f172a;
+    --text-muted: #64748b;
+    --border: #e2e8f0;
+    
+    --badge-posaka-bg: #ecfdf5;
+    --badge-posaka-text: #059669;
+    --badge-posaka-border: #a7f3d0;
+    
+    --badge-fever-bg: #fff1f2;
+    --badge-fever-text: #e11d48;
+    --badge-fever-border: #fecdd3;
+    
+    --badge-sun-bg: #fffbeb;
+    --badge-sun-text: #d97706;
+    --badge-sun-border: #fde68a;
+    
+    --badge-dist-bg: #f0fdf4;
+    --badge-dist-text: #166534;
+    --badge-dist-border: #bbf7d0;
+
+    --badge-skin-bg: #f5f3ff;
+    --badge-skin-text: #7c3aed;
+    --badge-skin-border: #ddd6fe;
+
+    --badge-public-bg: #ecfdf5;
+    --badge-public-text: #065f46;
+    --badge-public-border: #6ee7b7;
+
+    --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+    --shadow-md: 0 4px 12px -2px rgba(0, 0, 0, 0.08), 0 2px 6px -2px rgba(0, 0, 0, 0.04);
+    --shadow-lg: 0 10px 25px -3px rgba(0, 0, 0, 0.1), 0 4px 10px -2px rgba(0, 0, 0, 0.05);
   }
-  * { box-sizing: border-box; }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  
+  html, body {
+    height: 100%;
+    overflow: hidden;
+  }
+
   body {
-    margin: 0;
-    font-family: "Pretendard", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
+    font-family: "Pretendard", -apple-system, BlinkMacSystemFont, system-ui, Roboto, sans-serif;
     background: var(--bg);
-    color: var(--text);
+    color: var(--text-main);
     display: flex;
     justify-content: center;
+    -webkit-font-smoothing: antialiased;
   }
+
   #app {
     width: 100%;
-    max-width: 480px;
-    min-height: 100vh;
-    background: var(--bg);
+    max-width: 520px;
+    height: 100vh;
+    height: 100dvh;
+    background: #f8fafc;
     display: flex;
     flex-direction: column;
+    position: relative;
+    box-shadow: 0 0 30px rgba(0,0,0,0.07);
+    overflow: hidden;
   }
+
+  /* Header */
   header {
-    background: linear-gradient(135deg, var(--purple-1), var(--purple-2));
+    background: var(--header-bg);
     color: #fff;
-    padding: 22px 20px 20px;
-    text-align: center;
+    padding: 14px 16px 12px;
     border-radius: 0 0 20px 20px;
+    box-shadow: var(--shadow-md);
+    flex-shrink: 0;
+    z-index: 30;
   }
-  header .title {
-    font-size: 17px;
+
+  .header-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 6px;
+  }
+
+  .brand-logo {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 18px;
+    font-weight: 800;
+    letter-spacing: -0.5px;
+  }
+
+  .brand-tag {
+    font-size: 10.5px;
+    background: rgba(255, 255, 255, 0.2);
+    padding: 2px 6px;
+    border-radius: 999px;
+    font-weight: 500;
+  }
+
+  .admin-toggle-btn {
+    background: rgba(255, 255, 255, 0.18);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    color: #fff;
+    font-size: 11px;
+    font-weight: 600;
+    padding: 4px 9px;
+    border-radius: 999px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .admin-toggle-btn:hover { background: rgba(255, 255, 255, 0.3); }
+
+  /* GPS & Public Data Banner */
+  .gps-status-bar {
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 10px;
+    padding: 6px 10px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 11.5px;
+    color: #e0f2fe;
+    gap: 4px;
+  }
+  .gps-info {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .gps-btn {
+    background: #ffffff;
+    color: #1e3a8a;
+    border: none;
+    border-radius: 6px;
+    padding: 2px 7px;
+    font-size: 11px;
     font-weight: 700;
-    margin-bottom: 4px;
+    cursor: pointer;
+    flex-shrink: 0;
   }
-  header .subtitle {
-    font-size: 12px;
-    opacity: 0.85;
+
+  /* Sort & Quick Chips Bar */
+  .controls-bar {
+    background: #ffffff;
+    border-bottom: 1px solid var(--border);
+    padding: 8px 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    flex-shrink: 0;
   }
+
+  .sort-toggle-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 11.5px;
+  }
+
+  .sort-chips {
+    display: flex;
+    gap: 4px;
+  }
+  .sort-chip {
+    border: 1px solid #cbd5e1;
+    background: #f8fafc;
+    color: #475569;
+    padding: 3px 8px;
+    border-radius: 6px;
+    font-size: 11px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .sort-chip.active {
+    background: #eff6ff;
+    border-color: var(--primary);
+    color: var(--primary);
+    font-weight: 700;
+  }
+
+  .quick-chips-wrap {
+    display: flex;
+    gap: 6px;
+    overflow-x: auto;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+    padding-bottom: 2px;
+  }
+  .quick-chips-wrap::-webkit-scrollbar { display: none; }
+
+  .chip-btn {
+    white-space: nowrap;
+    border: 1px solid #cbd5e1;
+    background: #ffffff;
+    color: #334155;
+    font-size: 11.5px;
+    font-weight: 600;
+    padding: 5px 10px;
+    border-radius: 999px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    box-shadow: var(--shadow-sm);
+    display: flex;
+    align-items: center;
+    gap: 3px;
+  }
+  .chip-btn:hover, .chip-btn:active {
+    background: var(--primary-light);
+    border-color: var(--primary);
+    color: var(--primary);
+  }
+
+  /* Chat Area */
   #chat {
     flex: 1;
-    overflow-y: auto;
-    padding: 18px 14px 90px;
+    overflow-y: scroll;
+    padding: 14px 14px 100px;
     display: flex;
     flex-direction: column;
     gap: 14px;
+    scroll-behavior: smooth;
+    -webkit-overflow-scrolling: touch;
   }
+
   .row {
     display: flex;
     width: 100%;
@@ -67,189 +254,709 @@
   .row.user { justify-content: flex-end; }
 
   .bubble {
-    max-width: 78%;
-    padding: 12px 14px;
-    border-radius: 16px;
-    font-size: 14px;
-    line-height: 1.5;
-    box-shadow: var(--card-shadow);
-    white-space: pre-line;
-  }
-  .bubble.bot {
-    background: var(--bubble-bot);
-    border-bottom-left-radius: 4px;
-  }
-  .bubble.user {
-    background: var(--bubble-user);
-    color: #fff;
-    border-bottom-right-radius: 4px;
+    max-width: 86%;
+    padding: 13px 16px;
+    border-radius: 18px;
+    font-size: 13.5px;
+    line-height: 1.6;
+    box-shadow: var(--shadow-sm);
+    word-break: break-word;
   }
 
-  .result-block {
-    background: var(--bubble-bot);
-    border-radius: 16px;
+  .bubble.bot {
+    background: var(--card-bg);
+    color: var(--text-main);
+    border: 1px solid var(--border);
     border-bottom-left-radius: 4px;
-    padding: 14px;
-    max-width: 92%;
-    box-shadow: var(--card-shadow);
+  }
+
+  .bubble.bot.ai-live {
+    border-left: 3px solid var(--primary);
+    background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
+  }
+
+  .bubble.user {
+    background: var(--primary);
+    color: #fff;
+    border-bottom-right-radius: 4px;
+    font-weight: 500;
+  }
+
+  /* Welcome Banner */
+  .welcome-card {
+    background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
+    border: 1px solid #cbd5e1;
+    border-radius: 16px;
+    padding: 15px;
+    box-shadow: var(--shadow-sm);
+  }
+  .welcome-card .title {
+    font-size: 14.5px;
+    font-weight: 700;
+    color: var(--primary);
+    margin-bottom: 6px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .welcome-card .text {
+    font-size: 12.5px;
+    color: #475569;
+    line-height: 1.5;
+  }
+  .welcome-card .points {
+    margin-top: 8px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    font-size: 11.5px;
+    color: #64748b;
+  }
+
+  /* Result Container */
+  .result-container {
+    width: 100%;
     display: flex;
     flex-direction: column;
     gap: 12px;
   }
-  .result-block .intro {
-    font-size: 14px;
-    line-height: 1.5;
+
+  .hospital-cards-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
   }
 
+  /* Hospital Card */
   .hcard {
+    background: var(--card-bg);
     border: 1px solid var(--border);
-    border-radius: 12px;
-    padding: 12px 14px;
+    border-radius: 16px;
+    padding: 14px;
+    box-shadow: var(--shadow-md);
+    position: relative;
+    overflow: hidden;
+    animation: fadeIn 0.25s ease-out;
   }
-  .hcard + .hcard { margin-top: 2px; }
-  .hcard .name {
-    font-weight: 700;
-    font-size: 14.5px;
-    color: var(--purple-2);
-    margin-bottom: 8px;
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(6px); }
+    to { opacity: 1; transform: translateY(0); }
   }
-  .hcard .line {
+
+  .hcard-top {
     display: flex;
-    align-items: center;
-    gap: 6px;
-    font-size: 13px;
-    color: var(--text);
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 8px;
     margin-bottom: 6px;
   }
-  .hcard .line .icon { flex-shrink: 0; }
-  .hcard .copy-btn {
-    border: none;
-    background: var(--tag-bg);
-    color: var(--tag-text);
-    font-size: 11px;
-    padding: 2px 8px;
-    border-radius: 999px;
-    cursor: pointer;
-    margin-left: auto;
-  }
-  .hcard .copy-btn:active { transform: scale(0.96); }
-  .hcard .tel a { color: var(--text); text-decoration: none; }
-  .hcard .tags {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 6px;
-    margin-top: 8px;
-  }
-  .tag {
-    font-size: 11.5px;
-    background: var(--tag-bg);
-    color: var(--tag-text);
-    border-radius: 999px;
-    padding: 3px 10px;
-    font-weight: 600;
-  }
-  .tag.hours {
-    background: #eafaf0;
-    color: #1f9d55;
+
+  .hcard-name {
+    font-size: 15.5px;
+    font-weight: 700;
+    color: #0f172a;
+    line-height: 1.3;
   }
 
-  #inputbar {
-    position: fixed;
-    bottom: 0;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 100%;
-    max-width: 480px;
-    background: var(--bg);
-    padding: 10px 14px 16px;
-    display: flex;
-    gap: 8px;
-    align-items: center;
-  }
-  #msgInput {
-    flex: 1;
-    border: none;
-    border-radius: 999px;
-    padding: 13px 16px;
-    font-size: 14px;
-    outline: none;
-    box-shadow: var(--card-shadow);
-  }
-  #sendBtn {
+  .district-badge {
     flex-shrink: 0;
-    width: 42px;
-    height: 42px;
-    border-radius: 50%;
-    border: none;
-    background: var(--purple-2);
-    color: #fff;
-    font-size: 16px;
+    font-size: 11px;
+    font-weight: 700;
+    background: #e2e8f0;
+    color: #334155;
+    padding: 2px 7px;
+    border-radius: 999px;
+  }
+  .district-badge.er {
+    background: #fee2e2;
+    color: #b91c1c;
+  }
+
+  /* Badges Row */
+  .badges-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 5px;
+    margin-bottom: 8px;
+  }
+
+  .distance-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+    font-size: 11.5px;
+    font-weight: 700;
+    background: var(--badge-dist-bg);
+    color: var(--badge-dist-text);
+    border: 1px solid var(--badge-dist-border);
+    padding: 2px 7px;
+    border-radius: 6px;
+  }
+
+  .public-data-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+    font-size: 11.5px;
+    font-weight: 700;
+    background: var(--badge-public-bg);
+    color: var(--badge-public-text);
+    border: 1px solid var(--badge-public-border);
+    padding: 2px 7px;
+    border-radius: 6px;
+  }
+
+  /* Meta Badges */
+  .meta-badges {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    margin-bottom: 8px;
+  }
+
+  .meta-tag {
+    font-size: 11px;
+    font-weight: 600;
+    padding: 2px 7px;
+    border-radius: 5px;
+    display: inline-flex;
+    align-items: center;
+    gap: 2px;
+  }
+  .meta-tag.posaka {
+    background: var(--badge-posaka-bg);
+    color: var(--badge-posaka-text);
+    border: 1px solid var(--badge-posaka-border);
+  }
+  .meta-tag.fever-possible {
+    background: var(--badge-fever-bg);
+    color: var(--badge-fever-text);
+    border: 1px solid var(--badge-fever-border);
+  }
+  .meta-tag.fever-caution {
+    background: #fffbeb;
+    color: #b45309;
+    border: 1px solid #fde68a;
+  }
+  .meta-tag.fever-impossible {
+    background: #f1f5f9;
+    color: #94a3b8;
+    border: 1px solid #cbd5e1;
+    text-decoration: line-through;
+  }
+  .meta-tag.sun {
+    background: var(--badge-sun-bg);
+    color: var(--badge-sun-text);
+    border: 1px solid var(--badge-sun-border);
+  }
+  .meta-tag.skin {
+    background: var(--badge-skin-bg);
+    color: var(--badge-skin-text);
+    border: 1px solid var(--badge-skin-border);
+  }
+  .meta-tag.default {
+    background: #f1f5f9;
+    color: #475569;
+  }
+
+  /* Info Lines */
+  .info-line {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12.5px;
+    color: #334155;
+    margin-bottom: 4px;
+  }
+  .info-line .icon { flex-shrink: 0; font-size: 13px; }
+  .info-line.desc {
+    font-size: 11.5px;
+    color: #64748b;
+    background: #f8fafc;
+    padding: 6px 9px;
+    border-radius: 8px;
+    margin-top: 4px;
+    line-height: 1.4;
+  }
+
+  /* Action Buttons Grid */
+  .card-actions {
+    display: grid;
+    grid-template-columns: 1.4fr 1fr 1fr;
+    gap: 6px;
+    margin-top: 10px;
+    padding-top: 10px;
+    border-top: 1px solid #f1f5f9;
+  }
+
+  .btn-naver-map {
+    grid-column: span 3;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    background: var(--naver-green);
+    color: #ffffff;
+    font-size: 13px;
+    font-weight: 700;
+    padding: 9px 12px;
+    border-radius: 10px;
+    text-decoration: none;
+    transition: all 0.15s;
+    box-shadow: 0 2px 6px rgba(3, 199, 90, 0.25);
+  }
+  .btn-naver-map:hover {
+    background: var(--naver-hover);
+  }
+
+  .sub-action-btn {
+    border: 1px solid #cbd5e1;
+    background: #ffffff;
+    color: #334155;
+    font-size: 11.5px;
+    font-weight: 600;
+    padding: 6px 4px;
+    border-radius: 8px;
     cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
-    box-shadow: var(--card-shadow);
+    gap: 3px;
+    text-decoration: none;
+    transition: all 0.15s;
   }
-  #sendBtn:disabled { opacity: 0.5; cursor: default; }
+  .sub-action-btn:hover {
+    background: #f1f5f9;
+    border-color: #94a3b8;
+  }
+  .sub-action-btn.report {
+    color: #dc2626;
+    border-color: #fca5a5;
+    background: #fff5f5;
+  }
+
+  /* Load More Button */
+  .load-more-btn {
+    width: 100%;
+    background: #ffffff;
+    color: #334155;
+    border: 1px solid #cbd5e1;
+    border-radius: 12px;
+    padding: 10px;
+    font-size: 12.5px;
+    font-weight: 700;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    box-shadow: var(--shadow-sm);
+    transition: all 0.15s;
+  }
+  .load-more-btn:hover {
+    background: #eff6ff;
+    border-color: var(--primary);
+    color: var(--primary);
+  }
+
+  /* Floating Bottom Input Bar */
+  #inputbar {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border-top: 1px solid var(--border);
+    padding: 10px 14px calc(12px + env(safe-area-inset-bottom));
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    z-index: 40;
+    box-shadow: 0 -4px 15px rgba(0, 0, 0, 0.05);
+  }
 
   #micBtn {
     flex-shrink: 0;
     width: 42px;
     height: 42px;
     border-radius: 50%;
-    border: none;
-    background: #fff;
-    color: var(--purple-2);
-    font-size: 16px;
+    border: 1px solid #cbd5e1;
+    background: #ffffff;
+    color: var(--primary);
+    font-size: 17px;
     cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
-    box-shadow: var(--card-shadow);
+    box-shadow: var(--shadow-sm);
+    transition: all 0.2s;
+  }
+  #micBtn:hover {
+    background: var(--primary-light);
+    border-color: var(--primary);
   }
   #micBtn.recording {
-    background: #e0453f;
+    background: #ef4444;
+    border-color: #ef4444;
     color: #fff;
-    animation: pulse 1s infinite;
+    animation: micPulse 1.2s infinite;
   }
-  @keyframes pulse {
-    0% { box-shadow: 0 0 0 0 rgba(224, 69, 63, 0.5); }
-    70% { box-shadow: 0 0 0 8px rgba(224, 69, 63, 0); }
-    100% { box-shadow: 0 0 0 0 rgba(224, 69, 63, 0); }
+  @keyframes micPulse {
+    0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.6); }
+    70% { box-shadow: 0 0 0 10px rgba(239, 68, 68, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
   }
 
-  .speak-btn {
-    border: none;
-    background: var(--tag-bg);
-    color: var(--tag-text);
-    font-size: 12px;
-    padding: 4px 10px;
+  #msgInput {
+    flex: 1;
+    border: 1px solid #cbd5e1;
     border-radius: 999px;
-    cursor: pointer;
-    align-self: flex-start;
+    padding: 11px 16px;
+    font-size: 13.5px;
+    outline: none;
+    background: #f8fafc;
+    transition: all 0.2s;
   }
-  .speak-btn:disabled { opacity: 0.5; cursor: default; }
+  #msgInput:focus {
+    border-color: var(--primary);
+    background: #ffffff;
+    box-shadow: 0 0 0 3px var(--primary-glow);
+  }
 
-  .typing {
+  #sendBtn {
+    flex-shrink: 0;
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    border: none;
+    background: var(--primary);
+    color: #fff;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 8px var(--primary-glow);
+    transition: all 0.2s;
+  }
+  #sendBtn:disabled { opacity: 0.5; cursor: default; }
+
+  /* Toast Notification */
+  #toast {
+    position: fixed;
+    top: 75px;
+    left: 50%;
+    transform: translateX(-50%) translateY(-20px);
+    background: #0f172a;
+    color: #fff;
+    font-size: 12.5px;
+    font-weight: 600;
+    padding: 9px 16px;
+    border-radius: 999px;
+    box-shadow: var(--shadow-lg);
+    opacity: 0;
+    pointer-events: none;
+    transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  #toast.show {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+
+  /* Modals */
+  .modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(4px);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 16px;
+    z-index: 90;
+  }
+  .modal-overlay.active { display: flex; }
+
+  .modal-card {
+    background: #ffffff;
+    width: 100%;
+    max-width: 420px;
+    border-radius: 20px;
+    padding: 18px;
+    box-shadow: var(--shadow-lg);
+    animation: modalIn 0.2s ease-out;
+  }
+  @keyframes modalIn {
+    from { opacity: 0; transform: scale(0.95); }
+    to { opacity: 1; transform: scale(1); }
+  }
+
+  .modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+  }
+  .modal-title {
+    font-size: 15px;
+    font-weight: 700;
+    color: #0f172a;
+  }
+  .modal-close {
+    border: none;
+    background: none;
+    font-size: 18px;
+    color: #64748b;
+    cursor: pointer;
+  }
+
+  .report-radio-group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin-bottom: 12px;
+  }
+  .report-radio-label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 12.5px;
+    color: #334155;
+    cursor: pointer;
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    padding: 7px 10px;
+    border-radius: 8px;
+    transition: all 0.15s;
+  }
+  .report-radio-label:hover {
+    border-color: var(--primary);
+    background: #eff6ff;
+  }
+
+  .modal-textarea {
+    width: 100%;
+    height: 65px;
+    border: 1px solid #cbd5e1;
+    border-radius: 10px;
+    padding: 9px;
+    font-size: 12.5px;
+    outline: none;
+    margin-bottom: 12px;
+    resize: none;
+    font-family: inherit;
+  }
+  .modal-textarea:focus { border-color: var(--primary); }
+
+  .modal-submit-btn {
+    width: 100%;
+    background: var(--primary);
+    color: #fff;
+    border: none;
+    border-radius: 10px;
+    padding: 11px;
+    font-size: 13.5px;
+    font-weight: 700;
+    cursor: pointer;
+  }
+
+  /* Admin Drawer */
+  #adminDrawer {
+    position: fixed;
+    bottom: 70px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 92%;
+    max-width: 480px;
+    background: #1e293b;
+    color: #fff;
+    border-radius: 16px;
+    padding: 14px;
+    box-shadow: var(--shadow-lg);
+    display: none;
+    z-index: 50;
+    border: 1px solid #334155;
+  }
+  #adminDrawer.active { display: block; }
+  .admin-drawer-title {
     font-size: 13px;
-    color: var(--muted);
+    font-weight: 700;
+    color: #38bdf8;
+    margin-bottom: 6px;
+    display: flex;
+    justify-content: space-between;
+  }
+  .admin-select {
+    width: 100%;
+    background: #0f172a;
+    color: #fff;
+    border: 1px solid #475569;
+    padding: 7px;
+    border-radius: 8px;
+    font-size: 12.5px;
+    margin-bottom: 8px;
+    outline: none;
+  }
+  .admin-btn-group {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 6px;
+  }
+  .admin-action-btn {
+    background: #334155;
+    color: #f8fafc;
+    border: 1px solid #475569;
+    font-size: 11px;
+    font-weight: 600;
+    padding: 7px 3px;
+    border-radius: 6px;
+    cursor: pointer;
+  }
+
+  .typing-indicator {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 12.5px;
+    color: var(--text-muted);
   }
 </style>
 </head>
 <body>
 
 <div id="app">
+  <!-- Header -->
   <header>
-    <div class="title">🏥 포항 병원 찾기</div>
-    <div class="subtitle">증상과 원하는 날짜를 말씀해주세요</div>
+    <div class="header-top">
+      <div class="brand-logo">
+        <span>🏥 포항 바로닥터</span>
+        <span class="brand-tag">대화형 AI & 공공데이터</span>
+      </div>
+      <button class="admin-toggle-btn" id="adminToggleBtn" title="시연/해커톤용 실시간 상태 토글">🛠️ 데모 모드</button>
+    </div>
+    
+    <!-- GPS Location Banner -->
+    <div class="gps-status-bar">
+      <div class="gps-info">
+        <span>📍</span>
+        <span id="gpsStatusText">내 위치: 포항 북구 양덕동 (기본 위치)</span>
+      </div>
+      <button class="gps-btn" id="refreshGpsBtn">GPS 갱신</button>
+    </div>
   </header>
 
-  <div id="chat"></div>
+  <!-- Controls & Quick Symptom Chips -->
+  <div class="controls-bar">
+    <div class="sort-toggle-row">
+      <span style="color:#64748b; font-weight:600;">정렬 및 빠른 증상:</span>
+      <div class="sort-chips">
+        <button class="sort-chip active" id="sortRecommendBtn" data-sort="recommend">⭐ 추천순</button>
+        <button class="sort-chip" id="sortDistanceBtn" data-sort="distance">📍 가까운 거리순</button>
+      </div>
+    </div>
 
+    <div class="quick-chips-wrap">
+      <button class="chip-btn" data-msg="아침부터 어지럽고 속이 미식거려 일요일인데 어디가?">🤢 어지럼·속 미식거림</button>
+      <button class="chip-btn" data-msg="장염 때문에 일요일 5시에 문 연 곳 찾고 있어">🤢 일요일 5시 장염</button>
+      <button class="chip-btn" data-msg="열나고 기침나는데 발열 진료 가능한 내과 알려줘">🤒 감기·고열(발열진료)</button>
+      <button class="chip-btn" data-msg="지금 문 연 가장 가까운 양덕동 병원">📍 양덕동 가까운 병원</button>
+      <button class="chip-btn" data-msg="피부 두드러기 질환 치료 전문 병원">🩹 피부질환(치료전문)</button>
+      <button class="chip-btn" data-msg="포항사랑카드 결제 가능한 병원">💳 포사카 가맹점</button>
+      <button class="chip-btn" data-msg="야간 24시간 응급실">🚨 24시간 응급실</button>
+    </div>
+  </div>
+
+  <!-- Chat Log -->
+  <div id="chat">
+    <div class="welcome-card">
+      <div class="title">✨ 안녕하세요! 포항 바로닥터입니다. 😊</div>
+      <div class="text">
+        몸이 어떻게 불편하신가요? 증상이나 상황을 편하게 말씀해 주시면, <strong>대화형 AI</strong>가 1차 진료과와 함께 <strong>내 위치에서 가장 가까운 병원</strong>, <strong>공공데이터 실시간 응급실 병상</strong>까지 딱 맞는 해결책을 찾아드립니다.
+      </div>
+      <div class="points">
+        <div>• <strong>3곳 먼저 추천</strong> 후 원하시면 [더보기]로 추가 탐색</div>
+        <div>• <strong>공공데이터포털 실시간 API</strong> 연동 (응급실 실시간 잔여석)</div>
+        <div>• <strong>네이버 지도</strong> 원터치 연결로 길찾기/내비 즉시 이동</div>
+        <div>• 타자칠 기운이 없을 땐 아래 <strong>🎤 마이크</strong>를 누르고 말씀하세요!</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Floating Input Bar -->
   <div id="inputbar">
     <button id="micBtn" title="음성으로 말하기">🎤</button>
-    <input id="msgInput" type="text" placeholder="증상과 날짜를 입력해주세요. 예) 장염 때문에 내일 오후에 가고 싶어" />
+    <input id="msgInput" type="text" placeholder="예) 아침부터 어지럽고 속이 미식거려 일요일인데 어디가?" />
     <button id="sendBtn">↑</button>
+  </div>
+
+  <!-- Toast Notification -->
+  <div id="toast">📋 주소가 복사되었습니다!</div>
+
+  <!-- Report Modal -->
+  <div class="modal-overlay" id="reportModal">
+    <div class="modal-card">
+      <div class="modal-header">
+        <div class="modal-title">📢 병원 정보 제보 / 의견 작성</div>
+        <button class="modal-close" id="closeReportModal">✕</button>
+      </div>
+      <div style="font-size:12.5px; color:#475569; margin-bottom:10px;" id="reportHospitalTarget">
+        병원명: <strong>-</strong>
+      </div>
+      <div class="report-radio-group">
+        <label class="report-radio-label">
+          <input type="radio" name="repType" value="오늘 임시 휴진" checked> ⚠️ 오늘 임시 휴진이에요
+        </label>
+        <label class="report-radio-label">
+          <input type="radio" name="repType" value="발열 진료 가능 확인"> 🔥 발열 진료(신속검사) 가능 확인
+        </label>
+        <label class="report-radio-label">
+          <input type="radio" name="repType" value="열나면 진료 거부"> ⛔ 37.5도 이상 열나면 진료 안해줌
+        </label>
+        <label class="report-radio-label">
+          <input type="radio" name="repType" value="포항사랑카드 가맹 여부"> 💳 포항사랑카드 가맹 여부 제보
+        </label>
+        <label class="report-radio-label">
+          <input type="radio" name="repType" value="수액실/영양제 처방"> 💧 수액실/장염 수액 처방 쾌적함
+        </label>
+        <label class="report-radio-label">
+          <input type="radio" name="repType" value="기타 의견/특징 제보"> 📝 기타 의견 및 병원 특징 제보
+        </label>
+      </div>
+      <textarea class="modal-textarea" id="reportContent" placeholder="사용자 경험이나 확인된 특징을 자유롭게 적어주세요. (데모용 의견 작성)"></textarea>
+      <button class="modal-submit-btn" id="submitReportBtn">제보 제출하기</button>
+    </div>
+  </div>
+
+  <!-- Admin Demo Drawer -->
+  <div id="adminDrawer">
+    <div class="admin-drawer-title">
+      <span>🛠️ 심사위원/시연용 관리자 모드</span>
+      <span style="cursor:pointer;" id="closeAdminDrawer">✕</span>
+    </div>
+    <div style="font-size:11.5px; color:#94a3b8; margin-bottom:6px;">
+      "오늘 갑자기 휴진인 병원이면 어떡하나요?" 질문에 즉시 대응하는 실시간 토글:
+    </div>
+    <select class="admin-select" id="adminHospitalSelect">
+      <option value="ph-yd-01">양덕속편한내과의원</option>
+      <option value="ph-yd-02">포항양덕연합의원</option>
+      <option value="ph-jr-03">장량365의원</option>
+      <option value="ph-er-01">의료법인은성의료재단 좋은선린병원</option>
+      <option value="ph-er-02">경상북도포항의료원</option>
+      <option value="ph-er-03">포항세명기독병원</option>
+    </select>
+    <div class="admin-btn-group">
+      <button class="admin-action-btn" data-action="toggle_open">🚫 휴진/영업 토글</button>
+      <button class="admin-action-btn" data-action="toggle_fever">🔥 발열진료 토글</button>
+      <button class="admin-action-btn" data-action="toggle_posaka">💳 포사카 토글</button>
+    </div>
   </div>
 </div>
 
@@ -257,14 +964,90 @@
   const chatEl = document.getElementById('chat');
   const inputEl = document.getElementById('msgInput');
   const sendBtn = document.getElementById('sendBtn');
+  const micBtn = document.getElementById('micBtn');
+  const toastEl = document.getElementById('toast');
+  const gpsStatusText = document.getElementById('gpsStatusText');
+  const refreshGpsBtn = document.getElementById('refreshGpsBtn');
 
-  function addBotBubble(text) {
-    const row = document.createElement('div');
-    row.className = 'row bot';
-    row.innerHTML = `<div class="bubble bot"></div>`;
-    row.querySelector('.bubble').textContent = text;
-    chatEl.appendChild(row);
-    scrollToBottom();
+  let userCoords = { lat: 36.0825, lng: 129.3982, isGpsReal: false };
+  let currentSortBy = 'recommend';
+  let currentReportHospital = null;
+
+  function requestUserLocation() {
+    if ('geolocation' in navigator) {
+      gpsStatusText.textContent = 'GPS 위치 확인 중...';
+      navigator.geolocation.getCurrentPosition(
+        (pos) => {
+          userCoords.lat = pos.coords.latitude;
+          userCoords.lng = pos.coords.longitude;
+          userCoords.isGpsReal = true;
+          gpsStatusText.textContent = `내 위치: 위도 ${userCoords.lat.toFixed(3)}, 경도 ${userCoords.lng.toFixed(3)} (GPS 실시간)`;
+          showToast('📍 현재 GPS 위치가 정상 반영되었습니다!');
+        },
+        (err) => {
+          console.warn('GPS 오류/거부:', err.message);
+          userCoords.lat = 36.0825;
+          userCoords.lng = 129.3982;
+          userCoords.isGpsReal = false;
+          gpsStatusText.textContent = '내 위치: 포항 북구 양덕동 (기본 위치)';
+        },
+        { enableHighAccuracy: true, timeout: 6000 }
+      );
+    } else {
+      gpsStatusText.textContent = '내 위치: 포항 북구 양덕동 (기본 위치)';
+    }
+  }
+
+  refreshGpsBtn.addEventListener('click', requestUserLocation);
+  requestUserLocation();
+
+  const sortRecommendBtn = document.getElementById('sortRecommendBtn');
+  const sortDistanceBtn = document.getElementById('sortDistanceBtn');
+
+  sortRecommendBtn.addEventListener('click', () => {
+    currentSortBy = 'recommend';
+    sortRecommendBtn.classList.add('active');
+    sortDistanceBtn.classList.remove('active');
+    showToast('⭐ 스마트 추천순 정렬로 변경되었습니다.');
+  });
+
+  sortDistanceBtn.addEventListener('click', () => {
+    currentSortBy = 'distance';
+    sortDistanceBtn.classList.add('active');
+    sortRecommendBtn.classList.remove('active');
+    showToast('📍 가장 가까운 거리순 정렬로 변경되었습니다.');
+  });
+
+  function showToast(msg) {
+    toastEl.textContent = msg;
+    toastEl.classList.add('show');
+    setTimeout(() => { toastEl.classList.remove('show'); }, 2200);
+  }
+
+  function escapeHtml(str) {
+    if (!str) return '';
+    const div = document.createElement('div');
+    div.textContent = str;
+    return div.innerHTML;
+  }
+
+  function formatMarkdown(text) {
+    if (!text) return '';
+    let formatted = escapeHtml(text);
+    // 볼드 변환
+    formatted = formatted.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+    // 줄바꿈 변환
+    formatted = formatted.replace(/\n/g, '<br/>');
+    return formatted;
+  }
+
+  function scrollToBottom(forceSmooth = true) {
+    requestAnimationFrame(() => {
+      chatEl.scrollTo({
+        top: chatEl.scrollHeight + 500,
+        behavior: forceSmooth ? 'smooth' : 'auto'
+      });
+    });
   }
 
   function addUserBubble(text) {
@@ -279,175 +1062,227 @@
   function addTyping() {
     const row = document.createElement('div');
     row.className = 'row bot';
-    row.dataset.typing = '1';
-    row.innerHTML = `<div class="bubble bot typing">병원을 찾고 있어요...</div>`;
-    chatEl.appendChild(row);
-    scrollToBottom();
-    return row;
-  }
-
-  function escapeHtml(str) {
-    const div = document.createElement('div');
-    div.textContent = str || '';
-    return div.innerHTML;
-  }
-
-  function addResultBlock(reply, hospitals) {
-    const row = document.createElement('div');
-    row.className = 'row bot';
-
-    const cardsHtml = hospitals.map((h, idx) => {
-      const tags = (h.departments || []).map((d) => `<span class="tag">${escapeHtml(d)}</span>`).join('');
-      const hoursTag = h.hours ? `<span class="tag hours">${escapeHtml(h.hours)}</span>` : '';
-      return `
-        <div class="hcard">
-          <div class="name">${escapeHtml(h.name)}</div>
-          <div class="line">
-            <span class="icon">📍</span>
-            <span>${escapeHtml(h.address)}</span>
-            <button class="copy-btn" data-addr="${escapeHtml(h.address)}">복사</button>
-          </div>
-          <div class="line tel">
-            <span class="icon">📞</span>
-            <a href="tel:${h.tel || ''}">${escapeHtml(h.tel || '-')}</a>
-          </div>
-          <div class="tags">${hoursTag}${tags}</div>
-        </div>
-      `;
-    }).join('');
-
-    const speechText = [reply, ...hospitals.map((h) => h.name)].join('. ');
-
     row.innerHTML = `
-      <div class="result-block">
-        <div class="intro">${escapeHtml(reply)}</div>
-        <button class="speak-btn" data-text="${escapeHtml(speechText)}">🔊 읽어주기</button>
-        ${cardsHtml || '<div class="intro">조건에 맞는 병원을 찾지 못했어요.</div>'}
+      <div class="bubble bot typing-indicator" style="font-weight:600; color:#2563eb; display:flex; align-items:center; gap:4px;">
+        <span>⚡ AI가 최적의 병원을 생각 중</span><span class="thinking-dots" style="display:inline-block; min-width:42px; letter-spacing:2px; font-weight:800;">.</span>
       </div>
     `;
     chatEl.appendChild(row);
+    scrollToBottom();
 
-    const speakBtn = row.querySelector('.speak-btn');
-    speakBtn.addEventListener('click', () => speakText(speakBtn.dataset.text, speakBtn));
+    let dotCount = 1;
+    const dotsEl = row.querySelector('.thinking-dots');
+    const intervalId = setInterval(() => {
+      dotCount = (dotCount % 5) + 1;
+      let dots = '';
+      for (let i = 0; i < dotCount; i++) {
+        dots += '. ';
+      }
+      if (dotsEl) dotsEl.textContent = dots;
+    }, 300);
 
-    row.querySelectorAll('.copy-btn').forEach((btn) => {
-      btn.addEventListener('click', async () => {
-        try {
-          await navigator.clipboard.writeText(btn.dataset.addr);
-          const original = btn.textContent;
-          btn.textContent = '복사됨';
-          setTimeout(() => { btn.textContent = original; }, 1200);
-        } catch (e) {
-          alert('복사에 실패했어요: ' + e);
-        }
-      });
+    row.dataset.intervalId = intervalId;
+    return row;
+  }
+
+  function renderHospitalCard(h) {
+    let badgesHtml = '';
+    
+    let distBadgeHtml = '';
+    if (h.distance_text) {
+      distBadgeHtml = `<div class="distance-badge">📍 <strong>${escapeHtml(h.distance_text)}</strong></div>`;
+    }
+
+    let publicDataBadgeHtml = '';
+    if (h.live_public_data && h.live_public_data.is_connected) {
+      const beds = h.live_public_data.available_beds;
+      const ped = h.live_public_data.pediatric_beds;
+      let pedText = ped !== null ? ` (소아응급 ${ped}석)` : '';
+      publicDataBadgeHtml = `<div class="public-data-badge">🟢 <strong>실시간 공공데이터</strong> 응급실: ${beds}병상${pedText}</div>`;
+    }
+
+    if (h.posaka === 'O') {
+      badgesHtml += `<span class="meta-tag posaka">💳 포항사랑카드 O</span>`;
+    } else if (h.posaka === 'X') {
+      badgesHtml += `<span class="meta-tag default">💳 포사카 불가</span>`;
+    }
+
+    if (h.fever_status === 'possible') {
+      badgesHtml += `<span class="meta-tag fever-possible">${escapeHtml(h.fever_badge || '🔥 발열 진료 가능')}</span>`;
+    } else if (h.fever_status === 'caution') {
+      badgesHtml += `<span class="meta-tag fever-caution">${escapeHtml(h.fever_badge || '⚠️ 사전문의')}</span>`;
+    } else if (h.fever_status === 'impossible') {
+      badgesHtml += `<span class="meta-tag fever-impossible">${escapeHtml(h.fever_badge || '⛔ 발열 불가')}</span>`;
+    }
+
+    if (h.is_emergency) {
+      badgesHtml += `<span class="meta-tag fever-possible">🚨 24시간 응급실</span>`;
+    } else if (h.sunday_open) {
+      badgesHtml += `<span class="meta-tag sun">☀️ 일요일 진료</span>`;
+    }
+
+    if (h.skin_badge) {
+      badgesHtml += `<span class="meta-tag skin">${escapeHtml(h.skin_badge)}</span>`;
+    }
+
+    (h.features || []).slice(0, 2).forEach(f => {
+      badgesHtml += `<span class="meta-tag default">${escapeHtml(f)}</span>`;
     });
 
-    scrollToBottom();
+    const isEr = h.is_emergency ? ' er' : '';
+
+    return `
+      <div class="hcard" data-hid="${h.id}">
+        <div class="hcard-top">
+          <div class="hcard-name">${escapeHtml(h.name)}</div>
+          <span class="district-badge${isEr}">${escapeHtml(h.district)}</span>
+        </div>
+
+        <div class="badges-row">
+          ${distBadgeHtml}
+          ${publicDataBadgeHtml}
+        </div>
+
+        <div class="meta-badges">
+          ${badgesHtml}
+        </div>
+
+        <div class="info-line">
+          <span class="icon">⏰</span>
+          <span>${escapeHtml(h.hours_summary || '진료시간 문의')}</span>
+        </div>
+
+        <div class="info-line">
+          <span class="icon">📍</span>
+          <span>${escapeHtml(h.address)}</span>
+        </div>
+
+        ${h.description ? `<div class="info-line desc">💡 ${escapeHtml(h.description)}</div>` : ''}
+
+        <div class="card-actions">
+          <!-- A. 네이버 지도 웹으로 보내기 -->
+          <a href="${h.naver_map_url}" target="_blank" rel="noopener noreferrer" class="btn-naver-map">
+            <span>🗺️ 네이버 지도에서 보기</span>
+          </a>
+          
+          <!-- 원터치 주소 복사 -->
+          <button class="sub-action-btn copy-btn" data-addr="${escapeHtml(h.address)}">
+            📋 주소 복사
+          </button>
+          
+          <!-- 전화 연결 -->
+          <a href="tel:${h.tel}" class="sub-action-btn">
+            📞 전화 걸기
+          </a>
+          
+          <!-- 사용자 제보하기 -->
+          <button class="sub-action-btn report report-btn" data-hid="${h.id}" data-hname="${escapeHtml(h.name)}">
+            📢 제보하기
+          </button>
+        </div>
+      </div>
+    `;
   }
 
-  function scrollToBottom() {
-    chatEl.scrollTop = chatEl.scrollHeight;
-  }
+  function addResultBlock(data) {
+    const allHospitals = data.hospitals || [];
+    let visibleCount = Math.min(3, allHospitals.length); // 먼저 3가지 보여주기
 
-  // ── 🔊 음성 출력 (TTS) ──────────────────────────────────
-  async function speakText(text, btn) {
-    const original = btn.textContent;
-    btn.disabled = true;
-    btn.textContent = '🔊 만드는 중...';
-    try {
-      const res = await fetch('/api/tts', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ text }),
+    // 1. AI 대화형 답변 말풍선 추가
+    const botRow = document.createElement('div');
+    botRow.className = 'row bot';
+    botRow.innerHTML = `<div class="bubble bot ai-live">${formatMarkdown(data.reply)}</div>`;
+    chatEl.appendChild(botRow);
+
+    // 2. 병원 카드 리스트 컨테이너
+    const listRow = document.createElement('div');
+    listRow.className = 'row bot';
+
+    const renderBatchCards = (start, count) => {
+      return allHospitals.slice(start, start + count).map(h => renderHospitalCard(h)).join('');
+    };
+
+    const initialCardsHtml = renderBatchCards(0, visibleCount);
+    const hasMore = allHospitals.length > visibleCount;
+    const remainingCount = allHospitals.length - visibleCount;
+
+    listRow.innerHTML = `
+      <div class="result-container">
+        <div class="hospital-cards-list">
+          ${initialCardsHtml}
+        </div>
+        ${hasMore ? `
+          <button class="load-more-btn">
+            <span>👇 병원 더보기 (+${remainingCount}곳 더 보기)</span>
+          </button>
+        ` : ''}
+      </div>
+    `;
+
+    chatEl.appendChild(listRow);
+
+    // 이벤트 바인딩 헬퍼
+    const bindCardEvents = (container) => {
+      container.querySelectorAll('.copy-btn').forEach(btn => {
+        btn.onclick = async () => {
+          try {
+            await navigator.clipboard.writeText(btn.dataset.addr);
+            showToast('📋 주소가 클립보드에 복사되었습니다!');
+          } catch (e) {
+            showToast('주소 복사: ' + btn.dataset.addr);
+          }
+        };
       });
-      if (!res.ok) {
-        const err = await res.json().catch(() => ({}));
-        throw new Error(err.error || `HTTP ${res.status}`);
-      }
-      const blob = await res.blob();
-      const audio = new Audio(URL.createObjectURL(blob));
-      audio.play();
-      btn.textContent = original;
-    } catch (e) {
-      alert('음성 생성 실패: ' + e.message);
-      btn.textContent = original;
-    } finally {
-      btn.disabled = false;
-    }
-  }
 
-  // ── 🎤 음성 입력 (STT) ──────────────────────────────────
-  const micBtn = document.getElementById('micBtn');
-  let mediaRecorder = null;
-  let recordedChunks = [];
-  let isRecording = false;
-
-  async function startRecording() {
-    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-    recordedChunks = [];
-    mediaRecorder = new MediaRecorder(stream);
-    mediaRecorder.ondataavailable = (e) => {
-      if (e.data.size > 0) recordedChunks.push(e.data);
+      container.querySelectorAll('.report-btn').forEach(btn => {
+        btn.onclick = () => {
+          openReportModal(btn.dataset.hid, btn.dataset.hname);
+        };
+      });
     };
-    mediaRecorder.onstop = async () => {
-      stream.getTracks().forEach((track) => track.stop());
-      const blob = new Blob(recordedChunks, { type: mediaRecorder.mimeType || 'audio/webm' });
-      await sendAudioForTranscription(blob);
-    };
-    mediaRecorder.start();
-    isRecording = true;
-    micBtn.classList.add('recording');
-    micBtn.textContent = '■';
+
+    bindCardEvents(listRow);
+
+    // 더보기 버튼 이벤트
+    const loadMoreBtn = listRow.querySelector('.load-more-btn');
+    if (loadMoreBtn) {
+      loadMoreBtn.addEventListener('click', () => {
+        const nextBatchCount = 3;
+        const nextCardsHtml = renderBatchCards(visibleCount, nextBatchCount);
+        visibleCount += nextBatchCount;
+
+        const cardsList = listRow.querySelector('.hospital-cards-list');
+        const tempDiv = document.createElement('div');
+        tempDiv.innerHTML = nextCardsHtml;
+
+        while (tempDiv.firstChild) {
+          cardsList.appendChild(tempDiv.firstChild);
+        }
+
+        bindCardEvents(cardsList);
+
+        const leftCount = allHospitals.length - visibleCount;
+        if (leftCount > 0) {
+          loadMoreBtn.querySelector('span').textContent = `👇 병원 더보기 (+${leftCount}곳 더 보기)`;
+        } else {
+          loadMoreBtn.remove();
+        }
+
+        scrollToBottom();
+        setTimeout(() => scrollToBottom(), 150);
+      });
+    }
+
+    scrollToBottom();
+    setTimeout(() => scrollToBottom(), 150);
   }
 
-  function stopRecording() {
-    if (mediaRecorder && isRecording) {
-      mediaRecorder.stop();
-    }
-    isRecording = false;
-    micBtn.classList.remove('recording');
-    micBtn.textContent = '🎤';
-  }
-
-  async function sendAudioForTranscription(blob) {
-    inputEl.placeholder = '음성을 텍스트로 바꾸는 중...';
-    micBtn.disabled = true;
-    try {
-      const form = new FormData();
-      form.append('audio', blob, 'recording.webm');
-      const res = await fetch('/api/stt', { method: 'POST', body: form });
-      const data = await res.json();
-      if (data.error) {
-        alert('음성 인식 실패: ' + data.error);
-      } else if (data.text) {
-        inputEl.value = data.text;
-        inputEl.focus();
-      } else {
-        alert('음성에서 텍스트를 못 찾았어요. 다시 말씀해주세요.');
-      }
-    } catch (e) {
-      alert('음성 인식 요청 실패: ' + e.message);
-    } finally {
-      inputEl.placeholder = '증상과 날짜를 입력해주세요. 예) 장염 때문에 내일 오후에 가고 싶어';
-      micBtn.disabled = false;
-    }
-  }
-
-  micBtn.addEventListener('click', () => {
-    if (isRecording) {
-      stopRecording();
-    } else {
-      startRecording().catch((e) => alert('마이크를 사용할 수 없어요: ' + e.message));
-    }
-  });
-
-  async function handleSend() {
-    const text = inputEl.value.trim();
+  async function handleSend(customText = null) {
+    const text = (customText || inputEl.value).trim();
     if (!text) return;
 
     addUserBubble(text);
-    inputEl.value = '';
+    if (!customText) inputEl.value = '';
     sendBtn.disabled = true;
 
     const typingRow = addTyping();
@@ -456,32 +1291,190 @@
       const res = await fetch('/api/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ message: text }),
+        body: JSON.stringify({
+          message: text,
+          lat: userCoords.lat,
+          lng: userCoords.lng,
+          sort_by: currentSortBy
+        })
       });
       const data = await res.json();
+      if (typingRow.dataset.intervalId) clearInterval(typingRow.dataset.intervalId);
       typingRow.remove();
 
       if (data.error) {
-        addBotBubble('에러: ' + data.error);
+        const errRow = document.createElement('div');
+        errRow.className = 'row bot';
+        errRow.innerHTML = `<div class="bubble bot">⚠️ ${escapeHtml(data.error)}</div>`;
+        chatEl.appendChild(errRow);
+        scrollToBottom();
       } else {
-        addResultBlock(data.reply, data.hospitals || []);
+        addResultBlock(data);
       }
     } catch (e) {
+      if (typingRow.dataset.intervalId) clearInterval(typingRow.dataset.intervalId);
       typingRow.remove();
-      addBotBubble('요청에 실패했어요: ' + e);
+      const errRow = document.createElement('div');
+      errRow.className = 'row bot';
+      errRow.innerHTML = `<div class="bubble bot">⚠️ 연결에 실패했습니다: ${e.message}</div>`;
+      chatEl.appendChild(errRow);
+      scrollToBottom();
     } finally {
       sendBtn.disabled = false;
       inputEl.focus();
     }
   }
 
-  sendBtn.addEventListener('click', handleSend);
+  sendBtn.addEventListener('click', () => handleSend());
   inputEl.addEventListener('keydown', (e) => {
     if (e.key === 'Enter') handleSend();
   });
+  inputEl.addEventListener('focus', () => {
+    setTimeout(() => scrollToBottom(), 300);
+  });
 
-  // 첫 인사말
-  addBotBubble('안녕하세요! 포항 병원 찾기입니다. 😊\n어디가 불편하신지, 그리고 언제쯤 방문하고 싶으신지 말씀해주세요.');
+  // Quick Chips Click Event
+  document.querySelectorAll('.chip-btn').forEach(chip => {
+    chip.addEventListener('click', () => {
+      handleSend(chip.dataset.msg);
+    });
+  });
+
+  // ── 🎤 음성 인식 ─────────────────────────────────────────────
+  let recognition = null;
+  let isWebSpeechSupported = ('webkitSpeechRecognition' in window) || ('SpeechRecognition' in window);
+
+  if (isWebSpeechSupported) {
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    recognition = new SpeechRecognition();
+    recognition.lang = 'ko-KR';
+    recognition.interimResults = false;
+    recognition.maxAlternatives = 1;
+
+    recognition.onstart = () => {
+      micBtn.classList.add('recording');
+      micBtn.textContent = '■';
+      inputEl.placeholder = '말씀해주세요... (음성 듣는 중 🎙️)';
+    };
+
+    recognition.onresult = (event) => {
+      const transcript = event.results[0][0].transcript;
+      inputEl.value = transcript;
+      handleSend(transcript);
+    };
+
+    recognition.onerror = (event) => {
+      console.warn('Web Speech API 에러:', event.error);
+      stopRecording();
+    };
+
+    recognition.onend = () => {
+      stopRecording();
+    };
+  }
+
+  function startRecording() {
+    if (recognition) {
+      try {
+        recognition.start();
+      } catch (e) {
+        recognition.stop();
+      }
+    } else {
+      showToast('이 브라우저는 음성 인식을 지원하지 않습니다. 텍스트로 입력해주세요.');
+    }
+  }
+
+  function stopRecording() {
+    micBtn.classList.remove('recording');
+    micBtn.textContent = '🎤';
+    inputEl.placeholder = '예) 아침부터 어지럽고 속이 미식거려 일요일인데 어디가?';
+  }
+
+  micBtn.addEventListener('click', () => {
+    if (micBtn.classList.contains('recording')) {
+      if (recognition) recognition.stop();
+      stopRecording();
+    } else {
+      startRecording();
+    }
+  });
+
+  // ── 📢 제보 모달 ─────────────────────────────────────────────
+  const reportModal = document.getElementById('reportModal');
+  const closeReportModal = document.getElementById('closeReportModal');
+  const submitReportBtn = document.getElementById('submitReportBtn');
+  const reportTargetEl = document.getElementById('reportHospitalTarget');
+  const reportContentEl = document.getElementById('reportContent');
+
+  function openReportModal(hid, hname) {
+    currentReportHospital = { id: hid, name: hname };
+    reportTargetEl.innerHTML = `병원명: <strong>${escapeHtml(hname)}</strong>`;
+    reportContentEl.value = '';
+    reportModal.classList.add('active');
+  }
+
+  closeReportModal.addEventListener('click', () => {
+    reportModal.classList.remove('active');
+  });
+
+  submitReportBtn.addEventListener('click', async () => {
+    if (!currentReportHospital) return;
+    const selectedRadio = document.querySelector('input[name="repType"]:checked');
+    const repType = selectedRadio ? selectedRadio.value : '기타 제보';
+    const content = reportContentEl.value.trim();
+
+    try {
+      const res = await fetch('/api/report', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          hospital_id: currentReportHospital.id,
+          hospital_name: currentReportHospital.name,
+          report_type: repType,
+          content: content || repType,
+          author: '포항 시민/학생'
+        })
+      });
+      const data = await res.json();
+      reportModal.classList.remove('active');
+      showToast('🎉 ' + data.message);
+    } catch (e) {
+      showToast('제보 전송 실패: ' + e.message);
+    }
+  });
+
+  // ── 🛠️ 관리자 데모 패널 ──────────────────────────────────────────
+  const adminToggleBtn = document.getElementById('adminToggleBtn');
+  const adminDrawer = document.getElementById('adminDrawer');
+  const closeAdminDrawer = document.getElementById('closeAdminDrawer');
+
+  adminToggleBtn.addEventListener('click', () => {
+    adminDrawer.classList.toggle('active');
+  });
+  closeAdminDrawer.addEventListener('click', () => {
+    adminDrawer.classList.remove('active');
+  });
+
+  document.querySelectorAll('.admin-action-btn').forEach(btn => {
+    btn.addEventListener('click', async () => {
+      const hid = document.getElementById('adminHospitalSelect').value;
+      const action = btn.dataset.action;
+      try {
+        const res = await fetch('/api/admin/toggle', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ hospital_id: hid, action: action })
+        });
+        const data = await res.json();
+        if (data.status === 'success') {
+          showToast(`⚡ ${data.hospital.name} 상태가 실시간 변경되었습니다!`);
+        }
+      } catch (e) {
+        showToast('관리자 변경 실패: ' + e.message);
+      }
+    });
+  });
 </script>
 
 </body>

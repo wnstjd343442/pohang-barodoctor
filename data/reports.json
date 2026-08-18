@@ -1,0 +1,38 @@
+[
+  {
+    "id": "rep-1787028724030",
+    "hospital_id": "ph-yd-01",
+    "hospital_name": "양덕속편한내과의원",
+    "report_type": "수액실/영양제 처방",
+    "content": "장염 수액 처방 받았는데 1시간 만에 상태 많이 좋아졌어요. 포항사랑카드도 잘 됩니다.",
+    "author": "양덕동 대학생",
+    "created_at": "2026-08-18 13:52:04"
+  },
+  {
+    "id": "rep-demo-01",
+    "hospital_id": "ph-yd-01",
+    "hospital_name": "양덕속편한내과의원",
+    "report_type": "수액실/영양제 처방 가능",
+    "content": "장염 걸렸을 때 1시간 수액 맞고 약 처방받았는데 친절하고 금방 나았어요. 포항사랑카드 잘 됩니다!",
+    "created_at": "2026-08-15 14:20:00",
+    "author": "양덕 자취생"
+  },
+  {
+    "id": "rep-demo-02",
+    "hospital_id": "ph-jr-03",
+    "hospital_name": "장량365의원",
+    "report_type": "일요일/야간 진료 확인",
+    "content": "일요일 저녁 7시에 배가 너무 아파서 갔는데 9시까지 야간진료 해주셔서 살았습니다 ㅠㅠ",
+    "created_at": "2026-08-16 19:40:00",
+    "author": "한동대 기숙사생"
+  },
+  {
+    "id": "rep-demo-03",
+    "hospital_id": "ph-jr-01",
+    "hospital_name": "포항맑은피부과의원",
+    "report_type": "피부질환/보험치료 전문",
+    "content": "미용 시술 강요 전혀 없고 두드러기/접촉성 피부염 보험 진료 꼼꼼하게 봐주십니다.",
+    "created_at": "2026-08-17 11:10:00",
+    "author": "장성동 주민"
+  }
+]
