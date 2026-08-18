@@ -309,12 +309,36 @@ def analyze_symptom_and_intent(text):
     elif "이동" in text:
         target_district = "이동"
 
+    # 특정 진료과 직접 검색 (예: 양덕동 내과, 소아과, 이비인후과 등)
+    dept_map = {
+        "내과": (["내과", "소화기내과", "가정의학과"], ["응급의학과"], "내과 전문 진료 의원을 안내합니다."),
+        "이비인후과": (["이비인후과"], ["내과", "가정의학과"], "이비인후과 호흡기/이비인후 질환 전문 의원을 안내합니다."),
+        "피부과": (["피부과"], ["가정의학과"], "피부과 질환/진료 의원을 안내합니다."),
+        "정형외과": (["정형외과", "통증의학과"], ["외과"], "정형외과/통증의학과 전문 의원을 안내합니다."),
+        "소아과": (["소아청소년과", "소아과"], ["이비인후과"], "소아청소년과 전문 의원을 안내합니다."),
+        "외과": (["외과", "정형외과"], ["응급의학과"], "외과/상처치료 전문 의원을 안내합니다.")
+    }
+    for dept_kw, (pri, alt, adv) in dept_map.items():
+        if dept_kw in text_lower:
+            return {
+                "category_key": f"dept_{dept_kw}",
+                "is_medical_symptom": True,
+                "category_title": f"{dept_kw} 진료 안내",
+                "primary_depts": pri,
+                "alt_depts": alt,
+                "advice": adv,
+                "target_date_str": target_date_str,
+                "is_sunday": is_sunday,
+                "is_night": is_night,
+                "target_district": target_district
+            }
+
     # 증상 키워드가 없는 경우
     if matched_cat_key is None:
         if any(w in text_lower for w in ["병원", "의원", "진료", "가까운", "문 연", "응급실", "포사카", "일요일", "야간", "어디", "추천"]):
             return {
                 "category_key": "general_hospital",
-                "is_medical_symptom": False,
+                "is_medical_symptom": True,
                 "category_title": "가까운 진료 가능 병의원",
                 "primary_depts": ["내과", "가정의학과", "이비인후과"],
                 "alt_depts": ["응급의학과"],
