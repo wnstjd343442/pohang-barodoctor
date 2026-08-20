@@ -37021,5 +37021,63 @@
       "org_updated_at": "2026-07-20"
     },
     "saturday_open": true
+  },
+  {
+    "id": "BOAS_001",
+    "name": "보아스메디컬의원",
+    "gu": "북구",
+    "district": "흥해읍/한동대",
+    "address": "경상북도 포항시 북구 흥해읍 한동로 558 (한동대학교 교내)",
+    "tel": "054-260-3022",
+    "er_tel": null,
+    "lat": 36.103756,
+    "lng": 129.388852,
+    "org_type": "의원",
+    "departments": [
+      "내과",
+      "정형외과",
+      "소아청소년과",
+      "안과",
+      "피부과",
+      "이비인후과",
+      "가정의학과"
+    ],
+    "hours": {
+      "mon": "09:00~17:30",
+      "tue": "09:00~17:30",
+      "wed": "09:00~17:30",
+      "thu": "09:00~17:30",
+      "fri": "09:00~17:30",
+      "sat": null,
+      "sun": null,
+      "holiday": null
+    },
+    "hours_summary": "평일 09:00~17:30 (점심시간 12:30~13:30) / 주말·공휴일 휴진",
+    "sunday_open": false,
+    "holiday_open": false,
+    "night_open": false,
+    "is_emergency": false,
+    "emergency_level": null,
+    "moonlight_clinic": false,
+    "features": [
+      "한동대학교 교내 의료시설 (학생, 교직원 및 주민 진료)",
+      "진료과: 내과, 정형외과, 피부과, 안과, 이비인후과"
+    ],
+    "description": "한동대학교 교내 소재 의원. 진료과목: 내과, 정형외과, 피부과, 안과, 이비인후과.",
+    "posaka": "unknown",
+    "posaka_note": "포항사랑상품권 가맹 여부 미확인",
+    "fever_status": "unknown",
+    "fever_badge": null,
+    "fever_note": null,
+    "skin_type": null,
+    "skin_badge": null,
+    "naver_search_query": "보아스메디컬의원 포항",
+    "source": {
+      "provider": "건강보험심사평가원 / 한동대학교 의료시설",
+      "code": "BOAS_001",
+      "fetched_at": "2026-08-20",
+      "org_updated_at": "2026-08-20"
+    },
+    "saturday_open": false
   }
 ]
