@@ -301,6 +301,10 @@ def matches_department(hospital, target_dept_list):
     h_name = hospital.get("name", "")
     h_org = hospital.get("org_type", "")
     
+    # 일반 외래 전문 진료 탐색 시 요양병원은 오매칭 배제
+    if "요양병원" in h_name or h_org == "요양병원":
+        return False
+        
     for td in target_dept_list:
         if td == "치과":
             if h_org in ["치과의원", "치과병원"] or "치과" in h_name:
@@ -310,8 +314,16 @@ def matches_department(hospital, target_dept_list):
         elif td == "한의원":
             if h_org in ["한의원", "한방병원"] or "한의원" in h_name or "한방" in h_name:
                 return True
+        elif td in ["피부과", "성형외과"]:
+            if h_org in ["치과의원", "치과병원", "한의원", "한방병원"]:
+                continue
+            # 피부과/성형외과 검색 시 전혀 무관한 타 전문과 간판(내과의원, 소아과, 이비인후과, 안과, 정형외과, 정신과 등)은 오매칭 방지
+            if any(k in h_name for k in ["치과", "한의원", "소아", "이비인후", "안과", "정형외과", "내과의원", "정신건강"]):
+                continue
+            if any(d in ["피부과", "성형외과"] for d in h_depts) or any(k in h_name for k in ["피부", "성형", "미의원", "에스테틱", "뷰티", "라인"]):
+                return True
         else:
-            # 치과의원이나 한의원은 일반 의과 진료과목(내과, 정형외과, 피부과 등)에 오매칭되지 않도록 철저히 차단
+            # 치과의원이나 한의원은 일반 의과 진료과목(내과, 정형외과 등)에 오매칭되지 않도록 철저히 차단
             if h_org in ["치과의원", "치과병원", "한의원", "한방병원"]:
                 continue
             if "치과" in h_name or "한의원" in h_name:
@@ -531,9 +543,10 @@ def analyze_symptom_with_gemini(text, history=None):
 [임상 분석 지침]
 1. 이전 대화 맥락이 있는 경우(예: 이전에 '배 아파'라고 한 뒤 이번에 '난 일요일에 가야돼'라고 한 경우):
    - 이전 대화에서 호소한 증상('복통/장염/소화기질환')을 그대로 유지하고, 이번 최신 입력의 조건('일요일 진료', is_sunday: true)을 결합해 분석해.
-2. 사용자가 특정 병원명(예: '보아스메디컬의원', '세명기독병원')이나 지역 병원 탐색(예: '한동대 병원', '두호동 병원')을 입력한 경우에도 is_medical: true로 설정하고, primary_depts: ["내과", "가정의학과", "일반의"]를 배정해.
-3. 환자가 호소하는 증상의 의학적 기전과 원인을 추론하여 1순위 추천 진료과(primary_depts, 1~3개)와 대안/응급 진료과(alt_depts, 1~2개)를 결정해.
-4. 시공간 및 긴급도 추출:
+2. 사용자가 특정 병원명(예: '세명기독병원', '포항성모병원')이나 지역 병원 탐색(예: '두호동 병원', '양덕동 병원')을 입력한 경우에도 is_medical: true로 설정하고, primary_depts: ["내과", "가정의학과"]를 배정해.
+3. [피부 미용/쁘띠 시술 엄격 한정]: 보톡스, 필러, 리프팅, 토닝, 점빼기, 레이저, 슈링크, 인모드, 쁘띠 시술 등 피부 미용 시술은 오직 primary_depts: ["피부과", "성형외과"]로만 한정하고, alt_depts: []로 설정해줘 (정형외과, 내과, 응급실 완전 배제).
+4. 환자가 호소하는 증상의 의학적 기전과 원인을 추론하여 1순위 추천 진료과(primary_depts, 1~3개)와 대안/응급 진료과(alt_depts, 1~2개)를 결정해.
+5. 시공간 및 긴급도 추출:
    - is_open_now: 지금, 현재, 지금 문 연, 지금 갈 수 있는 등 현재 실시간 진료 가능한 병원을 찾으면 true
    - is_saturday: 토요일 진료 필요 시 true
    - is_sunday: 일요일 진료 필요 시 true
@@ -541,8 +554,8 @@ def analyze_symptom_with_gemini(text, history=None):
    - is_night: 야간, 밤, 저녁, 새벽, 늦게, 5시/6시 이후 등 야간 진료가 필요하면 true
    - is_emergency: 호흡곤란, 극심한 흉통, 대량 출혈 등 24시 응급실 직행 필요 시 true
    - target_district: 포항 지역명(양덕동, 장성동, 장량동, 이동, 효자동, 두호동, 창포동, 흥해읍, 오천읍 등)이 언급되었으면 해당 동 이름, 없으면 null
-5. category_title: 간결하고 전문적인 의학적 증상 요약 제목 (예: "급성 복통 및 설사", "피부 시술 및 관리", "포항 관내 병원 탐색")
-6. advice: 환자가 즉시 실천할 수 있는 1~2문장의 전문적 의학 대처 요령
+6. category_title: 간결하고 전문적인 의학적 증상 요약 제목 (예: "급성 복통 및 설사", "피부 미용 및 쁘띠 시술", "포항 관내 병원 탐색")
+7. advice: 환자가 즉시 실천할 수 있는 1~2문장의 전문적 의학 대처 요령
 
 반드시 아래 JSON 포맷으로만 출력해 (설명이나 마크다운 백틱 제외):
 {{
