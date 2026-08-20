@@ -1265,11 +1265,52 @@
     return { isOpen: false, label: `⏰ ${h.hours_summary || '진료시간 문의'}`, type: 'unknown' };
   }
 
+  async function fetchAndDisplayFilteredHospitals() {
+    const params = new URLSearchParams();
+    if (activeFilters.open_now) params.set('open_now', 'true');
+    if (activeFilters.saturday) params.set('saturday', 'true');
+    if (activeFilters.sunday) params.set('sunday', 'true');
+    if (activeFilters.holiday) params.set('holiday', 'true');
+    if (activeFilters.night) params.set('night', 'true');
+    if (activeFilters.er) params.set('er', 'true');
+    if (userCoords.lat && userCoords.lng) {
+      params.set('lat', userCoords.lat);
+      params.set('lng', userCoords.lng);
+      params.set('sort_by', 'distance');
+    }
+
+    const titleParts = [];
+    if (activeFilters.er) titleParts.push('🚨 24시 응급실');
+    if (activeFilters.open_now) titleParts.push('🟢 현재 진료중');
+    if (activeFilters.saturday) titleParts.push('📅 토요일 진료');
+    if (activeFilters.sunday) titleParts.push('☀️ 일요일 진료');
+    if (activeFilters.holiday) titleParts.push('🚩 공휴일 진료');
+    if (activeFilters.night) titleParts.push('🌙 야간진료');
+
+    const titleText = titleParts.join(' + ') || '전체 병원';
+
+    try {
+      const res = await fetch(`/api/hospitals?${params.toString()}`);
+      const data = await res.json();
+      if (data && data.hospitals) {
+        addResultBlock({
+          reply: `🏥 **[${titleText}]** 조건에 맞는 포항 관내 병·의원 안내입니다. (내 위치 기준 가장 가까운 순)`,
+          hospitals: data.hospitals,
+          total_matched: data.hospitals.length
+        });
+      }
+    } catch(e) {
+      console.error('Filter fetch error:', e);
+    }
+  }
+
   document.querySelectorAll('.filter-toggle-btn').forEach(btn => {
-    btn.addEventListener('click', () => {
+    btn.addEventListener('click', async () => {
       const filterKey = btn.dataset.filter;
       activeFilters[filterKey] = !activeFilters[filterKey];
       btn.classList.toggle('active', activeFilters[filterKey]);
+
+      const isAnyActive = Object.values(activeFilters).some(v => v);
 
       if (activeFilters[filterKey]) {
         showToast(`🔍 ${btn.textContent.trim()} 필터가 적용되었습니다.`);
@@ -1279,6 +1320,11 @@
 
       if (lastResultData && lastResultData.hospitals && lastResultData.hospitals.length > 0) {
         updateCurrentCardsDisplay(lastResultData);
+        if (allHospitals.length === 0 && isAnyActive) {
+          await fetchAndDisplayFilteredHospitals();
+        }
+      } else if (isAnyActive) {
+        await fetchAndDisplayFilteredHospitals();
       }
     });
   });

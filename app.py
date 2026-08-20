@@ -442,7 +442,34 @@ def analyze_symptom_and_intent(text):
     is_sunday = False
     is_holiday = False
     is_night = False
+    is_late_night = False
     target_date_str = "오늘"
+    target_hour = None
+    
+    # 시간대 정밀 파싱 (예: 밤 11시, 밤 10시, 23시, 22시, 24시, 새벽 1시, 새벽 2시 등)
+    m_hour = re.search(r"(밤|오후|새벽|저녁)?\s*(\d{1,2})\s*시", text)
+    if m_hour:
+        meridiem = m_hour.group(1) or ""
+        hour_val = int(m_hour.group(2))
+        if meridiem in ["밤", "오후", "저녁"] and hour_val < 12:
+            target_hour = hour_val + 12
+        elif meridiem == "새벽" and hour_val == 12:
+            target_hour = 0
+        elif meridiem == "새벽":
+            target_hour = hour_val
+        else:
+            target_hour = hour_val
+            
+    if "새벽" in text or "자정" in text or "심야" in text or "24시" in text or "응급실" in text:
+        is_late_night = True
+        is_night = True
+        
+    if target_hour is not None:
+        if target_hour >= 21 or target_hour <= 6:
+            is_late_night = True
+            is_night = True
+        elif target_hour >= 18:
+            is_night = True
     
     if "모레" in text:
         d = today + timedelta(days=2)
@@ -526,6 +553,7 @@ def analyze_symptom_and_intent(text):
                 "is_sunday": is_sunday,
                 "is_holiday": is_holiday,
                 "is_night": is_night,
+                "is_late_night": is_late_night,
                 "target_district": target_district
             }
         
@@ -541,6 +569,8 @@ def analyze_symptom_and_intent(text):
             is_holiday = True
         if ai_result.get("is_night"):
             is_night = True
+        if ai_result.get("is_emergency"):
+            is_late_night = True
         if ai_result.get("target_district"):
             target_district = target_district or ai_result.get("target_district")
 
@@ -557,6 +587,7 @@ def analyze_symptom_and_intent(text):
             "is_sunday": is_sunday,
             "is_holiday": is_holiday,
             "is_night": is_night,
+            "is_late_night": is_late_night,
             "target_district": target_district,
             "urgency": ai_result.get("urgency", "routine")
         }
@@ -588,6 +619,7 @@ def analyze_symptom_and_intent(text):
             "is_sunday": is_sunday,
             "is_holiday": is_holiday,
             "is_night": is_night,
+            "is_late_night": is_late_night,
             "target_district": target_district
         }
 
@@ -607,6 +639,7 @@ def analyze_symptom_and_intent(text):
             "is_sunday": is_sunday,
             "is_holiday": is_holiday,
             "is_night": is_night,
+            "is_late_night": is_late_night,
             "target_district": target_district
         }
 
@@ -623,6 +656,7 @@ def analyze_symptom_and_intent(text):
         "is_sunday": is_sunday,
         "is_holiday": is_holiday,
         "is_night": is_night,
+        "is_late_night": is_late_night,
         "target_district": target_district
     }
 
@@ -687,6 +721,8 @@ def rank_and_filter_hospitals(hospitals, analysis, user_lat=None, user_lng=None,
     target_district = analysis.get("target_district")
     is_medical = analysis.get("is_medical_symptom", True)
     
+    is_late_night = analysis.get("is_late_night", False)
+    
     scored_list = []
     
     for h in hospitals:
@@ -717,14 +753,29 @@ def rank_and_filter_hospitals(hospitals, analysis, user_lat=None, user_lng=None,
         else:
             score += 5
             
-        # 현재 진료중 가중치
+        # 실시간 진료 상태 가중치
         h_open_now = is_hospital_open_now(h)
-        if is_open_now:
-            if h_open_now:
-                score += 75
+        
+        # 🚨 심야 (밤 9시/10시/11시/새벽 등 일반 의원 마감 시간대)
+        if is_late_night:
+            if is_er:
+                score += 250
+                match_reasons.append("🚨 24시간 응급실 진료 가능")
+            elif h.get("moonlight_clinic"):
+                score += 130
+                match_reasons.append("🌙 달빛어린이병원 (야간)")
+            elif h.get("night_open"):
+                score += 90
+                match_reasons.append("야간 진료")
+            else:
+                score -= 300 # 심야 시간대에는 문 닫은 일반 의원 대폭 감점
+        # 현재 진료중 가중치
+        elif is_open_now:
+            if h_open_now or is_er:
+                score += 100
                 match_reasons.append("현재 진료중")
             else:
-                score -= 60
+                score -= 80
                 
         if is_saturday:
             if h.get("saturday_open") or is_er:
@@ -740,7 +791,7 @@ def rank_and_filter_hospitals(hospitals, analysis, user_lat=None, user_lng=None,
             else:
                 score -= 40
                 
-        if is_night:
+        if is_night and not is_late_night:
             if h.get("night_open") or is_er:
                 score += 40
                 match_reasons.append("야간/24시간 운영")
@@ -763,10 +814,10 @@ def rank_and_filter_hospitals(hospitals, analysis, user_lat=None, user_lng=None,
             
             if dist_km is not None:
                 if dist_km <= 1.5:
-                    score += 30
+                    score += 40
                     match_reasons.append("반경 1.5km 이내")
                 elif dist_km <= 3.0:
-                    score += 20
+                    score += 25
                 elif dist_km <= 6.0:
                     score += 10
                 else:
@@ -793,10 +844,18 @@ def rank_and_filter_hospitals(hospitals, analysis, user_lat=None, user_lng=None,
             "open_status_type": open_status["type"]
         })
         
-    if sort_by == "distance" and user_lat is not None:
-        scored_list.sort(key=lambda x: (x.get("distance_km") is None, x.get("distance_km") or 999, -x["match_score"]))
-    else:
-        scored_list.sort(key=lambda x: x["match_score"], reverse=True)
+    # 정렬: 1순위 열려있는 곳(또는 24h 응급실), 2순위 내 위치 기준 가까운 거리순, 3순위 매칭 점수
+    def hospital_sort_key(x):
+        # 🚨 심야(밤 10시 이후/새벽)에는 24시간 응급실(is_emergency)만 진정한 운영 기관
+        if is_late_night:
+            is_available = bool(x.get("is_emergency"))
+        else:
+            is_available = bool(x.get("is_open_now") or x.get("is_emergency"))
+            
+        dist = x.get("distance_km") if (user_lat is not None and x.get("distance_km") is not None) else 9999
+        return (not is_available, dist, -x.get("match_score", 0))
+        
+    scored_list.sort(key=hospital_sort_key)
         
     # 만약 해당 특수 진료과로 진료 가능한 개원의가 현재 없는 경우 24시 응급의료센터로만 안전하게 안내
     if not scored_list:
