@@ -881,15 +881,39 @@ def rank_and_filter_hospitals(hospitals, analysis, user_lat=None, user_lng=None,
     open_hospitals.sort(key=lambda x: (x.get("distance_km") if x.get("distance_km") is not None else 9999))
     closed_hospitals.sort(key=lambda x: (x.get("distance_km") if x.get("distance_km") is not None else 9999))
     
-    # 열려있는 병원들을 무조건 맨 앞에, 닫힌 병원은 맨 뒤에 배치
-    result_list = open_hospitals + closed_hospitals
-        
-    # 만약 해당 특수 진료과로 진료 가능한 개원의가 현재 없는 경우 24시 응급의료센터로만 안전하게 안내
-    if not result_list:
-        er_hospitals = [h for h in hospitals if h.get("is_emergency")]
+    # 🚨 만약 현재 열려있는 일반 의원이 1곳도 없다면 ("그게 없으면 응급실이나 해야지"):
+    # 포항 24시간 응급실(ER) 센터들을 가져와 내 위치 기준 가장 가까운 순서대로 최상단에 배치!
+    if not open_hospitals:
+        er_hospitals = []
+        for h in hospitals:
+            if h.get("is_emergency"):
+                dist_km = None
+                dist_text = None
+                if user_lat is not None and user_lng is not None and h.get("lat") and h.get("lng"):
+                    dist_km = calculate_distance_km(user_lat, user_lng, h["lat"], h["lng"])
+                    dist_text = format_distance_and_time(dist_km)
+                    
+                query = h.get("naver_search_query") or f"{h['name']} 포항"
+                naver_map_url = f"https://map.naver.com/p/search/{requests.utils.quote(query)}"
+                kakao_map_url = f"https://map.kakao.com/link/to/{requests.utils.quote(h['name'])},{h.get('lat')},{h.get('lng')}"
+                
+                er_hospitals.append({
+                    **h,
+                    "match_score": 100,
+                    "match_reasons": ["🚨 24시간 응급의료센터 (야간/휴일 상시대기)"],
+                    "distance_km": dist_km,
+                    "distance_text": dist_text,
+                    "naver_map_url": naver_map_url,
+                    "kakao_map_url": kakao_map_url,
+                    "is_open_now": True,
+                    "open_status_label": "🚨 24시 응급진료",
+                    "open_status_type": "er"
+                })
         er_hospitals.sort(key=lambda x: (x.get("distance_km") if x.get("distance_km") is not None else 9999))
-        result_list = er_hospitals if er_hospitals else hospitals[:5]
+        open_hospitals = er_hospitals
         
+    # 열려있는 병원(또는 24h 응급실)을 무조건 맨 앞에, 닫힌 병원은 맨 뒤에 배치
+    result_list = open_hospitals + closed_hospitals
     return result_list
 
 def generate_gemini_conversational_reply(user_message, analysis, top_hospitals):
@@ -923,9 +947,12 @@ def generate_gemini_conversational_reply(user_message, analysis, top_hospitals):
     hosp_text = "\n".join(hospital_summary) if hospital_summary else "진료 가능 병원"
     
     closest_open = None
+    is_er_fallback = False
     for h in top_hospitals:
         if h.get("is_open_now") or h.get("is_emergency"):
             closest_open = h
+            if h.get("is_emergency") and not any(not item.get("is_emergency") and item.get("is_open_now") for item in top_hospitals):
+                is_er_fallback = True
             break
             
     closest_info_line = ""
@@ -933,7 +960,10 @@ def generate_gemini_conversational_reply(user_message, analysis, top_hospitals):
         dist_val = closest_open.get('distance_km')
         dist_str = f"약 {dist_val}km" if dist_val is not None else ""
         status_label = closest_open.get('open_status_label', '진료중')
-        closest_info_line = f"현재 환자 위치에서 지금 열려있는 가장 가까운 병원: {closest_open['name']} ({closest_open.get('district', '')}, {dist_str}, {status_label})"
+        if is_er_fallback:
+            closest_info_line = f"현재 주변 일반 의원은 모두 진료가 마감/휴진 상태이므로, 즉시 진료 가능한 24시간 응급의료센터 중 가장 가까운 곳: {closest_open['name']} ({closest_open.get('district', '')}, {dist_str}, {status_label})"
+        else:
+            closest_info_line = f"현재 환자 위치에서 지금 열려있는 가장 가까운 병원: {closest_open['name']} ({closest_open.get('district', '')}, {dist_str}, {status_label})"
     
     prompt = f"""너는 포항 시민과 학생들을 위한 따뜻하고 전문적인 AI 의료 트리아지 닥터 "포항 바로닥터"야.
 
@@ -951,10 +981,11 @@ def generate_gemini_conversational_reply(user_message, analysis, top_hospitals):
 
 [답변 작성 가이드]
 1. 불필요한 형식적 첫인사("안녕하세요")는 생략하고, 환자가 겪고 있는 고통/불편에 대해 공감하며 바로 핵심을 말해줘.
-2. "현재 위치에서 지금 진료 중인 가장 가까운 병원은 **[가장 가까운 병원명] (거리, 진료시간)**입니다."라는 핵심 안내를 답변 시작 부분에 명확하게 강조해줘.
-3. 왜 이 진료과({', '.join(analysis.get('primary_depts', []))})를 방문해야 하는지 1문장으로 친절히 설명해줘.
-4. 환자가 진료 전/병원 이동 중 취해야 할 행동 요령(예: 탈수 예방 수액/미온수, RICE 요법, 체온 관리, 금식 여부, 신분증 지참 등)을 1~2문장으로 짚어줘.
-5. 모바일 화면에서 빠르게 읽을 수 있도록 읽기 쉬운 한국어 대화체(3~4문단, 200~250자 내외)로 작성하고 마크다운 볼드(**강조**)를 사용해줘."""
+2. 만약 일반 의원이 모두 문을 닫아 24시간 응급실이 안내된 경우, "현재 해당 진료과 주변 의원이 모두 마감/휴진되어 가장 가까운 **24시간 응급실 [병원명] (약 0.X km)**을 안내해 드립니다."라고 명확히 설명해줘.
+3. 지금 열려있는 일반 의원이 있는 경우, "현재 위치에서 지금 진료 중인 가장 가까운 병원은 **[가장 가까운 병원명] (거리, 진료시간)**입니다."라는 핵심 안내를 답변 시작 부분에 명확하게 강조해줘.
+4. 왜 이 진료과({', '.join(analysis.get('primary_depts', []))})를 방문해야 하는지 1문장으로 친절히 설명해줘.
+5. 환자가 진료 전/병원 이동 중 취해야 할 행동 요령(예: 탈수 예방 수액/미온수, RICE 요법, 체온 관리, 금식 여부, 신분증 지참 등)을 1~2문장으로 짚어줘.
+6. 모바일 화면에서 빠르게 읽을 수 있도록 읽기 쉬운 한국어 대화체(3~4문단, 200~250자 내외)로 작성하고 마크다운 볼드(**강조**)를 사용해줘."""
 
     last_err = None
     for idx, key in enumerate(keys, 1):
