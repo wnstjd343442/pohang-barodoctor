@@ -55,81 +55,10 @@ def get_gemini_client():
 DB_FILE = os.path.join(os.path.dirname(__file__), "data", "pohang_hospitals_db.json")
 REPORTS_FILE = os.path.join(os.path.dirname(__file__), "data", "reports.json")
 
-# ─────────────────────────────────────────────────────────────
-# 🏥 공공데이터포털 (국립중앙의료원) 실시간 응급실 가용병상 캐시 & 조회
-# ─────────────────────────────────────────────────────────────
-_public_er_cache = {"data": {}, "fetched_at": 0}
-PUBLIC_CACHE_TTL = 180  # 3분 캐시
-
-def fetch_realtime_public_er_data():
-    """공공데이터포털 getEmrrmRltmUsefulSckbdInfoInqire API 호출"""
-    now = time.time()
-    if (now - _public_er_cache["fetched_at"]) < PUBLIC_CACHE_TTL and _public_er_cache["data"]:
-        return _public_er_cache["data"]
-
-    url = "https://apis.data.go.kr/B552657/ErmctInfoInqireService/getEmrrmRltmUsefulSckbdInfoInqire"
-    params = {
-        "serviceKey": DECODING_KEY,
-        "STAGE1": "경상북도",
-        "STAGE2": "포항시",
-        "numOfRows": 20
-    }
-    
-    er_mapping = {}
-    try:
-        res = requests.get(url, params=params, timeout=4, headers={"User-Agent": "Mozilla/5.0"})
-        if res.status_code == 200:
-            d = xmltodict.parse(res.content)
-            items = d.get("response", {}).get("body", {}).get("items", {}).get("item", [])
-            if isinstance(items, dict):
-                items = [items]
-            for item in items:
-                name = item.get("dutyName") or ""
-                hvec = item.get("hvec")  # 가용 병상수
-                hv28 = item.get("hv28")  # 소아 응급 가용수
-                
-                info = {
-                    "live_beds": int(hvec) if (hvec and str(hvec).lstrip('-').isdigit()) else 0,
-                    "pediatric_beds": int(hv28) if (hv28 and str(hv28).lstrip('-').isdigit()) else None,
-                    "updated_at": datetime.now().strftime("%H:%M")
-                }
-                
-                if "좋은선린" in name:
-                    er_mapping["ph-er-01"] = info
-                elif "포항의료원" in name:
-                    er_mapping["ph-er-02"] = info
-                elif "세명기독" in name:
-                    er_mapping["ph-er-03"] = info
-                elif "성모병원" in name:
-                    er_mapping["ph-er-04"] = info
-                elif "에스포항" in name:
-                    er_mapping["ph-er-05"] = info
-                    
-            _public_er_cache["data"] = er_mapping
-            _public_er_cache["fetched_at"] = now
-    except Exception as e:
-        print(f"공공데이터포털 실시간 API 에러: {e}")
-        
-    return _public_er_cache["data"]
-
 def load_hospitals_db():
     if os.path.exists(DB_FILE):
         with open(DB_FILE, "r", encoding="utf-8") as f:
-            hospitals = json.load(f)
-            er_live = fetch_realtime_public_er_data()
-            for h in hospitals:
-                if h["id"] in er_live:
-                    live_info = er_live[h["id"]]
-                    h["live_public_data"] = {
-                        "is_connected": True,
-                        "source": "국립중앙의료원 공공데이터포털",
-                        "available_beds": live_info.get("live_beds", 0),
-                        "pediatric_beds": live_info.get("pediatric_beds"),
-                        "updated_at": live_info.get("updated_at")
-                    }
-                else:
-                    h["live_public_data"] = None
-            return hospitals
+            return json.load(f)
     return []
 
 def save_hospitals_db(data):
@@ -616,8 +545,8 @@ def generate_gemini_conversational_reply(user_message, analysis, top_hospitals):
         
     hospital_summary = []
     for h in top_hospitals[:4]:
-        er_live = f"[실시간 응급병상: {h['live_public_data']['available_beds']}석]" if h.get("live_public_data") else ""
-        hospital_summary.append(f"- {h['name']} ({h.get('district', '')}): {h.get('hours_summary', '')} {er_live} 특징: {', '.join(h.get('features', [])[:2])}")
+        er_badge = "[24시 응급실]" if h.get("is_emergency") else ""
+        hospital_summary.append(f"- {h['name']} ({h.get('district', '')}): {h.get('hours_summary', '')} {er_badge} 특징: {', '.join(h.get('features', [])[:2])}")
         
     hosp_text = "\n".join(hospital_summary) if hospital_summary else "진료 가능 병원"
     

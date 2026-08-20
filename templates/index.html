@@ -928,12 +928,12 @@
     <div class="welcome-card">
       <div class="title">✨ 안녕하세요! 포항 바로닥터입니다. 😊</div>
       <div class="text">
-        몸이 어떻게 불편하신가요? 증상이나 상황을 말씀해 주시면 <strong>대화형 AI</strong>가 1차 진료과와 함께 <strong>내 위치에서 가장 가까운 병원</strong>, <strong>공공데이터 실시간 응급실 병상</strong>까지 딱 맞게 찾아드립니다.
+        몸이 어떻게 불편하신가요? 증상이나 상황을 말씀해 주시면 <strong>대화형 AI</strong>가 1차 진료과와 함께 <strong>내 위치에서 가장 가까운 병원</strong>, <strong>포항시 663개 병·의원 진료정보</strong>까지 딱 맞게 찾아드립니다.
       </div>
       <div class="points">
         <div>• <strong>내 위치(GPS) 기준 가장 가까운 병원</strong> 최단거리순 자동 정렬</div>
         <div>• <strong>휴일·야간·24시 응급실</strong> 상단 퀵 필터 즉시 적용</div>
-        <div>• <strong>국립중앙의료원 공공데이터</strong> 실시간 응급실 가용병상 연동</div>
+        <div>• <strong>국립중앙의료원(E-Gen) 공공데이터</strong> 663개 병의원 진료시간 및 52개 진료과 연동</div>
         <div>• <strong>네이버/카카오 지도</strong> 원터치 내비 길찾기 연동</div>
       </div>
 
@@ -944,9 +944,9 @@
           <button class="provenance-detail-link" id="welcomeSourceDetailBtn">상세 출처 안내 ›</button>
         </div>
         <div class="provenance-badges">
-          <span class="p-badge">🟢 보건복지부 실시간 응급병상 API</span>
           <span class="p-badge">🏥 국립중앙의료원(E-Gen) 663개 병의원 DB</span>
-          <span class="p-badge">🚨 중앙응급의료센터 법정 지정현황</span>
+          <span class="p-badge">⏰ 요일별/공휴일/야간 법정 진료시간</span>
+          <span class="p-badge">🚨 보건복지부 응급의료기관 지정현황</span>
         </div>
       </div>
     </div>
@@ -1003,21 +1003,6 @@
       <!-- Source 1 -->
       <div class="source-item-card">
         <div style="font-weight:700; font-size:13px; color:#0f172a; margin-bottom:4px; display:flex; align-items:center; gap:6px;">
-          <span>🟢</span> 실시간 응급의료 가용병상 정보 API
-        </div>
-        <div style="font-size:11.5px; color:#2563eb; font-weight:700; margin-bottom:4px;">
-          제공 기관: 보건복지부 / 국립중앙의료원(NMC) 중앙응급의료센터
-        </div>
-        <div style="font-size:12px; color:#475569; line-height:1.5;">
-          • <strong>API명</strong>: <code>getEmrrmRltmUsefulSckbdInfoInqire</code><br/>
-          • <strong>수집 항목</strong>: 포항 5대 응급의료기관 실시간 가용병상(<code>hvec</code>) 및 소아응급 병상(<code>hv28</code>)<br/>
-          • <strong>연동 방식</strong>: 공공데이터포털 REST API 3분 주기 실시간 갱신
-        </div>
-      </div>
-
-      <!-- Source 2 -->
-      <div class="source-item-card">
-        <div style="font-weight:700; font-size:13px; color:#0f172a; margin-bottom:4px; display:flex; align-items:center; gap:6px;">
           <span>🏥</span> 포항시 병·의원 공식 인허가 & 진료시간 DB
         </div>
         <div style="font-size:11.5px; color:#2563eb; font-weight:700; margin-bottom:4px;">
@@ -1029,7 +1014,7 @@
         </div>
       </div>
 
-      <!-- Source 3 -->
+      <!-- Source 2 -->
       <div class="source-item-card">
         <div style="font-weight:700; font-size:13px; color:#0f172a; margin-bottom:4px; display:flex; align-items:center; gap:6px;">
           <span>🚨</span> 응급의료기관 지정 목록 및 달빛어린이병원
@@ -1200,14 +1185,6 @@
       distBadgeHtml = `<div class="distance-badge">📍 <strong>${escapeHtml(h.district)}</strong></div>`;
     }
 
-    let publicDataBadgeHtml = '';
-    if (h.live_public_data && h.live_public_data.is_connected) {
-      const beds = h.live_public_data.available_beds;
-      const ped = h.live_public_data.pediatric_beds;
-      let pedText = ped !== null ? ` (소아 ${ped}석)` : '';
-      publicDataBadgeHtml = `<div class="public-data-badge">🟢 <strong>국립중앙의료원 실시간 연동</strong> 응급실: ${beds}병상${pedText}</div>`;
-    }
-
     const seenBadges = new Set();
 
     if (h.posaka === 'O') {
@@ -1269,7 +1246,6 @@
 
         <div class="badges-row">
           ${distBadgeHtml}
-          ${publicDataBadgeHtml}
         </div>
 
         <div class="meta-badges">
