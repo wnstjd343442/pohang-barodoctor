@@ -844,7 +844,7 @@ def rank_and_filter_hospitals(hospitals, analysis, user_lat=None, user_lng=None,
             "open_status_type": open_status["type"]
         })
         
-    # 정렬: 1순위 열려있는 곳(또는 24h 응급실), 2순위 내 위치 기준 가까운 거리순, 3순위 매칭 점수
+    # 🎯 정렬 기준: 3순위 매칭 점수는 제외하고 "1순위: 현재 열려있는 곳(또는 24h 응급실), 2순위: 내 위치 기준 가장 가까운 거리(km)"로만 순수하게 정렬
     def hospital_sort_key(x):
         # 🚨 심야(밤 10시 이후/새벽)에는 24시간 응급실(is_emergency)만 진정한 운영 기관
         if is_late_night:
@@ -853,7 +853,7 @@ def rank_and_filter_hospitals(hospitals, analysis, user_lat=None, user_lng=None,
             is_available = bool(x.get("is_open_now") or x.get("is_emergency"))
             
         dist = x.get("distance_km") if (user_lat is not None and x.get("distance_km") is not None) else 9999
-        return (not is_available, dist, -x.get("match_score", 0))
+        return (not is_available, dist)
         
     scored_list.sort(key=hospital_sort_key)
         
@@ -1087,14 +1087,22 @@ def api_hospitals():
             dist_text = format_distance_and_time(dist_km)
             
         query = h.get("naver_search_query") or f"{h['name']} 포항"
+        open_status = get_hospital_open_status_kr(h)
         h["naver_map_url"] = f"https://map.naver.com/p/search/{requests.utils.quote(query)}"
         h["kakao_map_url"] = f"https://map.kakao.com/link/to/{requests.utils.quote(h['name'])},{h.get('lat')},{h.get('lng')}"
         h["distance_km"] = dist_km
         h["distance_text"] = dist_text
+        h["is_open_now"] = open_status["is_open"]
+        h["open_status_label"] = open_status["label"]
+        h["open_status_type"] = open_status["type"]
         filtered.append(h)
         
-    if sort_by == "distance" and user_lat:
-        filtered.sort(key=lambda x: (x.get("distance_km") is None, x.get("distance_km") or 999))
+    def api_sort_key(x):
+        is_available = bool(x.get("is_open_now") or x.get("is_emergency"))
+        dist = x.get("distance_km") if (user_lat and x.get("distance_km") is not None) else 9999
+        return (not is_available, dist)
+        
+    filtered.sort(key=api_sort_key)
         
     return jsonify({"count": len(filtered), "hospitals": filtered})
 

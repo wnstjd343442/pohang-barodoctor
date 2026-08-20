@@ -1569,6 +1569,18 @@
       return true;
     });
 
+    // 🎯 정렬: 1순위: 지금 열려있는 병원(또는 24h 응급실), 2순위: 내 위치 기준 가장 가까운 거리(km) 순
+    allHospitals.sort((a, b) => {
+      const stA = getHospitalOpenStatus(a);
+      const stB = getHospitalOpenStatus(b);
+      const availA = (stA.isOpen || a.is_emergency) ? 0 : 1;
+      const availB = (stB.isOpen || b.is_emergency) ? 0 : 1;
+      if (availA !== availB) return availA - availB;
+      const distA = (a.distance_km !== null && a.distance_km !== undefined) ? a.distance_km : 9999;
+      const distB = (b.distance_km !== null && b.distance_km !== undefined) ? b.distance_km : 9999;
+      return distA - distB;
+    });
+
     visibleCount = Math.min(3, allHospitals.length);
 
     if (allHospitals.length === 0) {
