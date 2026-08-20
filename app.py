@@ -239,7 +239,7 @@ SYMPTOM_CATEGORIES = {
         "title": "관절 / 척추 / 염좌 / 골절 / 근육통",
         "keywords": [
             "팔", "다리", "손", "발", "손가락", "발가락", "손목", "발목", "어깨", "허리", "무릎", "골반", "등", "갈비뼈",
-            "뼈", "관절", "염좌", "골절", "접질", "삐", "담", "근육통", "인대", "통증", "아파", "정형외과", "통증의학과", "도수치료",
+            "뼈", "관절", "염좌", "골절", "접질", "삐", "담", "근육통", "인대", "정형외과", "통증의학과", "도수치료",
             "깁스", "물리치료", "팔아파", "다리아파", "허리아파", "무릎아파", "어깨아파", "발목아파", "손목아파"
         ],
         "primary_depts": ["정형외과", "마취통증의학과", "재활의학과"],
@@ -592,7 +592,28 @@ def analyze_symptom_and_intent(text):
             "urgency": ai_result.get("urgency", "routine")
         }
 
-    # 4. [Fallback] 만약 Gemini 일시 오류 시 로컬 키워드 사전으로 안전하게 폴백
+    # 4. [Fallback] 만약 Gemini 일시 오류 시 로컬 키워드 사전 및 진료과 매핑으로 안전하게 폴백
+    explicit_depts = []
+    dept_checks = [
+        ("내과", ["내과", "소화기내과", "순환기내과"]),
+        ("이비인후과", ["이비인후과", "이비인후"]),
+        ("정형외과", ["정형외과"]),
+        ("치과", ["치과"]),
+        ("안과", ["안과"]),
+        ("피부과", ["피부과"]),
+        ("소아청소년과", ["소아청소년과", "소아과"]),
+        ("산부인과", ["산부인과", "여성의원"]),
+        ("비뇨의학과", ["비뇨의학과", "비뇨기과"]),
+        ("신경과", ["신경과"]),
+        ("신경외과", ["신경외과"]),
+        ("정신건강의학과", ["정신건강의학과", "정신과"]),
+        ("외과", ["외과"]),
+        ("한의원", ["한의원", "한방병원"])
+    ]
+    for dname, kws in dept_checks:
+        if any(k in text_lower for k in kws):
+            explicit_depts.append(dname)
+
     matched_cat_key = None
     max_score = 0
     for cat_key, cat_data in SYMPTOM_CATEGORIES.items():
@@ -606,11 +627,12 @@ def analyze_symptom_and_intent(text):
 
     if matched_cat_key:
         cat_info = SYMPTOM_CATEGORIES[matched_cat_key]
+        primary_list = explicit_depts if explicit_depts else cat_info["primary_depts"]
         return {
             "category_key": matched_cat_key,
             "is_medical_symptom": True,
             "category_title": cat_info["title"],
-            "primary_depts": cat_info["primary_depts"],
+            "primary_depts": primary_list,
             "alt_depts": cat_info["alt_depts"],
             "advice": cat_info["advice"],
             "target_date_str": target_date_str,
@@ -844,25 +866,31 @@ def rank_and_filter_hospitals(hospitals, analysis, user_lat=None, user_lng=None,
             "open_status_type": open_status["type"]
         })
         
-    # 🎯 정렬 기준: 3순위 매칭 점수는 제외하고 "1순위: 현재 열려있는 곳(또는 24h 응급실), 2순위: 내 위치 기준 가장 가까운 거리(km)"로만 순수하게 정렬
-    def hospital_sort_key(x):
-        # 🚨 심야(밤 10시 이후/새벽)에는 24시간 응급실(is_emergency)만 진정한 운영 기관
-        if is_late_night:
-            is_available = bool(x.get("is_emergency"))
+    # 🎯 열려있는 병원(또는 24h 응급실)만 우선 분리
+    open_hospitals = []
+    closed_hospitals = []
+    
+    for item in scored_list:
+        is_available = bool(item.get("is_emergency")) if is_late_night else bool(item.get("is_open_now") or item.get("is_emergency"))
+        if is_available:
+            open_hospitals.append(item)
         else:
-            is_available = bool(x.get("is_open_now") or x.get("is_emergency"))
+            closed_hospitals.append(item)
             
-        dist = x.get("distance_km") if (user_lat is not None and x.get("distance_km") is not None) else 9999
-        return (not is_available, dist)
-        
-    scored_list.sort(key=hospital_sort_key)
+    # 🎯 사용자의 현재 위치 기준 가장 가까운 거리(km) 순서로만 순수하게 정렬
+    open_hospitals.sort(key=lambda x: (x.get("distance_km") if x.get("distance_km") is not None else 9999))
+    closed_hospitals.sort(key=lambda x: (x.get("distance_km") if x.get("distance_km") is not None else 9999))
+    
+    # 열려있는 병원들을 무조건 맨 앞에, 닫힌 병원은 맨 뒤에 배치
+    result_list = open_hospitals + closed_hospitals
         
     # 만약 해당 특수 진료과로 진료 가능한 개원의가 현재 없는 경우 24시 응급의료센터로만 안전하게 안내
-    if not scored_list:
+    if not result_list:
         er_hospitals = [h for h in hospitals if h.get("is_emergency")]
-        scored_list = er_hospitals if er_hospitals else hospitals[:5]
+        er_hospitals.sort(key=lambda x: (x.get("distance_km") if x.get("distance_km") is not None else 9999))
+        result_list = er_hospitals if er_hospitals else hospitals[:5]
         
-    return scored_list
+    return result_list
 
 def generate_gemini_conversational_reply(user_message, analysis, top_hospitals):
     """Gemini 3.6 Flash를 활용해 실제 따뜻하고 전문적인 의료 대화 답변 생성 (다중 API 키 Failover 지원)"""
@@ -889,9 +917,23 @@ def generate_gemini_conversational_reply(user_message, analysis, top_hospitals):
     hospital_summary = []
     for h in top_hospitals[:4]:
         er_badge = "[24시 응급실]" if h.get("is_emergency") else ""
-        hospital_summary.append(f"- {h['name']} ({h.get('district', '')}): {h.get('hours_summary', '')} {er_badge} 특징: {', '.join(h.get('features', [])[:2])}")
+        dist_str = f"약 {h.get('distance_km')}km" if h.get('distance_km') is not None else ""
+        hospital_summary.append(f"- {h['name']} ({h.get('district', '')}, {dist_str}): {h.get('open_status_label', '')} {er_badge} 진료과: {', '.join(h.get('departments', [])[:3])}")
         
     hosp_text = "\n".join(hospital_summary) if hospital_summary else "진료 가능 병원"
+    
+    closest_open = None
+    for h in top_hospitals:
+        if h.get("is_open_now") or h.get("is_emergency"):
+            closest_open = h
+            break
+            
+    closest_info_line = ""
+    if closest_open:
+        dist_val = closest_open.get('distance_km')
+        dist_str = f"약 {dist_val}km" if dist_val is not None else ""
+        status_label = closest_open.get('open_status_label', '진료중')
+        closest_info_line = f"현재 환자 위치에서 지금 열려있는 가장 가까운 병원: {closest_open['name']} ({closest_open.get('district', '')}, {dist_str}, {status_label})"
     
     prompt = f"""너는 포항 시민과 학생들을 위한 따뜻하고 전문적인 AI 의료 트리아지 닥터 "포항 바로닥터"야.
 
@@ -901,18 +943,18 @@ def generate_gemini_conversational_reply(user_message, analysis, top_hospitals):
 [의학적 트리아지 분석 결과]
 - 추정 질환/상태: {analysis.get('category_title', '증상 호소')}
 - 권장 1차 진료과: {', '.join(analysis.get('primary_depts', []))} (대안/응급: {', '.join(analysis.get('alt_depts', []))})
-- 진료 희망 일시: {analysis.get('target_date_str', '오늘')}
+- {closest_info_line}
 - 1차 대처 조언: {analysis.get('advice', '')}
 
-[포항 관내 진료 가능 추천 병원 (공공데이터 663개 연동 기반)]
+[포항 관내 진료 가능 추천 병원 (내 위치 기준 가장 가까운 열려있는 병원 순)]
 {hosp_text}
 
 [답변 작성 가이드]
-1. 불필요한 형식적 첫인사("안녕하세요")는 생략하고, 환자가 겪고 있는 고통/불편에 대한 따뜻한 공감으로 바로 시작해.
-2. 왜 이 진료과({', '.join(analysis.get('primary_depts', []))})를 방문해야 하는지 환자의 눈높이에 맞게 1문장으로 친절히 설명해줘.
-3. 환자가 진료 전/병원 이동 중 취해야 할 행동 요령(예: 탈수 예방을 위한 소량의 미온수/수액 권고, RICE 요법, 체온 관리, 금식 여부 등)을 명확하게 짚어줘.
-4. 아래 추천 병원 목록 중에서 적절한 병원 1~2곳을 자연스럽게 언급하며 진료시간 확인 및 방문을 권유해줘.
-5. 모바일 화면에서 빠르게 읽을 수 있도록 읽기 쉬운 한국어 대화체(3~4문단, 200~250자 내외)로 작성하고 마크다운 볼드(**강조**)를 적절히 사용해줘."""
+1. 불필요한 형식적 첫인사("안녕하세요")는 생략하고, 환자가 겪고 있는 고통/불편에 대해 공감하며 바로 핵심을 말해줘.
+2. "현재 위치에서 지금 진료 중인 가장 가까운 병원은 **[가장 가까운 병원명] (거리, 진료시간)**입니다."라는 핵심 안내를 답변 시작 부분에 명확하게 강조해줘.
+3. 왜 이 진료과({', '.join(analysis.get('primary_depts', []))})를 방문해야 하는지 1문장으로 친절히 설명해줘.
+4. 환자가 진료 전/병원 이동 중 취해야 할 행동 요령(예: 탈수 예방 수액/미온수, RICE 요법, 체온 관리, 금식 여부, 신분증 지참 등)을 1~2문장으로 짚어줘.
+5. 모바일 화면에서 빠르게 읽을 수 있도록 읽기 쉬운 한국어 대화체(3~4문단, 200~250자 내외)로 작성하고 마크다운 볼드(**강조**)를 사용해줘."""
 
     last_err = None
     for idx, key in enumerate(keys, 1):
