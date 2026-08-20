@@ -4,6 +4,7 @@ import json
 import math
 import os
 import re
+import threading
 import time
 import wave
 from datetime import datetime, timedelta, timezone
@@ -65,6 +66,8 @@ def get_all_gemini_api_keys():
 DECODING_KEY = os.environ.get("DATA_GO_KR_DECODING_KEY", "")
 
 _gemini_clients_cache = {}
+_current_gemini_key_index = 0
+_key_lock = threading.Lock()
 
 def get_gemini_client(api_key=None):
     """특정 API 키 또는 기본 키에 대한 Gemini 클라이언트 생성 및 캐싱"""
@@ -82,6 +85,57 @@ def get_gemini_client(api_key=None):
             print(f"Gemini client init error for key {api_key[:8]}...:", e)
             return None
     return _gemini_clients_cache.get(api_key)
+
+GEMINI_FALLBACK_MODELS = [
+    "gemini-3.5-flash-lite",
+    "gemini-flash-lite-latest",
+    "gemini-3.1-flash-lite",
+    "gemini-flash-latest",
+    "gemini-3.6-flash",
+    "gemini-3.7-flash"
+]
+
+def execute_with_gemini_key_rotation(operation_fn):
+    """
+    마지막으로 성공한 Gemini API 키 인덱스부터 시작하여 순환 시도하고,
+    각 키마다 다중 모델(3.6 Flash, Flash-latest, 3.5 Flash-lite 등) 순환 Failover를 수행하여
+    할당량을 극대화하는 지능형 다중 키 + 다중 모델 Failover 엔진
+    """
+    global _current_gemini_key_index
+    keys = get_all_gemini_api_keys()
+    if not keys:
+        return None, "Gemini API 키가 설정되지 않았습니다."
+        
+    n_keys = len(keys)
+    with _key_lock:
+        start_idx = _current_gemini_key_index % n_keys
+        
+    last_err = None
+    for step in range(n_keys):
+        curr_idx = (start_idx + step) % n_keys
+        api_key = keys[curr_idx]
+        client = get_gemini_client(api_key)
+        if not client:
+            continue
+            
+        # 키마다 독립된 무료 쿼터를 가진 다중 모델 순환 시도
+        for model_name in GEMINI_FALLBACK_MODELS:
+            try:
+                result = operation_fn(client, api_key, model_name)
+                with _key_lock:
+                    _current_gemini_key_index = curr_idx
+                return result, None
+            except Exception as e:
+                last_err = e
+                # print(f"[Gemini Key #{curr_idx+1} - {model_name} Failover] error: {e}")
+                continue
+            
+    err_str = str(last_err) if last_err else "API Key Quota Exceeded"
+    if "429" in err_str or "RESOURCE_EXHAUSTED" in err_str:
+        err_msg = "⚠️ Gemini API 모든 무료 사용량 한도에 도달했습니다."
+    else:
+        err_msg = f"⚠️ Gemini API 오류: {err_str[:80]}"
+    return None, err_msg
 
 DB_FILE = os.path.join(os.path.dirname(__file__), "data", "pohang_hospitals_db.json")
 REPORTS_FILE = os.path.join(os.path.dirname(__file__), "data", "reports.json")
@@ -393,26 +447,19 @@ def analyze_symptom_with_gemini(text):
   "advice": ""
 }}"""
 
-    for idx, key in enumerate(keys, 1):
-        client = get_gemini_client(key)
-        if not client:
-            continue
-        try:
-            res = client.models.generate_content(
-                model="gemini-3.6-flash",
-                contents=prompt
-            )
-            raw_text = (res.text or "").strip()
-            raw_text = re.sub(r"^```json\s*", "", raw_text)
-            raw_text = re.sub(r"^```\s*", "", raw_text)
-            raw_text = re.sub(r"\s*```$", "", raw_text).strip()
-            data = json.loads(raw_text)
-            return data
-        except Exception as e:
-            print(f"[Gemini Key #{idx} Failover] symptom analysis error: {e}")
-            continue
-            
-    return None
+    def _do_analyze(client, api_key, model_name):
+        res = client.models.generate_content(
+            model=model_name,
+            contents=prompt
+        )
+        raw_text = (res.text or "").strip()
+        raw_text = re.sub(r"^```json\s*", "", raw_text)
+        raw_text = re.sub(r"^```\s*", "", raw_text)
+        raw_text = re.sub(r"\s*```$", "", raw_text).strip()
+        return json.loads(raw_text)
+
+    data, err = execute_with_gemini_key_rotation(_do_analyze)
+    return data
 
 def analyze_symptom_and_intent(text):
     text_lower = text.lower().strip()
@@ -852,7 +899,25 @@ def rank_and_filter_hospitals(hospitals, analysis, user_lat=None, user_lng=None,
         naver_map_url = f"https://map.naver.com/p/search/{requests.utils.quote(query)}"
         kakao_map_url = f"https://map.kakao.com/link/to/{requests.utils.quote(h['name'])},{h.get('lat')},{h.get('lng')}"
         
-        open_status = get_hospital_open_status_kr(h)
+        if is_sunday:
+            if h.get("is_emergency"):
+                open_status = {"is_open": True, "label": "🚨 24시 응급진료", "type": "er"}
+            elif h.get("sunday_open") or (h.get("hours", {}).get("sun") and "휴" not in str(h.get("hours", {}).get("sun"))):
+                sun_str = h.get("hours", {}).get("sun") or f"{h.get('sun_start', '')}~{h.get('sun_close', '')}"
+                open_status = {"is_open": True, "label": f"☀️ 일요일 진료 ({sun_str})", "type": "open"}
+            else:
+                open_status = {"is_open": False, "label": "🔴 일요일 휴진", "type": "closed"}
+        elif is_saturday:
+            if h.get("is_emergency"):
+                open_status = {"is_open": True, "label": "🚨 24시 응급진료", "type": "er"}
+            elif h.get("saturday_open") or (h.get("hours", {}).get("sat") and "휴" not in str(h.get("hours", {}).get("sat"))):
+                sat_str = h.get("hours", {}).get("sat") or f"{h.get('sat_start', '')}~{h.get('sat_close', '')}"
+                open_status = {"is_open": True, "label": f"📅 토요일 진료 ({sat_str})", "type": "open"}
+            else:
+                open_status = {"is_open": False, "label": "🔴 토요일 휴진", "type": "closed"}
+        else:
+            open_status = get_hospital_open_status_kr(h)
+
         scored_list.append({
             **h,
             "match_score": score,
@@ -871,7 +936,15 @@ def rank_and_filter_hospitals(hospitals, analysis, user_lat=None, user_lng=None,
     closed_hospitals = []
     
     for item in scored_list:
-        is_available = bool(item.get("is_emergency")) if is_late_night else bool(item.get("is_open_now") or item.get("is_emergency"))
+        if is_sunday or is_saturday:
+            is_available = bool(item.get("is_open_now") or item.get("is_emergency"))
+        elif is_late_night:
+            is_available = bool(item.get("is_emergency"))
+        elif is_night:
+            is_available = bool(item.get("night_open") or item.get("is_open_now") or item.get("is_emergency"))
+        else:
+            is_available = bool(item.get("is_open_now") or item.get("is_emergency"))
+
         if is_available:
             open_hospitals.append(item)
         else:
@@ -917,7 +990,7 @@ def rank_and_filter_hospitals(hospitals, analysis, user_lat=None, user_lng=None,
     return result_list
 
 def generate_gemini_conversational_reply(user_message, analysis, top_hospitals):
-    """Gemini 3.6 Flash를 활용해 실제 따뜻하고 전문적인 의료 대화 답변 생성 (다중 API 키 Failover 지원)"""
+    """Gemini 3.5 Flash-Lite를 활용해 실제 따뜻하고 전문적인 의료 대화 답변 생성 (다중 API 키 Failover 지원)"""
     keys = get_all_gemini_api_keys()
     if not keys:
         return None, "Gemini API 키가 설정되지 않았습니다."
@@ -926,23 +999,29 @@ def generate_gemini_conversational_reply(user_message, analysis, top_hospitals):
         prompt = f"""너는 포항 시민과 학생들을 위한 AI 의료 안내 비서 "포항 바로닥터"야.
 사용자가 "{user_message}"라고 입력했어.
 상투적인 "안녕하세요" 첫인사를 반복하지 말고, 사용자의 말에 짧고 자연스럽게 한 문장으로 반응한 뒤 "어디가 불편하시거나 찾으시는 병원이 있으신가요? (예: 배 아파, 목감기, 일요일 정형외과)"라고 1~2문장으로 간결하게 물어봐줘."""
-        for idx, key in enumerate(keys, 1):
-            client = get_gemini_client(key)
-            if not client:
-                continue
-            try:
-                res = client.models.generate_content(model="gemini-3.6-flash", contents=prompt)
-                return (res.text or "").strip(), None
-            except Exception as e:
-                print(f"[Gemini Key #{idx} Failover] non_medical reply error: {e}")
-                continue
-        return None, "모든 AI API 키 할당량 초과"
+        def _do_non_medical(client, api_key, model_name):
+            res = client.models.generate_content(model=model_name, contents=prompt)
+            return (res.text or "").strip()
+        return execute_with_gemini_key_rotation(_do_non_medical)
         
+    is_sunday = analysis.get("is_sunday", False)
+    is_saturday = analysis.get("is_saturday", False)
+    is_night = analysis.get("is_night", False)
+    
     hospital_summary = []
     for h in top_hospitals[:4]:
         er_badge = "[24시 응급실]" if h.get("is_emergency") else ""
-        dist_str = f"약 {h.get('distance_km')}km" if h.get('distance_km') is not None else ""
-        hospital_summary.append(f"- {h['name']} ({h.get('district', '')}, {dist_str}): {h.get('open_status_label', '')} {er_badge} 진료과: {', '.join(h.get('departments', [])[:3])}")
+        dist_val = h.get("distance_km")
+        if dist_val is not None:
+            if dist_val < 0.3:
+                dist_desc = "바로 인근 도보 거리"
+            elif dist_val < 1.0:
+                dist_desc = "가장 가까운 거리"
+            else:
+                dist_desc = f"인근 {h.get('district', '')}"
+        else:
+            dist_desc = h.get("district", "")
+        hospital_summary.append(f"- {h['name']} ({dist_desc}): {h.get('open_status_label', '')} {er_badge} 진료과: {', '.join(h.get('departments', [])[:3])}")
         
     hosp_text = "\n".join(hospital_summary) if hospital_summary else "진료 가능 병원"
     
@@ -957,13 +1036,17 @@ def generate_gemini_conversational_reply(user_message, analysis, top_hospitals):
             
     closest_info_line = ""
     if closest_open:
-        dist_val = closest_open.get('distance_km')
-        dist_str = f"약 {dist_val}km" if dist_val is not None else ""
         status_label = closest_open.get('open_status_label', '진료중')
-        if is_er_fallback:
-            closest_info_line = f"현재 주변 일반 의원은 모두 진료가 마감/휴진 상태이므로, 즉시 진료 가능한 24시간 응급의료센터 중 가장 가까운 곳: {closest_open['name']} ({closest_open.get('district', '')}, {dist_str}, {status_label})"
+        if is_sunday:
+            closest_info_line = f"일요일에 진료 가능한 병원 중 가장 가까운 곳: {closest_open['name']} ({closest_open.get('district', '')}, {status_label})"
+        elif is_saturday:
+            closest_info_line = f"토요일에 진료 가능한 병원 중 가장 가까운 곳: {closest_open['name']} ({closest_open.get('district', '')}, {status_label})"
+        elif is_night:
+            closest_info_line = f"야간에 진료 가능한 병원 중 가장 가까운 곳: {closest_open['name']} ({closest_open.get('district', '')}, {status_label})"
+        elif is_er_fallback:
+            closest_info_line = f"현재 주변 일반 의원은 모두 진료가 마감/휴진 상태이므로, 즉시 방문 가능한 24시간 응급의료센터 중 가장 가까운 곳: {closest_open['name']} ({closest_open.get('district', '')}, {status_label})"
         else:
-            closest_info_line = f"현재 환자 위치에서 지금 열려있는 가장 가까운 병원: {closest_open['name']} ({closest_open.get('district', '')}, {dist_str}, {status_label})"
+            closest_info_line = f"현재 환자 위치에서 지금 진료 중인 가장 가까운 병원: {closest_open['name']} ({closest_open.get('district', '')}, {status_label})"
     
     prompt = f"""너는 포항 시민과 학생들을 위한 따뜻하고 전문적인 AI 의료 트리아지 닥터 "포항 바로닥터"야.
 
@@ -981,34 +1064,24 @@ def generate_gemini_conversational_reply(user_message, analysis, top_hospitals):
 
 [답변 작성 가이드]
 1. 불필요한 형식적 첫인사("안녕하세요")는 생략하고, 환자가 겪고 있는 고통/불편에 대해 공감하며 바로 핵심을 말해줘.
-2. 만약 일반 의원이 모두 문을 닫아 24시간 응급실이 안내된 경우, "현재 해당 진료과 주변 의원이 모두 마감/휴진되어 가장 가까운 **24시간 응급실 [병원명] (약 0.X km)**을 안내해 드립니다."라고 명확히 설명해줘.
-3. 지금 열려있는 일반 의원이 있는 경우, "현재 위치에서 지금 진료 중인 가장 가까운 병원은 **[가장 가까운 병원명] (거리, 진료시간)**입니다."라는 핵심 안내를 답변 시작 부분에 명확하게 강조해줘.
+2. 거리를 안내할 때 "약 1.39km", "0.11km" 같은 딱딱한 숫자 거리 표현을 직접 쓰지 말고, "가장 가까운", "바로 인근에 위치한", "가장 빠르게 방문하실 수 있는" 같은 자연스럽고 친근한 표현을 사용해줘.
+3. [시점/요일 안내 기준 - 매우 중요]:
+   - 사용자가 '일요일'을 요청한 경우: "일요일에 진료 가능한 가장 가까운 병원은 **[병원명] (일요일 진료시간)**입니다."라고 안내하고, '오늘/지금'이라는 표현을 절대 쓰지 마.
+   - 사용자가 '토요일'을 요청한 경우: "토요일에 진료 가능한 가장 가까운 병원은 **[병원명] (토요일 진료시간)**입니다."라고 안내하고, '오늘/지금'이라는 표현을 절대 쓰지 마.
+   - 사용자가 특정 요일을 지정하지 않은 일반 질문인 경우: "현재 위치에서 지금 진료 중인 가장 가까운 병원은 **[가장 가까운 병원명] (진료시간)**입니다."라고 안내해줘.
+   - 일반 의원이 모두 문을 닫아 24시간 응급실이 안내된 경우: "현재 해당 진료과 주변 의원이 모두 마감/휴진되어 가장 가까운 **24시간 응급실 [병원명]**을 안내해 드립니다."라고 명확히 설명해줘.
 4. 왜 이 진료과({', '.join(analysis.get('primary_depts', []))})를 방문해야 하는지 1문장으로 친절히 설명해줘.
 5. 환자가 진료 전/병원 이동 중 취해야 할 행동 요령(예: 탈수 예방 수액/미온수, RICE 요법, 체온 관리, 금식 여부, 신분증 지참 등)을 1~2문장으로 짚어줘.
 6. 모바일 화면에서 빠르게 읽을 수 있도록 읽기 쉬운 한국어 대화체(3~4문단, 200~250자 내외)로 작성하고 마크다운 볼드(**강조**)를 사용해줘."""
 
-    last_err = None
-    for idx, key in enumerate(keys, 1):
-        client = get_gemini_client(key)
-        if not client:
-            continue
-        try:
-            res = client.models.generate_content(
-                model="gemini-3.6-flash",
-                contents=prompt
-            )
-            return (res.text or "").strip(), None
-        except Exception as e:
-            last_err = e
-            print(f"[Gemini Key #{idx} Failover] reply error: {e}")
-            continue
-            
-    err_str = str(last_err) if last_err else "API Key Quota Exceeded"
-    if "429" in err_str or "RESOURCE_EXHAUSTED" in err_str:
-        err_msg = "⚠️ Gemini API 모든 무료 사용량 한도에 도달했습니다."
-    else:
-        err_msg = f"⚠️ Gemini API 오류: {err_str[:80]}"
-    return None, err_msg
+    def _do_reply(client, api_key, model_name):
+        res = client.models.generate_content(
+            model=model_name,
+            contents=prompt
+        )
+        return (res.text or "").strip()
+
+    return execute_with_gemini_key_rotation(_do_reply)
 
 @app.after_request
 def add_cors_headers(response):
@@ -1279,7 +1352,7 @@ def api_stt():
         audio_b64 = base64.b64encode(wav_bytes).decode("ascii")
 
         interaction = client.interactions.create(
-            model="gemini-3.6-flash",
+            model="gemini-3.5-flash-lite",
             input=[
                 {"type": "text", "text": "다음 음성을 한국어 텍스트로 정확하게 변환해줘. 부가 설명 없이 인식된 텍스트만 출력해."},
                 {"type": "audio", "data": audio_b64, "mime_type": "audio/wav"},

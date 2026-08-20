@@ -957,7 +957,6 @@
       <button class="filter-toggle-btn" id="filterOpenNowBtn" data-filter="open_now">🟢 현재 진료중</button>
       <button class="filter-toggle-btn" id="filterSaturdayBtn" data-filter="saturday">📅 토요일 진료</button>
       <button class="filter-toggle-btn" id="filterSundayBtn" data-filter="sunday">☀️ 일요일 진료</button>
-      <button class="filter-toggle-btn" id="filterHolidayBtn" data-filter="holiday">🚩 공휴일 진료</button>
       <button class="filter-toggle-btn" id="filterNightBtn" data-filter="night">🌙 야간진료</button>
       <button class="filter-toggle-btn" id="filterErBtn" data-filter="er">🚨 24시 응급실</button>
     </div>
@@ -972,7 +971,7 @@
       </div>
       <div class="points">
         <div>• <strong>내 위치(GPS) 기준 가장 가까운 병원</strong> 도로명 주소 & 최단거리순 자동 정렬</div>
-        <div>• <strong>토요일·일요일·공휴일·야간·24시 응급실</strong> 상단 퀵 필터 즉시 적용</div>
+        <div>• <strong>토요일·일요일·야간·24시 응급실</strong> 상단 퀵 필터 즉시 적용</div>
         <div>• <strong>국립중앙의료원(E-Gen) 공공데이터</strong> 663개 병의원 진료시간 및 52개 진료과 연동</div>
         <div>• <strong>피부과·안과·치과·정형외과·소아과 등</strong> 증상별 정밀 진료과 매칭</div>
         <div>• <strong>네이버/카카오 지도</strong> 원터치 내비 길찾기 연동</div>
@@ -1270,7 +1269,6 @@
     if (activeFilters.open_now) params.set('open_now', 'true');
     if (activeFilters.saturday) params.set('saturday', 'true');
     if (activeFilters.sunday) params.set('sunday', 'true');
-    if (activeFilters.holiday) params.set('holiday', 'true');
     if (activeFilters.night) params.set('night', 'true');
     if (activeFilters.er) params.set('er', 'true');
     if (userCoords.lat && userCoords.lng) {
@@ -1284,7 +1282,6 @@
     if (activeFilters.open_now) titleParts.push('🟢 현재 진료중');
     if (activeFilters.saturday) titleParts.push('📅 토요일 진료');
     if (activeFilters.sunday) titleParts.push('☀️ 일요일 진료');
-    if (activeFilters.holiday) titleParts.push('🚩 공휴일 진료');
     if (activeFilters.night) titleParts.push('🌙 야간진료');
 
     const titleText = titleParts.join(' + ') || '전체 병원';
@@ -1439,15 +1436,10 @@
       seenBadges.add('24시간');
       seenBadges.add('일요일');
       seenBadges.add('토요일');
-      seenBadges.add('공휴일');
     } else {
       if (h.sunday_open) {
         seenBadges.add('일요일');
         badgesHtml += `<span class="meta-tag sun">☀️ 일요일 진료</span>`;
-      }
-      if (h.holiday_open) {
-        seenBadges.add('공휴일');
-        badgesHtml += `<span class="meta-tag default" style="background:#fef3c7; color:#92400e; border-color:#fde68a;">🚩 공휴일 진료</span>`;
       }
       if (h.saturday_open) {
         seenBadges.add('토요일');
