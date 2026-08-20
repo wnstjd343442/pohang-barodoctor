@@ -899,7 +899,25 @@ def rank_and_filter_hospitals(hospitals, analysis, user_lat=None, user_lng=None,
         naver_map_url = f"https://map.naver.com/p/search/{requests.utils.quote(query)}"
         kakao_map_url = f"https://map.kakao.com/link/to/{requests.utils.quote(h['name'])},{h.get('lat')},{h.get('lng')}"
         
-        open_status = get_hospital_open_status_kr(h)
+        if is_sunday:
+            if h.get("is_emergency"):
+                open_status = {"is_open": True, "label": "🚨 24시 응급진료", "type": "er"}
+            elif h.get("sunday_open") or (h.get("hours", {}).get("sun") and "휴" not in str(h.get("hours", {}).get("sun"))):
+                sun_str = h.get("hours", {}).get("sun") or f"{h.get('sun_start', '')}~{h.get('sun_close', '')}"
+                open_status = {"is_open": True, "label": f"☀️ 일요일 진료 ({sun_str})", "type": "open"}
+            else:
+                open_status = {"is_open": False, "label": "🔴 일요일 휴진", "type": "closed"}
+        elif is_saturday:
+            if h.get("is_emergency"):
+                open_status = {"is_open": True, "label": "🚨 24시 응급진료", "type": "er"}
+            elif h.get("saturday_open") or (h.get("hours", {}).get("sat") and "휴" not in str(h.get("hours", {}).get("sat"))):
+                sat_str = h.get("hours", {}).get("sat") or f"{h.get('sat_start', '')}~{h.get('sat_close', '')}"
+                open_status = {"is_open": True, "label": f"📅 토요일 진료 ({sat_str})", "type": "open"}
+            else:
+                open_status = {"is_open": False, "label": "🔴 토요일 휴진", "type": "closed"}
+        else:
+            open_status = get_hospital_open_status_kr(h)
+
         scored_list.append({
             **h,
             "match_score": score,
@@ -918,7 +936,15 @@ def rank_and_filter_hospitals(hospitals, analysis, user_lat=None, user_lng=None,
     closed_hospitals = []
     
     for item in scored_list:
-        is_available = bool(item.get("is_emergency")) if is_late_night else bool(item.get("is_open_now") or item.get("is_emergency"))
+        if is_sunday or is_saturday:
+            is_available = bool(item.get("is_open_now") or item.get("is_emergency"))
+        elif is_late_night:
+            is_available = bool(item.get("is_emergency"))
+        elif is_night:
+            is_available = bool(item.get("night_open") or item.get("is_open_now") or item.get("is_emergency"))
+        else:
+            is_available = bool(item.get("is_open_now") or item.get("is_emergency"))
+
         if is_available:
             open_hospitals.append(item)
         else:
@@ -964,7 +990,7 @@ def rank_and_filter_hospitals(hospitals, analysis, user_lat=None, user_lng=None,
     return result_list
 
 def generate_gemini_conversational_reply(user_message, analysis, top_hospitals):
-    """Gemini 3.6 Flash를 활용해 실제 따뜻하고 전문적인 의료 대화 답변 생성 (다중 API 키 Failover 지원)"""
+    """Gemini 3.5 Flash-Lite를 활용해 실제 따뜻하고 전문적인 의료 대화 답변 생성 (다중 API 키 Failover 지원)"""
     keys = get_all_gemini_api_keys()
     if not keys:
         return None, "Gemini API 키가 설정되지 않았습니다."
@@ -978,6 +1004,10 @@ def generate_gemini_conversational_reply(user_message, analysis, top_hospitals):
             return (res.text or "").strip()
         return execute_with_gemini_key_rotation(_do_non_medical)
         
+    is_sunday = analysis.get("is_sunday", False)
+    is_saturday = analysis.get("is_saturday", False)
+    is_night = analysis.get("is_night", False)
+    
     hospital_summary = []
     for h in top_hospitals[:4]:
         er_badge = "[24시 응급실]" if h.get("is_emergency") else ""
@@ -1007,7 +1037,13 @@ def generate_gemini_conversational_reply(user_message, analysis, top_hospitals):
     closest_info_line = ""
     if closest_open:
         status_label = closest_open.get('open_status_label', '진료중')
-        if is_er_fallback:
+        if is_sunday:
+            closest_info_line = f"일요일에 진료 가능한 병원 중 가장 가까운 곳: {closest_open['name']} ({closest_open.get('district', '')}, {status_label})"
+        elif is_saturday:
+            closest_info_line = f"토요일에 진료 가능한 병원 중 가장 가까운 곳: {closest_open['name']} ({closest_open.get('district', '')}, {status_label})"
+        elif is_night:
+            closest_info_line = f"야간에 진료 가능한 병원 중 가장 가까운 곳: {closest_open['name']} ({closest_open.get('district', '')}, {status_label})"
+        elif is_er_fallback:
             closest_info_line = f"현재 주변 일반 의원은 모두 진료가 마감/휴진 상태이므로, 즉시 방문 가능한 24시간 응급의료센터 중 가장 가까운 곳: {closest_open['name']} ({closest_open.get('district', '')}, {status_label})"
         else:
             closest_info_line = f"현재 환자 위치에서 지금 진료 중인 가장 가까운 병원: {closest_open['name']} ({closest_open.get('district', '')}, {status_label})"
@@ -1029,11 +1065,14 @@ def generate_gemini_conversational_reply(user_message, analysis, top_hospitals):
 [답변 작성 가이드]
 1. 불필요한 형식적 첫인사("안녕하세요")는 생략하고, 환자가 겪고 있는 고통/불편에 대해 공감하며 바로 핵심을 말해줘.
 2. 거리를 안내할 때 "약 1.39km", "0.11km" 같은 딱딱한 숫자 거리 표현을 직접 쓰지 말고, "가장 가까운", "바로 인근에 위치한", "가장 빠르게 방문하실 수 있는" 같은 자연스럽고 친근한 표현을 사용해줘.
-3. 만약 일반 의원이 모두 문을 닫아 24시간 응급실이 안내된 경우, "현재 해당 진료과 주변 의원이 모두 마감/휴진되어 가장 가까운 **24시간 응급실 [병원명]**을 안내해 드립니다."라고 명확히 설명해줘.
-4. 지금 열려있는 일반 의원이 있는 경우, "현재 위치에서 지금 진료 중인 가장 가까운 병원은 **[가장 가까운 병원명] (진료시간)**입니다."라는 핵심 안내를 답변 시작 부분에 명확하게 강조해줘.
-5. 왜 이 진료과({', '.join(analysis.get('primary_depts', []))})를 방문해야 하는지 1문장으로 친절히 설명해줘.
-6. 환자가 진료 전/병원 이동 중 취해야 할 행동 요령(예: 탈수 예방 수액/미온수, RICE 요법, 체온 관리, 금식 여부, 신분증 지참 등)을 1~2문장으로 짚어줘.
-7. 모바일 화면에서 빠르게 읽을 수 있도록 읽기 쉬운 한국어 대화체(3~4문단, 200~250자 내외)로 작성하고 마크다운 볼드(**강조**)를 사용해줘."""
+3. [시점/요일 안내 기준 - 매우 중요]:
+   - 사용자가 '일요일'을 요청한 경우: "일요일에 진료 가능한 가장 가까운 병원은 **[병원명] (일요일 진료시간)**입니다."라고 안내하고, '오늘/지금'이라는 표현을 절대 쓰지 마.
+   - 사용자가 '토요일'을 요청한 경우: "토요일에 진료 가능한 가장 가까운 병원은 **[병원명] (토요일 진료시간)**입니다."라고 안내하고, '오늘/지금'이라는 표현을 절대 쓰지 마.
+   - 사용자가 특정 요일을 지정하지 않은 일반 질문인 경우: "현재 위치에서 지금 진료 중인 가장 가까운 병원은 **[가장 가까운 병원명] (진료시간)**입니다."라고 안내해줘.
+   - 일반 의원이 모두 문을 닫아 24시간 응급실이 안내된 경우: "현재 해당 진료과 주변 의원이 모두 마감/휴진되어 가장 가까운 **24시간 응급실 [병원명]**을 안내해 드립니다."라고 명확히 설명해줘.
+4. 왜 이 진료과({', '.join(analysis.get('primary_depts', []))})를 방문해야 하는지 1문장으로 친절히 설명해줘.
+5. 환자가 진료 전/병원 이동 중 취해야 할 행동 요령(예: 탈수 예방 수액/미온수, RICE 요법, 체온 관리, 금식 여부, 신분증 지참 등)을 1~2문장으로 짚어줘.
+6. 모바일 화면에서 빠르게 읽을 수 있도록 읽기 쉬운 한국어 대화체(3~4문단, 200~250자 내외)로 작성하고 마크다운 볼드(**강조**)를 사용해줘."""
 
     def _do_reply(client, api_key, model_name):
         res = client.models.generate_content(
