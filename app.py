@@ -10,7 +10,6 @@ from datetime import datetime, timedelta
 from io import BytesIO
 
 import requests
-import xmltodict
 from dotenv import load_dotenv
 from flask import Flask, jsonify, render_template, request
 from pydub import AudioSegment
@@ -192,32 +191,67 @@ WEEKDAYS_KR = ["월", "화", "수", "목", "금", "토", "일"]
 WEEKDAY_NAMES = {"월요일": 0, "화요일": 1, "수요일": 2, "목요일": 3, "금요일": 4, "토요일": 5, "일요일": 6}
 
 def analyze_symptom_with_gemini(text):
-    """키워드에 없는 비정형 증상(예: '팔이 아파', '숨쉬기 힘들어', '귀가 멍멍해')을 Gemini가 직접 진료과 및 조언으로 판별"""
+    """
+    [AI-First 임상 트리아지 엔진]
+    사용자의 자연어 텍스트에서 신체 증상, 의학적 원인, 1차/대안 추천 진료과, 긴급도, 대처 조언, 시공간 조건을 정밀 분석
+    """
     client = get_gemini_client()
     if not client:
         return None
         
-    prompt = f"""너는 한국 응급의료 및 1차 진료 트리아지 전문가야.
-사용자 입력: "{text}"
+    prompt = f"""너는 대한민국 응급의료 및 1차 진료 임상 트리아지(Triage) AI 전문가야.
+사용자가 입력한 자연어 증상이나 병원 탐색 요청을 의학적으로 깊이 있게 분석하고, 가장 적절한 표준 진료과와 긴급도를 판단해줘.
 
-사용자의 입력이 의학적 증상/통증/건강 고민/병원 찾기인지 분석해서 반드시 아래 JSON 포맷으로만 답변해줘:
+[사용자 입력]
+"{text}"
+
+[선택 가능한 표준 진료과 목록]
+내과, 소아청소년과, 이비인후과, 정형외과, 마취통증의학과, 신경과, 신경외과, 외과, 피부과, 안과, 치과, 비뇨의학과, 산부인과, 정신건강의학과, 재활의학과, 가정의학과, 응급의학과, 흉부외과, 한방내과
+
+[임상 분석 지침]
+1. 환자가 호소하는 증상의 의학적 기전과 원인을 추론하여 1순위 추천 진료과(primary_depts, 1~3개)와 대안/응급 진료과(alt_depts, 1~2개)를 결정해.
+   - 예) "어깨가 뻐근하고 팔이 저려" -> primary_depts: ["정형외과", "마취통증의학과", "신경외과"], alt_depts: ["재활의학과", "가정의학과"]
+   - 예) "장염 걸렸어 수액 맞고 싶어" -> primary_depts: ["내과", "가정의학과"], alt_depts: ["응급의학과"]
+   - 예) "애기가 밤에 열이 39도야" -> primary_depts: ["소아청소년과"], alt_depts: ["응급의학과", "이비인후과"]
+   - 예) "발목 삐끗해서 붓고 아파" -> primary_depts: ["정형외과", "마취통증의학과"], alt_depts: ["외과", "재활의학과"]
+   - 예) "눈이 충혈되고 뻑뻑해" -> primary_depts: ["안과"], alt_depts: ["내과", "가정의학과"]
+   - 예) "귀가 멍멍하고 이명 들려" -> primary_depts: ["이비인후과"], alt_depts: ["내과"]
+   - 예) "양덕동에 지금 갈 수 있는 병원" -> primary_depts: ["내과", "가정의학과", "이비인후과"], alt_depts: ["응급의학과"]
+2. 시공간 및 긴급도 추출:
+   - is_sunday: 사용자가 일요일/주말/휴일 진료를 원하면 true
+   - is_night: 야간, 밤, 저녁, 새벽, 늦게, 5시/6시 이후 등 야간 진료가 필요하면 true
+   - is_emergency: 호흡곤란, 극심한 흉통, 대량 출혈 등 24시 응급실 직행 필요 시 true
+   - target_district: 포항 지역명(양덕동, 장성동, 장량동, 이동, 효자동, 두호동, 창포동, 흥해읍, 오천읍 등)이 언급되었으면 해당 동 이름, 없으면 null
+3. category_title: 간결하고 전문적인 의학적 증상 요약 제목 (예: "경추부 신경통 및 어깨 근막통증증후군", "급성 위장염 및 탈수 의심")
+4. advice: 환자가 즉시 실천할 수 있는 1~2문장의 전문적 의학 대처 요령 (수액 권고, RICE 요법, 체온 조절, 금식 등)
+
+반드시 아래 JSON 포맷으로만 출력해 (설명이나 마크다운 백틱 제외):
 {{
   "is_medical": true,
-  "category_title": "증상 요약 (예: 가슴 통증 / 호흡기·심혈관 질환)",
-  "primary_depts": ["내과", "흉부외과"],
-  "alt_depts": ["가정의학과", "응급의학과"],
-  "advice": "환자를 위한 1~2문장의 전문적인 대처 조언"
+  "category_title": "증상 요약 제목",
+  "primary_depts": ["진료과1", "진료과2"],
+  "alt_depts": ["대안진료과1"],
+  "is_sunday": false,
+  "is_night": false,
+  "is_emergency": false,
+  "target_district": null,
+  "urgency": "routine",
+  "advice": "환자 대처 조언"
 }}
 
-만약 단순 일상 대화나 비의료 인사/장난(예: '바보', '안녕', '반가워', '너 누구야')인 경우:
+단, 사용자의 입력이 완전히 의학과 무관한 단순 인사/장난(예: '안녕', '반가워', '바보')인 경우에만:
 {{
   "is_medical": false,
   "category_title": "일반 대화",
   "primary_depts": [],
   "alt_depts": [],
+  "is_sunday": false,
+  "is_night": false,
+  "is_emergency": false,
+  "target_district": null,
+  "urgency": "routine",
   "advice": ""
-}}
-반드시 JSON 문자열만 출력해. 설명이나 마크다운 백틱 없이 순수 JSON만 반환해."""
+}}"""
 
     try:
         res = client.models.generate_content(
@@ -237,18 +271,23 @@ def analyze_symptom_with_gemini(text):
 def analyze_symptom_and_intent(text):
     text_lower = text.lower().strip()
     
-    matched_cat_key = None
-    max_score = 0
-    
-    for cat_key, cat_data in SYMPTOM_CATEGORIES.items():
-        score = 0
-        for kw in cat_data["keywords"]:
-            if kw in text_lower:
-                score += (3 if len(kw) >= 2 else 1)
-        if score > max_score:
-            max_score = score
-            matched_cat_key = cat_key
-            
+    # 1. 명백한 비의료 단순 인사/장난 사전 필터링
+    is_pure_non_medical = text_lower in ["바보", "안녕", "안녕하세요", "ㅎㅇ", "하이", "ㅋㅋ", "ㅎㅎ", "테스트", "test"]
+    if is_pure_non_medical:
+        return {
+            "category_key": "non_medical",
+            "is_medical_symptom": False,
+            "category_title": "일반 대화",
+            "primary_depts": [],
+            "alt_depts": [],
+            "advice": "",
+            "target_date_str": "오늘",
+            "is_sunday": (datetime.now().weekday() == 6),
+            "is_night": False,
+            "target_district": None
+        }
+
+    # 2. 날짜 및 시간 키워드 파싱
     today = datetime.now().date()
     is_sunday = False
     is_night = False
@@ -298,102 +337,25 @@ def analyze_symptom_and_intent(text):
         is_sunday = True
         
     target_district = None
-    if "양덕" in text:
-        target_district = "양덕동"
-    elif "장량" in text or "장성" in text or "법원" in text:
-        target_district = "장량동"
-    elif "두호" in text:
-        target_district = "두호동"
-    elif "창포" in text:
-        target_district = "창포동"
-    elif "한동대" in text or "흥해" in text or "초곡" in text:
-        target_district = "흥해읍/한동대"
-    elif "우현" in text:
-        target_district = "우현동"
-    elif "이동" in text:
-        target_district = "이동"
-
-    # 특정 진료과 직접 검색 (예: 양덕동 내과, 소아과, 이비인후과 등)
-    dept_map = {
-        "내과": (["내과", "소화기내과", "가정의학과"], ["응급의학과"], "내과 전문 진료 의원을 안내합니다."),
-        "이비인후과": (["이비인후과"], ["내과", "가정의학과"], "이비인후과 호흡기/이비인후 질환 전문 의원을 안내합니다."),
-        "피부과": (["피부과"], ["가정의학과"], "피부과 질환/진료 의원을 안내합니다."),
-        "정형외과": (["정형외과", "마취통증의학과"], ["외과"], "정형외과/통증의학과 전문 의원을 안내합니다."),
-        "소아과": (["소아청소년과"], ["이비인후과"], "소아청소년과 전문 의원을 안내합니다."),
-        "외과": (["외과", "정형외과"], ["응급의학과"], "외과/상처치료 전문 의원을 안내합니다."),
-        "안과": (["안과"], ["내과", "가정의학과"], "안과 질환 전문 의원을 안내합니다."),
-        "치과": (["치과"], [], "치과 전문 의원을 안내합니다."),
-        "비뇨기과": (["비뇨의학과", "내과"], ["가정의학과"], "비뇨의학과 전문 의원을 안내합니다.")
+    district_map = {
+        "양덕": "양덕동", "장량": "장량동", "장성": "장량동", "두호": "두호동",
+        "창포": "창포동", "한동대": "흥해읍/한동대", "흥해": "흥해읍/한동대",
+        "초곡": "흥해읍/한동대", "우현": "우현동", "이동": "이동", "효자": "효자동",
+        "지곡": "지곡동", "대이동": "대이동", "오천": "오천읍", "문덕": "오천읍"
     }
-    for dept_kw, (pri, alt, adv) in dept_map.items():
-        if dept_kw in text_lower:
-            return {
-                "category_key": f"dept_{dept_kw}",
-                "is_medical_symptom": True,
-                "category_title": f"{dept_kw} 진료 안내",
-                "primary_depts": pri,
-                "alt_depts": alt,
-                "advice": adv,
-                "target_date_str": target_date_str,
-                "is_sunday": is_sunday,
-                "is_night": is_night,
-                "target_district": target_district
-            }
+    for kw, dist_name in district_map.items():
+        if kw in text:
+            target_district = dist_name
+            break
 
-    # 룰 기반 키워드가 없는 경우 -> Gemini 동적 AI 트리아지 호출
-    if matched_cat_key is None:
-        is_clear_non_medical = text_lower in ["바보", "안녕", "안녕하세요", "ㅎㅇ", "하이", "ㅋㅋ", "ㅎㅎ", "테스트", "test"]
-        if not is_clear_non_medical:
-            ai_triage = analyze_symptom_with_gemini(text)
-            if ai_triage and ai_triage.get("is_medical") and ai_triage.get("primary_depts"):
-                return {
-                    "category_key": "ai_dynamic",
-                    "is_medical_symptom": True,
-                    "category_title": ai_triage.get("category_title", "의료 진료 안내"),
-                    "primary_depts": ai_triage.get("primary_depts", ["내과", "가정의학과"]),
-                    "alt_depts": ai_triage.get("alt_depts", ["응급의학과"]),
-                    "advice": ai_triage.get("advice", "가까운 진료 가능 병의원을 방문해 보세요."),
-                    "target_date_str": target_date_str,
-                    "is_sunday": is_sunday,
-                    "is_night": is_night,
-                    "target_district": target_district
-                }
-
-        # 일반적인 신체 통증/불편 호소 키워드 감지 (예: "아파", "통증", "쑤셔", "결려", "몸이 안 좋아")
-        pain_words = ["아파", "통증", "쑤셔", "결려", "이상해", "불편", "괴로워", "저려", "따가워", "욱신", "부었", "다쳤", "쓰려", "답답"]
-        if any(pw in text_lower for pw in pain_words):
-            return {
-                "category_key": "general_pain",
-                "is_medical_symptom": True,
-                "category_title": "신체 통증 / 1차 진료 안내",
-                "primary_depts": ["내과", "가정의학과", "정형외과"],
-                "alt_depts": ["응급의학과"],
-                "advice": "신체 통증 및 불편감에 대해 1차 진료가 가능한 가까운 내과/가정의학과/정형외과를 안내합니다.",
-                "target_date_str": target_date_str,
-                "is_sunday": is_sunday,
-                "is_night": is_night,
-                "target_district": target_district
-            }
-
-        if any(w in text_lower for w in ["병원", "의원", "진료", "가까운", "문 연", "응급실", "일요일", "야간", "어디", "추천"]):
-            return {
-                "category_key": "general_hospital",
-                "is_medical_symptom": True,
-                "category_title": "가까운 진료 가능 병의원",
-                "primary_depts": ["내과", "가정의학과", "이비인후과"],
-                "alt_depts": ["응급의학과"],
-                "advice": "내 위치 기준 진료 가능한 가까운 포항 병의원을 안내합니다.",
-                "target_date_str": target_date_str,
-                "is_sunday": is_sunday,
-                "is_night": is_night,
-                "target_district": target_district
-            }
-        else:
-            # 비의료 일상 대화 또는 짧은 텍스트 (예: 바보, 안녕 등)
+    # 3. [AI-First Triage] Gemini 3.6 Flash를 1순위로 실행하여 임상 증상 및 진료과 정밀 분석
+    ai_result = analyze_symptom_with_gemini(text)
+    if ai_result:
+        if not ai_result.get("is_medical", True):
             return {
                 "category_key": "non_medical",
                 "is_medical_symptom": False,
-                "category_title": "일반 대화",
+                "category_title": ai_result.get("category_title", "일반 대화"),
                 "primary_depts": [],
                 "alt_depts": [],
                 "advice": "",
@@ -402,15 +364,80 @@ def analyze_symptom_and_intent(text):
                 "is_night": is_night,
                 "target_district": target_district
             }
+        
+        primary_depts = ai_result.get("primary_depts") or ["내과", "가정의학과"]
+        alt_depts = ai_result.get("alt_depts") or ["응급의학과"]
+        if ai_result.get("is_sunday"):
+            is_sunday = True
+        if ai_result.get("is_night"):
+            is_night = True
+        if ai_result.get("target_district"):
+            target_district = target_district or ai_result.get("target_district")
 
-    cat_info = SYMPTOM_CATEGORIES[matched_cat_key]
+        return {
+            "category_key": "ai_triage",
+            "is_medical_symptom": True,
+            "category_title": ai_result.get("category_title", "의료 진료 안내"),
+            "primary_depts": primary_depts,
+            "alt_depts": alt_depts,
+            "advice": ai_result.get("advice", "가까운 진료 가능 병의원을 안내합니다."),
+            "target_date_str": target_date_str,
+            "is_sunday": is_sunday,
+            "is_night": is_night,
+            "target_district": target_district,
+            "urgency": ai_result.get("urgency", "routine")
+        }
+
+    # 4. [Fallback] 만약 Gemini 일시 오류 시 로컬 키워드 사전으로 안전하게 폴백
+    matched_cat_key = None
+    max_score = 0
+    for cat_key, cat_data in SYMPTOM_CATEGORIES.items():
+        score = 0
+        for kw in cat_data["keywords"]:
+            if kw in text_lower:
+                score += (3 if len(kw) >= 2 else 1)
+        if score > max_score:
+            max_score = score
+            matched_cat_key = cat_key
+
+    if matched_cat_key:
+        cat_info = SYMPTOM_CATEGORIES[matched_cat_key]
+        return {
+            "category_key": matched_cat_key,
+            "is_medical_symptom": True,
+            "category_title": cat_info["title"],
+            "primary_depts": cat_info["primary_depts"],
+            "alt_depts": cat_info["alt_depts"],
+            "advice": cat_info["advice"],
+            "target_date_str": target_date_str,
+            "is_sunday": is_sunday,
+            "is_night": is_night,
+            "target_district": target_district
+        }
+
+    # 일반 통증 호소 폴백
+    pain_words = ["아파", "통증", "쑤셔", "결려", "이상해", "불편", "괴로워", "저려", "따가워", "욱신", "부었", "다쳤", "쓰려", "답답", "병원", "진료"]
+    if any(pw in text_lower for pw in pain_words):
+        return {
+            "category_key": "general_pain",
+            "is_medical_symptom": True,
+            "category_title": "신체 통증 및 1차 진료 안내",
+            "primary_depts": ["내과", "가정의학과", "정형외과"],
+            "alt_depts": ["응급의학과"],
+            "advice": "신체 불편 증상에 대해 1차 진료가 가능한 가까운 내과/정형외과/가정의학과를 안내합니다.",
+            "target_date_str": target_date_str,
+            "is_sunday": is_sunday,
+            "is_night": is_night,
+            "target_district": target_district
+        }
+
     return {
-        "category_key": matched_cat_key,
+        "category_key": "general_hospital",
         "is_medical_symptom": True,
-        "category_title": cat_info["title"],
-        "primary_depts": cat_info["primary_depts"],
-        "alt_depts": cat_info["alt_depts"],
-        "advice": cat_info["advice"],
+        "category_title": "가까운 진료 가능 병의원",
+        "primary_depts": ["내과", "가정의학과", "이비인후과"],
+        "alt_depts": ["응급의학과"],
+        "advice": "내 위치 기준 진료 가능한 가까운 포항 병의원을 안내합니다.",
         "target_date_str": target_date_str,
         "is_sunday": is_sunday,
         "is_night": is_night,
@@ -421,12 +448,11 @@ def rank_and_filter_hospitals(hospitals, analysis, user_lat=None, user_lng=None,
     if analysis.get("category_key") == "non_medical":
         return []
         
-    primary_depts = set(analysis["primary_depts"])
-    alt_depts = set(analysis["alt_depts"])
-    is_sunday = analysis["is_sunday"]
-    is_night = analysis["is_night"]
-    target_district = analysis["target_district"]
-    is_medical = analysis.get("is_medical_symptom", False)
+    primary_depts = set(analysis.get("primary_depts") or [])
+    alt_depts = set(analysis.get("alt_depts") or [])
+    is_sunday = analysis.get("is_sunday", False)
+    is_night = analysis.get("is_night", False)
+    target_district = analysis.get("target_district")
     
     scored_list = []
     
@@ -442,28 +468,27 @@ def rank_and_filter_hospitals(hospitals, analysis, user_lat=None, user_lng=None,
         common_alt = h_depts.intersection(alt_depts)
         is_er = bool(h.get("is_emergency"))
         
-        # 의학적 증상이 명시된 경우 관련 없는 진료과(예: 배 아픈데 피부과)는 원천 배제!
-        if is_medical and not common_primary and not common_alt and not is_er:
-            continue
-            
         if common_primary:
-            score += 50
-            match_reasons.append(f"1차 추천: {', '.join(common_primary)}")
+            score += 60
+            match_reasons.append(f"추천 진료과: {', '.join(common_primary)}")
         elif common_alt:
-            score += 35
-            match_reasons.append(f"대안 진료: {', '.join(common_alt)}")
+            score += 40
+            match_reasons.append(f"대안 진료과: {', '.join(common_alt)}")
         elif is_er:
-            score += 30
+            score += 35
             match_reasons.append("24시간 응급진료")
         else:
-            score += 5
+            if any(dept in h_depts for dept in ["내과", "가정의학과", "일반의", "외과"]):
+                score += 15
+            else:
+                score += 5
                 
         if is_sunday:
             if h.get("sunday_open") or is_er:
                 score += 40
                 match_reasons.append("일요일 진료 가능")
             else:
-                score -= 35
+                score -= 30
                 
         if is_night:
             if h.get("night_open") or is_er:
@@ -474,7 +499,7 @@ def rank_and_filter_hospitals(hospitals, analysis, user_lat=None, user_lng=None,
                 
         if target_district:
             if target_district in (h.get("district") or "") or target_district in (h.get("address") or ""):
-                score += 30
+                score += 35
                 match_reasons.append(f"{target_district} 생활권")
         else:
             if "양덕동" in (h.get("district") or "") or "장량동" in (h.get("district") or ""):
@@ -488,24 +513,18 @@ def rank_and_filter_hospitals(hospitals, analysis, user_lat=None, user_lng=None,
             
             if dist_km is not None:
                 if dist_km <= 1.5:
-                    score += 25
-                    match_reasons.append("반경 1.5km 이내 초근접")
+                    score += 30
+                    match_reasons.append("반경 1.5km 이내")
                 elif dist_km <= 3.0:
-                    score += 15
+                    score += 20
                 elif dist_km <= 6.0:
-                    score += 5
+                    score += 10
                 else:
-                    score -= min(30, int(dist_km * 2))
+                    score -= min(25, int(dist_km * 1.5))
                     
         if h.get("posaka") == "O":
             score += 5
             
-        if analysis["category_key"] == "fever_cold":
-            if h.get("fever_status") == "possible":
-                score += 15
-            elif h.get("fever_status") == "impossible":
-                score -= 50
-                
         query = h.get("naver_search_query") or f"{h['name']} 포항"
         naver_map_url = f"https://map.naver.com/p/search/{requests.utils.quote(query)}"
         kakao_map_url = f"https://map.kakao.com/link/to/{requests.utils.quote(h['name'])},{h.get('lat')},{h.get('lng')}"
@@ -521,9 +540,13 @@ def rank_and_filter_hospitals(hospitals, analysis, user_lat=None, user_lng=None,
         })
         
     if sort_by == "distance" and user_lat is not None:
-        scored_list.sort(key=lambda x: (x.get("distance_km") is None, x.get("distance_km") or 999))
+        scored_list.sort(key=lambda x: (x.get("distance_km") is None, x.get("distance_km") or 999, -x["match_score"]))
     else:
         scored_list.sort(key=lambda x: x["match_score"], reverse=True)
+        
+    # 어떤 경우에도 증상이 있는 경우 최소 5곳 이상의 추천 병원을 보장
+    if not scored_list:
+        scored_list = hospitals[:10]
         
     return scored_list
 
@@ -550,24 +573,26 @@ def generate_gemini_conversational_reply(user_message, analysis, top_hospitals):
         
     hosp_text = "\n".join(hospital_summary) if hospital_summary else "진료 가능 병원"
     
-    prompt = f"""너는 포항 시민과 한동대학교/양덕동 학생들을 위한 전문 AI 의료 안내 비서 "포항 바로닥터"야.
+    prompt = f"""너는 포항 시민과 학생들을 위한 따뜻하고 전문적인 AI 의료 트리아지 닥터 "포항 바로닥터"야.
 
-[사용자 입력]
+[환자 호소 증상]
 "{user_message}"
 
-[의학 분석 정보]
-- 증상 분류: {analysis['category_title']}
-- 추천 진료과: 1차 {', '.join(analysis['primary_depts'])} (대안: {', '.join(analysis['alt_depts'])})
-- 희망/기준 날짜: {analysis['target_date_str']} (일요일: {analysis['is_sunday']}, 야간: {analysis['is_night']})
+[의학적 트리아지 분석 결과]
+- 추정 질환/상태: {analysis.get('category_title', '증상 호소')}
+- 권장 1차 진료과: {', '.join(analysis.get('primary_depts', []))} (대안/응급: {', '.join(analysis.get('alt_depts', []))})
+- 진료 희망 일시: {analysis.get('target_date_str', '오늘')}
+- 1차 대처 조언: {analysis.get('advice', '')}
 
-[추천 병원 목록]
+[포항 관내 진료 가능 추천 병원 (공공데이터 663개 연동 기반)]
 {hosp_text}
 
-[엄격한 답변 지침]
-1. "안녕하세요"라는 형식적인 첫인사를 절대 반복하지 말 것. 대화가 이미 진행 중이므로 환자의 증상에 대한 따뜻한 공감과 긴급도/수액 치료 등 의학적 행동 요령으로 바로 본론을 시작해.
-2. 반드시 위에 제공된 [추천 병원 목록]에 존재하는 실제 병원 이름과 정보만 언급할 것.
-3. 환자의 상황(예: 일요일, 야간, 장염 탈수, 고열 등)에 맞춰 수액 치료나 행동 요령을 명확하고 친절하게 설명해줘.
-4. 모바일 화면에서 빠르게 읽을 수 있도록 읽기 쉬운 한국어 대화체(3~4문단, 200~250자 내외)로 작성하고 마크다운 볼드(**강조**)를 적절히 사용해줘."""
+[답변 작성 가이드]
+1. 불필요한 형식적 첫인사("안녕하세요")는 생략하고, 환자가 겪고 있는 고통/불편에 대한 따뜻한 공감으로 바로 시작해.
+2. 왜 이 진료과({', '.join(analysis.get('primary_depts', []))})를 방문해야 하는지 환자의 눈높이에 맞게 1문장으로 친절히 설명해줘.
+3. 환자가 진료 전/병원 이동 중 취해야 할 행동 요령(예: 탈수 예방을 위한 소량의 미온수/수액 권고, RICE 요법, 체온 관리, 금식 여부 등)을 명확하게 짚어줘.
+4. 아래 추천 병원 목록 중에서 적절한 병원 1~2곳을 자연스럽게 언급하며 진료시간 확인 및 방문을 권유해줘.
+5. 모바일 화면에서 빠르게 읽을 수 있도록 읽기 쉬운 한국어 대화체(3~4문단, 200~250자 내외)로 작성하고 마크다운 볼드(**강조**)를 적절히 사용해줘."""
 
     try:
         res = client.models.generate_content(

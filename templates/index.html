@@ -1428,6 +1428,9 @@
     const text = (customText || inputEl.value).trim();
     if (!text) return;
 
+    // 모바일 가상 키보드 즉시 내리기
+    inputEl.blur();
+
     isProcessing = true;
     addUserBubble(text);
     if (!customText) inputEl.value = '';
@@ -1474,7 +1477,6 @@
       isProcessing = false;
       sendBtn.disabled = false;
       inputEl.disabled = false;
-      inputEl.focus();
     }
   }
 
