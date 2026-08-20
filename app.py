@@ -86,10 +86,19 @@ def get_gemini_client(api_key=None):
             return None
     return _gemini_clients_cache.get(api_key)
 
+GEMINI_FALLBACK_MODELS = [
+    "gemini-3.6-flash",
+    "gemini-flash-latest",
+    "gemini-3.5-flash-lite",
+    "gemini-3.7-flash",
+    "gemini-3.1-flash-lite"
+]
+
 def execute_with_gemini_key_rotation(operation_fn):
     """
     마지막으로 성공한 Gemini API 키 인덱스부터 시작하여 순환 시도하고,
-    성공한 키 인덱스를 전역에 기억하여 다음 요청 시 바로 그 키를 사용하는 순환 Failover 엔진
+    각 키마다 다중 모델(3.6 Flash, Flash-latest, 3.5 Flash-lite 등) 순환 Failover를 수행하여
+    할당량을 극대화하는 지능형 다중 키 + 다중 모델 Failover 엔진
     """
     global _current_gemini_key_index
     keys = get_all_gemini_api_keys()
@@ -108,15 +117,17 @@ def execute_with_gemini_key_rotation(operation_fn):
         if not client:
             continue
             
-        try:
-            result = operation_fn(client, api_key)
-            with _key_lock:
-                _current_gemini_key_index = curr_idx
-            return result, None
-        except Exception as e:
-            last_err = e
-            print(f"[Gemini Key #{curr_idx+1} Failover] error: {e}")
-            continue
+        # 키마다 독립된 무료 쿼터를 가진 다중 모델 순환 시도
+        for model_name in GEMINI_FALLBACK_MODELS:
+            try:
+                result = operation_fn(client, api_key, model_name)
+                with _key_lock:
+                    _current_gemini_key_index = curr_idx
+                return result, None
+            except Exception as e:
+                last_err = e
+                # print(f"[Gemini Key #{curr_idx+1} - {model_name} Failover] error: {e}")
+                continue
             
     err_str = str(last_err) if last_err else "API Key Quota Exceeded"
     if "429" in err_str or "RESOURCE_EXHAUSTED" in err_str:
@@ -435,9 +446,9 @@ def analyze_symptom_with_gemini(text):
   "advice": ""
 }}"""
 
-    def _do_analyze(client, api_key):
+    def _do_analyze(client, api_key, model_name):
         res = client.models.generate_content(
-            model="gemini-3.6-flash",
+            model=model_name,
             contents=prompt
         )
         raw_text = (res.text or "").strip()
@@ -961,8 +972,8 @@ def generate_gemini_conversational_reply(user_message, analysis, top_hospitals):
         prompt = f"""너는 포항 시민과 학생들을 위한 AI 의료 안내 비서 "포항 바로닥터"야.
 사용자가 "{user_message}"라고 입력했어.
 상투적인 "안녕하세요" 첫인사를 반복하지 말고, 사용자의 말에 짧고 자연스럽게 한 문장으로 반응한 뒤 "어디가 불편하시거나 찾으시는 병원이 있으신가요? (예: 배 아파, 목감기, 일요일 정형외과)"라고 1~2문장으로 간결하게 물어봐줘."""
-        def _do_non_medical(client, api_key):
-            res = client.models.generate_content(model="gemini-3.6-flash", contents=prompt)
+        def _do_non_medical(client, api_key, model_name):
+            res = client.models.generate_content(model=model_name, contents=prompt)
             return (res.text or "").strip()
         return execute_with_gemini_key_rotation(_do_non_medical)
         
@@ -1015,9 +1026,9 @@ def generate_gemini_conversational_reply(user_message, analysis, top_hospitals):
 5. 환자가 진료 전/병원 이동 중 취해야 할 행동 요령(예: 탈수 예방 수액/미온수, RICE 요법, 체온 관리, 금식 여부, 신분증 지참 등)을 1~2문장으로 짚어줘.
 6. 모바일 화면에서 빠르게 읽을 수 있도록 읽기 쉬운 한국어 대화체(3~4문단, 200~250자 내외)로 작성하고 마크다운 볼드(**강조**)를 사용해줘."""
 
-    def _do_reply(client, api_key):
+    def _do_reply(client, api_key, model_name):
         res = client.models.generate_content(
-            model="gemini-3.6-flash",
+            model=model_name,
             contents=prompt
         )
         return (res.text or "").strip()
