@@ -33,8 +33,8 @@
       "holiday": null
     },
     "hours_summary": "외래 평일 09:00~18:00 / 토 09:00~13:00 / 일 휴진 / 응급실 24시간",
-    "sunday_open": false,
-    "holiday_open": false,
+    "sunday_open": true,
+    "holiday_open": true,
     "night_open": false,
     "is_emergency": true,
     "emergency_level": "지역응급의료기관",
@@ -58,7 +58,8 @@
       "code": "A2700008",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2026-07-20"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2700016",
@@ -106,8 +107,8 @@
       "holiday": null
     },
     "hours_summary": "외래 평일 09:00~17:00 / 토 08:30~12:30 / 일 휴진 / 응급실 24시간",
-    "sunday_open": false,
-    "holiday_open": false,
+    "sunday_open": true,
+    "holiday_open": true,
     "night_open": true,
     "is_emergency": true,
     "emergency_level": "권역응급의료센터",
@@ -132,7 +133,8 @@
       "code": "A2700016",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2026-07-20"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2700002",
@@ -180,8 +182,8 @@
       "holiday": null
     },
     "hours_summary": "외래 평일 08:30~17:30 / 토 08:30~12:30 / 일 휴진 / 응급실 24시간",
-    "sunday_open": false,
-    "holiday_open": false,
+    "sunday_open": true,
+    "holiday_open": true,
     "night_open": false,
     "is_emergency": true,
     "emergency_level": "지역응급의료센터",
@@ -205,7 +207,8 @@
       "code": "A2700002",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2026-07-20"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2700005",
@@ -249,8 +252,8 @@
       "holiday": null
     },
     "hours_summary": "외래 월 08:30~17:30 / 화 08:30~17:00 / 수 08:30~17:00 / 목 08:30~17:00 / 금 08:30~17:00 / 토 08:30~12:30 / 일 휴진 / 응급실 24시간",
-    "sunday_open": false,
-    "holiday_open": false,
+    "sunday_open": true,
+    "holiday_open": true,
     "night_open": false,
     "is_emergency": true,
     "emergency_level": "지역응급의료기관",
@@ -274,7 +277,8 @@
       "code": "A2700005",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2026-08-04"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2702563",
@@ -315,8 +319,8 @@
       "holiday": null
     },
     "hours_summary": "외래 월 09:00~18:00 / 화 09:00~17:00 / 수 09:00~17:00 / 목 09:00~17:00 / 금 09:00~17:00 / 토 09:00~13:00 / 일 휴진 / 응급실 24시간",
-    "sunday_open": false,
-    "holiday_open": false,
+    "sunday_open": true,
+    "holiday_open": true,
     "night_open": true,
     "is_emergency": true,
     "emergency_level": "지역응급의료기관",
@@ -341,7 +345,8 @@
       "code": "A2702563",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2026-07-22"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2702839",
@@ -394,7 +399,8 @@
       "code": "A2702839",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2025-09-17"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "B2700469",
@@ -450,7 +456,8 @@
       "code": "B2700469",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2026-07-20"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2702368",
@@ -509,7 +516,8 @@
       "code": "A2702368",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2024-09-23"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2700970",
@@ -562,7 +570,8 @@
       "code": "A2700970",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2021-03-09"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2700151",
@@ -614,7 +623,8 @@
       "code": "A2700151",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2024-01-22"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2700233",
@@ -670,7 +680,8 @@
       "code": "A2700233",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2024-01-22"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "B2700073",
@@ -728,7 +739,8 @@
       "code": "B2700073",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2024-04-12"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "B2700758",
@@ -787,7 +799,8 @@
       "code": "B2700758",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2024-03-29"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "B2700434",
@@ -845,7 +858,8 @@
       "code": "B2700434",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2025-03-11"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "B2700175",
@@ -904,7 +918,8 @@
       "code": "B2700175",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2024-04-12"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "B2700419",
@@ -962,7 +977,8 @@
       "code": "B2700419",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2024-04-29"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2700775",
@@ -1017,7 +1033,8 @@
       "code": "A2700775",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2026-01-20"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2702310",
@@ -1075,7 +1092,8 @@
       "code": "A2702310",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2024-01-22"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2701496",
@@ -1125,7 +1143,8 @@
       "code": "A2701496",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2024-09-23"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "B2700290",
@@ -1183,7 +1202,8 @@
       "code": "B2700290",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2024-01-30"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2700856",
@@ -1241,7 +1261,8 @@
       "code": "A2700856",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2024-01-22"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2701732",
@@ -1291,7 +1312,8 @@
       "code": "A2701732",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2024-09-12"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "B2700370",
@@ -1346,7 +1368,8 @@
       "code": "B2700370",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2022-09-16"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2703155",
@@ -1398,7 +1421,8 @@
       "code": "A2703155",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2025-03-04"
-    }
+    },
+    "saturday_open": false
   },
   {
     "id": "A2701857",
@@ -1448,7 +1472,8 @@
       "code": "A2701857",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2024-10-15"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2700174",
@@ -1502,7 +1527,8 @@
       "code": "A2700174",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2024-04-02"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2700613",
@@ -1556,7 +1582,8 @@
       "code": "A2700613",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2024-01-22"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "B2700041",
@@ -1611,7 +1638,8 @@
       "code": "B2700041",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2025-09-05"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "B2700755",
@@ -1669,7 +1697,8 @@
       "code": "B2700755",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2025-06-25"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2700614",
@@ -1723,7 +1752,8 @@
       "code": "A2700614",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2024-01-22"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2701492",
@@ -1779,7 +1809,8 @@
       "code": "A2701492",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2024-09-23"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2702574",
@@ -1835,7 +1866,8 @@
       "code": "A2702574",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2024-01-22"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2701819",
@@ -1894,7 +1926,8 @@
       "code": "A2701819",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2024-01-22"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2703127",
@@ -1950,7 +1983,8 @@
       "code": "A2703127",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2024-04-02"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2702627",
@@ -2005,7 +2039,8 @@
       "code": "A2702627",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2025-01-15"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2703231",
@@ -2055,7 +2090,8 @@
       "code": "A2703231",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2026-07-20"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "B2700006",
@@ -2115,7 +2151,8 @@
       "code": "B2700006",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2025-11-03"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "B2700804",
@@ -2170,7 +2207,8 @@
       "code": "B2700804",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2019-07-04"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2700687",
@@ -2222,7 +2260,8 @@
       "code": "A2700687",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2021-02-22"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "B2700269",
@@ -2276,7 +2315,8 @@
       "code": "B2700269",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2024-07-25"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2702571",
@@ -2333,7 +2373,8 @@
       "code": "A2702571",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2025-11-24"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2702648",
@@ -2386,7 +2427,8 @@
       "code": "A2702648",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2026-07-14"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "B2700988",
@@ -2444,7 +2486,8 @@
       "code": "B2700988",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2026-08-13"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "B2700115",
@@ -2499,7 +2542,8 @@
       "code": "B2700115",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2024-04-29"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2700557",
@@ -2554,7 +2598,8 @@
       "code": "A2700557",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2025-04-01"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "B2700946",
@@ -2612,7 +2657,8 @@
       "code": "B2700946",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2024-05-07"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "B2700113",
@@ -2667,7 +2713,8 @@
       "code": "B2700113",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2025-06-30"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "B2700078",
@@ -2726,7 +2773,8 @@
       "code": "B2700078",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2026-07-15"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "B2700914",
@@ -2784,7 +2832,8 @@
       "code": "B2700914",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2024-11-19"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2702583",
@@ -2846,7 +2895,8 @@
       "code": "A2702583",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2026-05-11"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2702309",
@@ -2896,7 +2946,8 @@
       "code": "A2702309",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2026-04-08"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2702311",
@@ -2950,7 +3001,8 @@
       "code": "A2702311",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2025-03-17"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2702435",
@@ -3011,7 +3063,8 @@
       "code": "A2702435",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2025-05-28"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2703057",
@@ -3071,7 +3124,8 @@
       "code": "A2703057",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2024-06-07"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2703018",
@@ -3121,7 +3175,8 @@
       "code": "A2703018",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2026-03-20"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2701521",
@@ -3175,7 +3230,8 @@
       "code": "A2701521",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2024-09-23"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "B2700961",
@@ -3233,7 +3289,8 @@
       "code": "B2700961",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2024-02-05"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "B2700786",
@@ -3291,7 +3348,8 @@
       "code": "B2700786",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2024-07-19"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2701787",
@@ -3352,7 +3410,8 @@
       "code": "A2701787",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2024-10-15"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "B2700032",
@@ -3410,7 +3469,8 @@
       "code": "B2700032",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2026-03-09"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2701546",
@@ -3467,7 +3527,8 @@
       "code": "A2701546",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2024-10-15"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2701876",
@@ -3521,7 +3582,8 @@
       "code": "A2701876",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2024-10-15"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2702919",
@@ -3571,7 +3633,8 @@
       "code": "A2702919",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2024-06-07"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2701861",
@@ -3630,7 +3693,8 @@
       "code": "A2701861",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2024-09-30"
-    }
+    },
+    "saturday_open": false
   },
   {
     "id": "A2701820",
@@ -3680,7 +3744,8 @@
       "code": "A2701820",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2024-09-23"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2700624",
@@ -3734,7 +3799,8 @@
       "code": "A2700624",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2026-03-03"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "B2700415",
@@ -3792,7 +3858,8 @@
       "code": "B2700415",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2025-09-01"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "B2700932",
@@ -3847,7 +3914,8 @@
       "code": "B2700932",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2025-09-17"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2701000",
@@ -3906,7 +3974,8 @@
       "code": "A2701000",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2024-08-27"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2701824",
@@ -3964,7 +4033,8 @@
       "code": "A2701824",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2024-09-23"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2700859",
@@ -4022,7 +4092,8 @@
       "code": "A2700859",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2026-08-13"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2700381",
@@ -4077,7 +4148,8 @@
       "code": "A2700381",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2024-01-22"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2700391",
@@ -4131,7 +4203,8 @@
       "code": "A2700391",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2026-07-29"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2702237",
@@ -4186,7 +4259,8 @@
       "code": "A2702237",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2024-09-23"
-    }
+    },
+    "saturday_open": false
   },
   {
     "id": "B2700106",
@@ -4245,7 +4319,8 @@
       "code": "B2700106",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2026-08-03"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "B2700484",
@@ -4304,7 +4379,8 @@
       "code": "B2700484",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2024-04-08"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2702424",
@@ -4354,7 +4430,8 @@
       "code": "A2702424",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2021-06-09"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2703132",
@@ -4404,7 +4481,8 @@
       "code": "A2703132",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2024-05-24"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2701163",
@@ -4459,7 +4537,8 @@
       "code": "A2701163",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2022-05-23"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2700612",
@@ -4514,7 +4593,8 @@
       "code": "A2700612",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2024-01-22"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "B2700590",
@@ -4571,7 +4651,8 @@
       "code": "B2700590",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2026-08-13"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2701434",
@@ -4630,7 +4711,8 @@
       "code": "A2701434",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2026-04-02"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2700281",
@@ -4688,7 +4770,8 @@
       "code": "A2700281",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2024-06-25"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "B2700874",
@@ -4746,7 +4829,8 @@
       "code": "B2700874",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2021-05-17"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2702880",
@@ -4796,7 +4880,8 @@
       "code": "A2702880",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2024-01-22"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2703093",
@@ -4849,7 +4934,8 @@
       "code": "A2703093",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2025-09-17"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2702476",
@@ -4905,7 +4991,8 @@
       "code": "A2702476",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2024-09-23"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2702691",
@@ -4965,7 +5052,8 @@
       "code": "A2702691",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2024-01-22"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2701885",
@@ -5025,7 +5113,8 @@
       "code": "A2701885",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2024-09-12"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2700532",
@@ -5081,7 +5170,8 @@
       "code": "A2700532",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2022-10-25"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2703137",
@@ -5142,7 +5232,8 @@
       "code": "A2703137",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2026-01-20"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "B2700372",
@@ -5192,7 +5283,8 @@
       "code": "B2700372",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2018-02-13"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2700853",
@@ -5246,7 +5338,8 @@
       "code": "A2700853",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2026-08-13"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "B2700223",
@@ -5301,7 +5394,8 @@
       "code": "B2700223",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2022-12-02"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2700037",
@@ -5353,7 +5447,8 @@
       "code": "A2700037",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2019-12-04"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2701847",
@@ -5403,7 +5498,8 @@
       "code": "A2701847",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2024-09-23"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2702440",
@@ -5456,7 +5552,8 @@
       "code": "A2702440",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2026-05-26"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2701889",
@@ -5504,7 +5601,8 @@
       "code": "A2701889",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2024-09-23"
-    }
+    },
+    "saturday_open": false
   },
   {
     "id": "B2700232",
@@ -5561,7 +5659,8 @@
       "code": "B2700232",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2025-04-11"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "B2700527",
@@ -5616,7 +5715,8 @@
       "code": "B2700527",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2026-08-03"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2701791",
@@ -5675,7 +5775,8 @@
       "code": "A2701791",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2024-09-23"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "C2701668",
@@ -5736,7 +5837,8 @@
       "code": "C2701668",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2026-04-02"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2701663",
@@ -5796,7 +5898,8 @@
       "code": "A2701663",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2024-09-23"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2701895",
@@ -5859,7 +5962,8 @@
       "code": "A2701895",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2024-01-22"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2701436",
@@ -5909,7 +6013,8 @@
       "code": "A2701436",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2024-09-23"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2703122",
@@ -5967,7 +6072,8 @@
       "code": "A2703122",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2026-07-20"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2700328",
@@ -6027,7 +6133,8 @@
       "code": "A2700328",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2025-12-08"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2700620",
@@ -6082,7 +6189,8 @@
       "code": "A2700620",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2026-04-05"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2702502",
@@ -6136,7 +6244,8 @@
       "code": "A2702502",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2026-05-11"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "B2700020",
@@ -6192,7 +6301,8 @@
       "code": "B2700020",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2026-02-27"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "B2700544",
@@ -6250,7 +6360,8 @@
       "code": "B2700544",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2021-11-17"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2701406",
@@ -6311,7 +6422,8 @@
       "code": "A2701406",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2024-09-23"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2700163",
@@ -6361,7 +6473,8 @@
       "code": "A2700163",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2024-01-22"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2701255",
@@ -6416,7 +6529,8 @@
       "code": "A2701255",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2024-01-22"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "B2700102",
@@ -6471,7 +6585,8 @@
       "code": "B2700102",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2019-05-10"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2700689",
@@ -6526,7 +6641,8 @@
       "code": "A2700689",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2025-01-13"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "B2700440",
@@ -6584,7 +6700,8 @@
       "code": "B2700440",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2025-04-11"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "B2700852",
@@ -6644,7 +6761,8 @@
       "code": "B2700852",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2025-08-27"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "B2700409",
@@ -6702,7 +6820,8 @@
       "code": "B2700409",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2024-03-29"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "B2700534",
@@ -6760,7 +6879,8 @@
       "code": "B2700534",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2026-07-15"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2702870",
@@ -6819,7 +6939,8 @@
       "code": "A2702870",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2024-01-22"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2701728",
@@ -6869,7 +6990,8 @@
       "code": "A2701728",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2024-09-23"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2700255",
@@ -6926,7 +7048,8 @@
       "code": "A2700255",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2024-01-22"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2701145",
@@ -6984,7 +7107,8 @@
       "code": "A2701145",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2024-08-06"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2701545",
@@ -7034,7 +7158,8 @@
       "code": "A2701545",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2024-09-23"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2702688",
@@ -7089,7 +7214,8 @@
       "code": "A2702688",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2024-01-22"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "B2700923",
@@ -7146,7 +7272,8 @@
       "code": "B2700923",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2026-03-26"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "B2700330",
@@ -7205,7 +7332,8 @@
       "code": "B2700330",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2026-08-13"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2702816",
@@ -7260,7 +7388,8 @@
       "code": "A2702816",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2024-01-22"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "B2700524",
@@ -7319,7 +7448,8 @@
       "code": "B2700524",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2021-01-13"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "B2700297",
@@ -7374,7 +7504,8 @@
       "code": "B2700297",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2018-02-13"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2701669",
@@ -7433,7 +7564,8 @@
       "code": "A2701669",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2024-09-30"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2702400",
@@ -7494,7 +7626,8 @@
       "code": "A2702400",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2024-09-12"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2703181",
@@ -7547,7 +7680,8 @@
       "code": "A2703181",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2025-04-02"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2701868",
@@ -7606,7 +7740,8 @@
       "code": "A2701868",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2024-01-22"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2700394",
@@ -7656,7 +7791,8 @@
       "code": "A2700394",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2024-01-22"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2703108",
@@ -7713,7 +7849,8 @@
       "code": "A2703108",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2026-07-06"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2703045",
@@ -7763,7 +7900,8 @@
       "code": "A2703045",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2023-12-04"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2700857",
@@ -7818,7 +7956,8 @@
       "code": "A2700857",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2024-01-22"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2702920",
@@ -7870,7 +8009,8 @@
       "code": "A2702920",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2020-08-12"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2702518",
@@ -7926,7 +8066,8 @@
       "code": "A2702518",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2024-01-22"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "B2700565",
@@ -7984,7 +8125,8 @@
       "code": "B2700565",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2025-09-29"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2700906",
@@ -8034,7 +8176,8 @@
       "code": "A2700906",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2024-01-22"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2702607",
@@ -8090,7 +8233,8 @@
       "code": "A2702607",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2026-05-11"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2700638",
@@ -8146,7 +8290,8 @@
       "code": "A2700638",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2021-03-09"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2700296",
@@ -8199,7 +8344,8 @@
       "code": "A2700296",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2024-01-22"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2700136",
@@ -8254,7 +8400,8 @@
       "code": "A2700136",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2020-03-16"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "B2700987",
@@ -8312,7 +8459,8 @@
       "code": "B2700987",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2026-07-29"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2702610",
@@ -8372,7 +8520,8 @@
       "code": "A2702610",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2025-12-01"
-    }
+    },
+    "saturday_open": false
   },
   {
     "id": "A2700295",
@@ -8422,7 +8571,8 @@
       "code": "A2700295",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2026-01-09"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2702411",
@@ -8477,7 +8627,8 @@
       "code": "A2702411",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2024-09-30"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2701645",
@@ -8537,7 +8688,8 @@
       "code": "A2701645",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2024-09-23"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2700395",
@@ -8600,7 +8752,8 @@
       "code": "A2700395",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2026-04-28"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2700990",
@@ -8655,7 +8808,8 @@
       "code": "A2700990",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2024-01-22"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "B2700757",
@@ -8711,7 +8865,8 @@
       "code": "B2700757",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2023-03-10"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2701205",
@@ -8766,7 +8921,8 @@
       "code": "A2701205",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2025-06-25"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2701611",
@@ -8816,7 +8972,8 @@
       "code": "A2701611",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2025-02-12"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2701699",
@@ -8874,7 +9031,8 @@
       "code": "A2701699",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2024-09-23"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2700269",
@@ -8931,7 +9089,8 @@
       "code": "A2700269",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2023-08-28"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "B2700071",
@@ -8987,7 +9146,8 @@
       "code": "B2700071",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2020-11-09"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2700992",
@@ -9044,7 +9204,8 @@
       "code": "A2700992",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2024-01-22"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "B2700727",
@@ -9101,7 +9262,8 @@
       "code": "B2700727",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2024-08-06"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2701208",
@@ -9153,7 +9315,8 @@
       "code": "A2701208",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2026-01-06"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2700222",
@@ -9205,7 +9368,8 @@
       "code": "A2700222",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2019-07-04"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2703015",
@@ -9255,7 +9419,8 @@
       "code": "A2703015",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2024-01-22"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2702238",
@@ -9305,7 +9470,8 @@
       "code": "A2702238",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2024-09-23"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2700732",
@@ -9353,7 +9519,8 @@
       "code": "A2700732",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2023-05-23"
-    }
+    },
+    "saturday_open": false
   },
   {
     "id": "A2701361",
@@ -9408,7 +9575,8 @@
       "code": "A2701361",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2025-05-30"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2703022",
@@ -9462,7 +9630,8 @@
       "code": "A2703022",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2026-04-28"
-    }
+    },
+    "saturday_open": false
   },
   {
     "id": "A2702660",
@@ -9520,7 +9689,8 @@
       "code": "A2702660",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2024-09-03"
-    }
+    },
+    "saturday_open": false
   },
   {
     "id": "A2700094",
@@ -9573,7 +9743,8 @@
       "code": "A2700094",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2024-10-15"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2701308",
@@ -9625,7 +9796,8 @@
       "code": "A2701308",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2026-07-29"
-    }
+    },
+    "saturday_open": false
   },
   {
     "id": "B2700834",
@@ -9684,7 +9856,8 @@
       "code": "B2700834",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2024-06-25"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2701862",
@@ -9734,7 +9907,8 @@
       "code": "A2701862",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2024-09-23"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2700154",
@@ -9786,7 +9960,8 @@
       "code": "A2700154",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2024-01-22"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2701739",
@@ -9834,7 +10009,8 @@
       "code": "A2701739",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2025-09-09"
-    }
+    },
+    "saturday_open": false
   },
   {
     "id": "A2701136",
@@ -9884,7 +10060,8 @@
       "code": "A2701136",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2026-07-20"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2701495",
@@ -9941,7 +10118,8 @@
       "code": "A2701495",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2025-04-28"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2700692",
@@ -9995,7 +10173,8 @@
       "code": "A2700692",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2025-01-20"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2703180",
@@ -10045,7 +10224,8 @@
       "code": "A2703180",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2025-04-02"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2702783",
@@ -10100,7 +10280,8 @@
       "code": "A2702783",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2021-02-15"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2700520",
@@ -10152,7 +10333,8 @@
       "code": "A2700520",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2024-01-22"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2702823",
@@ -10210,7 +10392,8 @@
       "code": "A2702823",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2019-03-13"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2701789",
@@ -10265,7 +10448,8 @@
       "code": "A2701789",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2024-09-12"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2701423",
@@ -10325,7 +10509,8 @@
       "code": "A2701423",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2021-06-22"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "B2700505",
@@ -10383,7 +10568,8 @@
       "code": "B2700505",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2025-11-24"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2700588",
@@ -10436,7 +10622,8 @@
       "code": "A2700588",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2024-01-22"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2700383",
@@ -10490,7 +10677,8 @@
       "code": "A2700383",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2025-03-11"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "B2700896",
@@ -10549,7 +10737,8 @@
       "code": "B2700896",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2022-12-02"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2700728",
@@ -10599,7 +10788,8 @@
       "code": "A2700728",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2019-07-04"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "B2700507",
@@ -10655,7 +10845,8 @@
       "code": "B2700507",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2026-02-27"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2700686",
@@ -10709,7 +10900,8 @@
       "code": "A2700686",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2025-07-29"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2702720",
@@ -10773,7 +10965,8 @@
       "code": "A2702720",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2024-03-29"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2702624",
@@ -10831,7 +11024,8 @@
       "code": "A2702624",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2024-09-30"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2700776",
@@ -10886,7 +11080,8 @@
       "code": "A2700776",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2023-08-28"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2701001",
@@ -10940,7 +11135,8 @@
       "code": "A2701001",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2025-03-04"
-    }
+    },
+    "saturday_open": false
   },
   {
     "id": "A2701182",
@@ -10991,7 +11187,8 @@
       "code": "A2701182",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2024-01-22"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2700531",
@@ -11047,7 +11244,8 @@
       "code": "A2700531",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2024-01-22"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "B2700230",
@@ -11102,7 +11300,8 @@
       "code": "B2700230",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2024-05-03"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2700235",
@@ -11155,7 +11354,8 @@
       "code": "A2700235",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2024-01-22"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2700229",
@@ -11207,7 +11407,8 @@
       "code": "A2700229",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2021-02-10"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "C2701744",
@@ -11265,7 +11466,8 @@
       "code": "C2701744",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2025-06-25"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2702841",
@@ -11323,7 +11525,8 @@
       "code": "A2702841",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2024-01-22"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "B2700092",
@@ -11378,7 +11581,8 @@
       "code": "B2700092",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2023-07-20"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2702241",
@@ -11434,7 +11638,8 @@
       "code": "A2702241",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2024-10-15"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2702342",
@@ -11492,7 +11697,8 @@
       "code": "A2702342",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2026-08-13"
-    }
+    },
+    "saturday_open": false
   },
   {
     "id": "B2700867",
@@ -11549,7 +11755,8 @@
       "code": "B2700867",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2026-06-05"
-    }
+    },
+    "saturday_open": false
   },
   {
     "id": "A2700623",
@@ -11606,7 +11813,8 @@
       "code": "A2700623",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2019-07-04"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "B2700984",
@@ -11664,7 +11872,8 @@
       "code": "B2700984",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2026-04-02"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2701493",
@@ -11721,7 +11930,8 @@
       "code": "A2701493",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2026-07-20"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "B2700433",
@@ -11779,7 +11989,8 @@
       "code": "B2700433",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2026-03-24"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2701207",
@@ -11831,7 +12042,8 @@
       "code": "A2701207",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2025-10-20"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2701817",
@@ -11892,7 +12104,8 @@
       "code": "A2701817",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2025-07-22"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2700274",
@@ -11944,7 +12157,8 @@
       "code": "A2700274",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2024-01-22"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2700169",
@@ -11992,7 +12206,8 @@
       "code": "A2700169",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2024-10-15"
-    }
+    },
+    "saturday_open": false
   },
   {
     "id": "A2702690",
@@ -12052,7 +12267,8 @@
       "code": "A2702690",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2024-01-22"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2703101",
@@ -12113,7 +12329,8 @@
       "code": "A2703101",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2024-09-30"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2703099",
@@ -12165,7 +12382,8 @@
       "code": "A2703099",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2023-09-12"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2702519",
@@ -12225,7 +12443,8 @@
       "code": "A2702519",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2024-01-30"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2703113",
@@ -12283,7 +12502,8 @@
       "code": "A2703113",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2026-07-06"
-    }
+    },
+    "saturday_open": false
   },
   {
     "id": "A2703119",
@@ -12335,7 +12555,8 @@
       "code": "A2703119",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2024-08-06"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "E2700363",
@@ -12385,7 +12606,8 @@
       "code": "E2700363",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2017-11-13"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "E2700054",
@@ -12435,7 +12657,8 @@
       "code": "E2700054",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2026-07-06"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "E2700234",
@@ -12487,7 +12710,8 @@
       "code": "E2700234",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2024-07-01"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "E2700354",
@@ -12537,7 +12761,8 @@
       "code": "E2700354",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2011-08-17"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "E2700352",
@@ -12587,7 +12812,8 @@
       "code": "E2700352",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2017-11-13"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "E2700233",
@@ -12637,7 +12863,8 @@
       "code": "E2700233",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2025-08-04"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "E2700353",
@@ -12687,7 +12914,8 @@
       "code": "E2700353",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2017-11-13"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "E2700020",
@@ -12735,7 +12963,8 @@
       "code": "E2700020",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2025-08-21"
-    }
+    },
+    "saturday_open": false
   },
   {
     "id": "E2700113",
@@ -12787,7 +13016,8 @@
       "code": "E2700113",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2026-07-06"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "E2700562",
@@ -12839,7 +13069,8 @@
       "code": "E2700562",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2026-07-06"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "E2700231",
@@ -12889,7 +13120,8 @@
       "code": "E2700231",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2026-07-06"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "E2700426",
@@ -12939,7 +13171,8 @@
       "code": "E2700426",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2011-08-17"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "E2700033",
@@ -12989,7 +13222,8 @@
       "code": "E2700033",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2020-07-20"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "E2700362",
@@ -13039,7 +13273,8 @@
       "code": "E2700362",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2017-11-13"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "E2700315",
@@ -13089,7 +13324,8 @@
       "code": "E2700315",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2017-11-13"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "E2700316",
@@ -13139,7 +13375,8 @@
       "code": "E2700316",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2017-11-13"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "E2700525",
@@ -13189,7 +13426,8 @@
       "code": "E2700525",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2011-08-17"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "E2700424",
@@ -13239,7 +13477,8 @@
       "code": "E2700424",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2017-11-13"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2703186",
@@ -13294,7 +13533,8 @@
       "code": "A2703186",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2026-07-29"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "C2701761",
@@ -13350,7 +13590,8 @@
       "code": "C2701761",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2025-03-17"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2701803",
@@ -13407,7 +13648,8 @@
       "code": "A2701803",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2024-09-30"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2703173",
@@ -13465,7 +13707,8 @@
       "code": "A2703173",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2026-05-18"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2702838",
@@ -13525,7 +13768,8 @@
       "code": "A2702838",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2025-03-17"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2700202",
@@ -13575,7 +13819,8 @@
       "code": "A2700202",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2025-09-01"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "B2700823",
@@ -13633,7 +13878,8 @@
       "code": "B2700823",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2025-11-24"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2702953",
@@ -13691,7 +13937,8 @@
       "code": "A2702953",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2024-08-06"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2700456",
@@ -13752,7 +13999,8 @@
       "code": "A2700456",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2024-07-19"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2702658",
@@ -13809,7 +14057,8 @@
       "code": "A2702658",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2024-10-15"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2703090",
@@ -13867,7 +14116,8 @@
       "code": "A2703090",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2024-11-19"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2700657",
@@ -13923,7 +14173,8 @@
       "code": "A2700657",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2025-05-30"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2700688",
@@ -13976,7 +14227,8 @@
       "code": "A2700688",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2024-01-22"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2700968",
@@ -14033,7 +14285,8 @@
       "code": "A2700968",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2024-01-08"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2701651",
@@ -14093,7 +14346,8 @@
       "code": "A2701651",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2024-09-30"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2701160",
@@ -14147,7 +14401,8 @@
       "code": "A2701160",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2024-01-22"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2700971",
@@ -14198,7 +14453,8 @@
       "code": "A2700971",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2024-01-22"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2700855",
@@ -14252,7 +14508,8 @@
       "code": "A2700855",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2026-04-02"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2700068",
@@ -14315,7 +14572,8 @@
       "code": "A2700068",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2025-05-22"
-    }
+    },
+    "saturday_open": false
   },
   {
     "id": "A2700397",
@@ -14370,7 +14628,8 @@
       "code": "A2700397",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2022-01-10"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2702719",
@@ -14429,7 +14688,8 @@
       "code": "A2702719",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2024-01-22"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2701085",
@@ -14483,7 +14743,8 @@
       "code": "A2701085",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2025-09-17"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "B2700104",
@@ -14541,7 +14802,8 @@
       "code": "B2700104",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2024-04-12"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2701140",
@@ -14592,7 +14854,8 @@
       "code": "A2701140",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2026-02-27"
-    }
+    },
+    "saturday_open": false
   },
   {
     "id": "A2702381",
@@ -14646,7 +14909,8 @@
       "code": "A2702381",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2026-06-23"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "B2700438",
@@ -14704,7 +14968,8 @@
       "code": "B2700438",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2026-08-16"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "B2700805",
@@ -14762,7 +15027,8 @@
       "code": "B2700805",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2025-05-28"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2701408",
@@ -14820,7 +15086,8 @@
       "code": "A2701408",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2024-09-23"
-    }
+    },
+    "saturday_open": false
   },
   {
     "id": "A2701038",
@@ -14873,7 +15140,8 @@
       "code": "A2701038",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2024-01-22"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "B2700945",
@@ -14932,7 +15200,8 @@
       "code": "B2700945",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2025-11-03"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2700223",
@@ -14989,7 +15258,8 @@
       "code": "A2700223",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2021-03-02"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2700754",
@@ -15041,7 +15311,8 @@
       "code": "A2700754",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2026-07-20"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "B2700788",
@@ -15099,7 +15370,8 @@
       "code": "B2700788",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2025-05-22"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2702305",
@@ -15158,7 +15430,8 @@
       "code": "A2702305",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2026-07-15"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2700085",
@@ -15208,7 +15481,8 @@
       "code": "A2700085",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2024-01-24"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2701731",
@@ -15262,7 +15536,8 @@
       "code": "A2701731",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2024-10-15"
-    }
+    },
+    "saturday_open": false
   },
   {
     "id": "A2700359",
@@ -15316,7 +15591,8 @@
       "code": "A2700359",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2026-03-20"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2701470",
@@ -15366,7 +15642,8 @@
       "code": "A2701470",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2024-10-07"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "B2700917",
@@ -15424,7 +15701,8 @@
       "code": "B2700917",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2026-04-28"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2701214",
@@ -15481,7 +15759,8 @@
       "code": "A2701214",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2024-01-23"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2701076",
@@ -15536,7 +15815,8 @@
       "code": "A2701076",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2024-01-23"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2700988",
@@ -15588,7 +15868,8 @@
       "code": "A2700988",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2024-01-23"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "B2700513",
@@ -15638,7 +15919,8 @@
       "code": "B2700513",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2021-02-18"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2702240",
@@ -15688,7 +15970,8 @@
       "code": "A2702240",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2024-01-23"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "B2700231",
@@ -15746,7 +16029,8 @@
       "code": "B2700231",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2024-02-05"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2700748",
@@ -15799,7 +16083,8 @@
       "code": "A2700748",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2025-08-12"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2702922",
@@ -15869,7 +16154,8 @@
       "code": "A2702922",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2025-06-30"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2702393",
@@ -15919,7 +16205,8 @@
       "code": "A2702393",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2025-07-22"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2700218",
@@ -15976,7 +16263,8 @@
       "code": "A2700218",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2024-12-09"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2701219",
@@ -16026,7 +16314,8 @@
       "code": "A2701219",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2021-02-18"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "B2700236",
@@ -16078,7 +16367,8 @@
       "code": "B2700236",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2021-02-18"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2700700",
@@ -16128,7 +16418,8 @@
       "code": "A2700700",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2023-12-20"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2703077",
@@ -16186,7 +16477,8 @@
       "code": "A2703077",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2025-09-24"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2700367",
@@ -16236,7 +16528,8 @@
       "code": "A2700367",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2024-01-24"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2701157",
@@ -16286,7 +16579,8 @@
       "code": "A2701157",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2024-01-02"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2703217",
@@ -16346,7 +16640,8 @@
       "code": "A2703217",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2026-06-05"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2700472",
@@ -16396,7 +16691,8 @@
       "code": "A2700472",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2021-02-18"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2702226",
@@ -16452,7 +16748,8 @@
       "code": "A2702226",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2023-10-13"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "B2700316",
@@ -16510,7 +16807,8 @@
       "code": "B2700316",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2025-01-21"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "E2700358",
@@ -16560,7 +16858,8 @@
       "code": "E2700358",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2021-02-18"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2702496",
@@ -16610,7 +16909,8 @@
       "code": "A2702496",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2024-01-02"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "B2700197",
@@ -16669,7 +16969,8 @@
       "code": "B2700197",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2022-06-27"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2700118",
@@ -16719,7 +17020,8 @@
       "code": "A2700118",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2022-07-12"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "B2700743",
@@ -16777,7 +17079,8 @@
       "code": "B2700743",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2024-06-07"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "E2700214",
@@ -16827,7 +17130,8 @@
       "code": "E2700214",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2021-02-18"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2702587",
@@ -16875,7 +17179,8 @@
       "code": "A2702587",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2024-02-26"
-    }
+    },
+    "saturday_open": false
   },
   {
     "id": "A2701397",
@@ -16923,7 +17228,8 @@
       "code": "A2701397",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2025-03-04"
-    }
+    },
+    "saturday_open": false
   },
   {
     "id": "A2700660",
@@ -16974,7 +17280,8 @@
       "code": "A2700660",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2021-02-18"
-    }
+    },
+    "saturday_open": false
   },
   {
     "id": "B2700920",
@@ -17031,7 +17338,8 @@
       "code": "B2700920",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2025-09-17"
-    }
+    },
+    "saturday_open": false
   },
   {
     "id": "E2700056",
@@ -17079,7 +17387,8 @@
       "code": "E2700056",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2021-02-18"
-    }
+    },
+    "saturday_open": false
   },
   {
     "id": "B2700439",
@@ -17136,7 +17445,8 @@
       "code": "B2700439",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2026-04-28"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2700275",
@@ -17186,7 +17496,8 @@
       "code": "A2700275",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2024-01-02"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2701560",
@@ -17243,7 +17554,8 @@
       "code": "A2701560",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2024-09-30"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2700649",
@@ -17293,7 +17605,8 @@
       "code": "A2700649",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2024-01-02"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2700983",
@@ -17343,7 +17656,8 @@
       "code": "A2700983",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2021-02-18"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2700821",
@@ -17393,7 +17707,8 @@
       "code": "A2700821",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2021-02-18"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2700360",
@@ -17443,7 +17758,8 @@
       "code": "A2700360",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2024-01-23"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2700703",
@@ -17493,7 +17809,8 @@
       "code": "A2700703",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2024-06-25"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2701118",
@@ -17543,7 +17860,8 @@
       "code": "A2701118",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2024-01-10"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2700377",
@@ -17595,7 +17913,8 @@
       "code": "A2700377",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2024-01-02"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2700736",
@@ -17645,7 +17964,8 @@
       "code": "A2700736",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2026-07-20"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2700553",
@@ -17695,7 +18015,8 @@
       "code": "A2700553",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2021-02-18"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "B2700340",
@@ -17754,7 +18075,8 @@
       "code": "B2700340",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2026-08-03"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2700420",
@@ -17811,7 +18133,8 @@
       "code": "A2700420",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2024-05-07"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2701147",
@@ -17868,7 +18191,8 @@
       "code": "A2701147",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2021-02-18"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2701220",
@@ -17921,7 +18245,8 @@
       "code": "A2701220",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2025-04-02"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2703131",
@@ -17976,7 +18301,8 @@
       "code": "A2703131",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2026-06-18"
-    }
+    },
+    "saturday_open": false
   },
   {
     "id": "E2700361",
@@ -18026,7 +18352,8 @@
       "code": "E2700361",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2021-02-18"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2701730",
@@ -18083,7 +18410,8 @@
       "code": "A2701730",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2024-09-30"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2703029",
@@ -18135,7 +18463,8 @@
       "code": "A2703029",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2024-01-02"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "B2700748",
@@ -18192,7 +18521,8 @@
       "code": "B2700748",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2026-07-06"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2702661",
@@ -18256,7 +18586,8 @@
       "code": "A2702661",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2026-07-15"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2700592",
@@ -18321,7 +18652,8 @@
       "code": "A2700592",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2026-04-02"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2700259",
@@ -18371,7 +18703,8 @@
       "code": "A2700259",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2024-01-23"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2702915",
@@ -18429,7 +18762,8 @@
       "code": "A2702915",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2025-08-27"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2702380",
@@ -18485,7 +18819,8 @@
       "code": "A2702380",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2025-04-28"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "B2700839",
@@ -18543,7 +18878,8 @@
       "code": "B2700839",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2024-05-03"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "B2700331",
@@ -18601,7 +18937,8 @@
       "code": "B2700331",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2026-04-15"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "B2700235",
@@ -18659,7 +18996,8 @@
       "code": "B2700235",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2024-04-25"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2702861",
@@ -18720,7 +19058,8 @@
       "code": "A2702861",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2024-01-02"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2702895",
@@ -18773,7 +19112,8 @@
       "code": "A2702895",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2024-08-27"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2702785",
@@ -18830,7 +19170,8 @@
       "code": "A2702785",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2025-02-05"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2702503",
@@ -18882,7 +19223,8 @@
       "code": "A2702503",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2025-03-04"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2701859",
@@ -18941,7 +19283,8 @@
       "code": "A2701859",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2024-09-30"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "B2700114",
@@ -18999,7 +19342,8 @@
       "code": "B2700114",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2024-04-12"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "B2700408",
@@ -19057,7 +19401,8 @@
       "code": "B2700408",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2022-08-08"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "B2700158",
@@ -19115,7 +19460,8 @@
       "code": "B2700158",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2025-11-03"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "B2700826",
@@ -19173,7 +19519,8 @@
       "code": "B2700826",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2024-04-25"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "B2700981",
@@ -19233,7 +19580,8 @@
       "code": "B2700981",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2026-05-11"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "E2700355",
@@ -19283,7 +19631,8 @@
       "code": "E2700355",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2021-02-18"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2700331",
@@ -19338,7 +19687,8 @@
       "code": "A2700331",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2024-01-02"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "B2700473",
@@ -19396,7 +19746,8 @@
       "code": "B2700473",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2024-01-30"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2701240",
@@ -19452,7 +19803,8 @@
       "code": "A2701240",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2024-01-02"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2702918",
@@ -19508,7 +19860,8 @@
       "code": "A2702918",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2025-05-22"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2702716",
@@ -19564,7 +19917,8 @@
       "code": "A2702716",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2026-01-20"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2703191",
@@ -19616,7 +19970,8 @@
       "code": "A2703191",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2025-09-12"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2702625",
@@ -19676,7 +20031,8 @@
       "code": "A2702625",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2024-01-02"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2702998",
@@ -19728,7 +20084,8 @@
       "code": "A2702998",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2024-01-02"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2702889",
@@ -19788,7 +20145,8 @@
       "code": "A2702889",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2024-12-09"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2701469",
@@ -19848,7 +20206,8 @@
       "code": "A2701469",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2024-10-07"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "E2700515",
@@ -19898,7 +20257,8 @@
       "code": "E2700515",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2021-02-18"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2702527",
@@ -19948,7 +20308,8 @@
       "code": "A2702527",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2024-01-02"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2702566",
@@ -20002,7 +20363,8 @@
       "code": "A2702566",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2025-08-18"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2702885",
@@ -20052,7 +20414,8 @@
       "code": "A2702885",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2024-01-02"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2702272",
@@ -20116,7 +20479,8 @@
       "code": "A2702272",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2023-08-28"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2701561",
@@ -20168,7 +20532,8 @@
       "code": "A2701561",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2024-10-15"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2702392",
@@ -20222,7 +20587,8 @@
       "code": "A2702392",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2025-01-17"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2701155",
@@ -20274,7 +20640,8 @@
       "code": "A2701155",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2024-01-02"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2701373",
@@ -20333,7 +20700,8 @@
       "code": "A2701373",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2024-01-23"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2701437",
@@ -20384,7 +20752,8 @@
       "code": "A2701437",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2026-02-13"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "B2700546",
@@ -20444,7 +20813,8 @@
       "code": "B2700546",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2025-12-29"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2701887",
@@ -20496,7 +20866,8 @@
       "code": "A2701887",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2024-10-07"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2702991",
@@ -20546,7 +20917,8 @@
       "code": "A2702991",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2024-01-23"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2700705",
@@ -20596,7 +20968,8 @@
       "code": "A2700705",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2021-02-18"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "B2700952",
@@ -20655,7 +21028,8 @@
       "code": "B2700952",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2024-01-02"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2703075",
@@ -20705,7 +21079,8 @@
       "code": "A2703075",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2026-07-06"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2702637",
@@ -20759,7 +21134,8 @@
       "code": "A2702637",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2026-04-28"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2702966",
@@ -20814,7 +21190,8 @@
       "code": "A2702966",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2025-08-18"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2703147",
@@ -20875,7 +21252,8 @@
       "code": "A2703147",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2024-10-07"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2701501",
@@ -20936,7 +21314,8 @@
       "code": "A2701501",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2024-10-28"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "B2700971",
@@ -20993,7 +21372,8 @@
       "code": "B2700971",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2025-09-05"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2700240",
@@ -21049,7 +21429,8 @@
       "code": "A2700240",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2024-04-29"
-    }
+    },
+    "saturday_open": false
   },
   {
     "id": "A2700832",
@@ -21099,7 +21480,8 @@
       "code": "A2700832",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2021-02-18"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2700160",
@@ -21149,7 +21531,8 @@
       "code": "A2700160",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2021-02-18"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2701317",
@@ -21207,7 +21590,8 @@
       "code": "A2701317",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2021-12-27"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2700368",
@@ -21257,7 +21641,8 @@
       "code": "A2700368",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2021-02-18"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "B2700508",
@@ -21313,7 +21698,8 @@
       "code": "B2700508",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2025-10-26"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2701863",
@@ -21363,7 +21749,8 @@
       "code": "A2701863",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2025-05-22"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2701788",
@@ -21413,7 +21800,8 @@
       "code": "A2701788",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2024-10-07"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2701818",
@@ -21463,7 +21851,8 @@
       "code": "A2701818",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2025-03-24"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2701451",
@@ -21520,7 +21909,8 @@
       "code": "A2701451",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2024-09-30"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "B2700506",
@@ -21577,7 +21967,8 @@
       "code": "B2700506",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2026-04-28"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2701074",
@@ -21627,7 +22018,8 @@
       "code": "A2701074",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2024-01-24"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "E2700360",
@@ -21677,7 +22069,8 @@
       "code": "E2700360",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2021-02-18"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "B2700067",
@@ -21735,7 +22128,8 @@
       "code": "B2700067",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2026-07-20"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2701141",
@@ -21783,7 +22177,8 @@
       "code": "A2701141",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2023-03-03"
-    }
+    },
+    "saturday_open": false
   },
   {
     "id": "A2700758",
@@ -21846,7 +22241,8 @@
       "code": "A2700758",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2026-07-06"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2702467",
@@ -21896,7 +22292,8 @@
       "code": "A2702467",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2026-07-20"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "B2700450",
@@ -21950,7 +22347,8 @@
       "code": "B2700450",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2021-02-18"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2702623",
@@ -21998,7 +22396,8 @@
       "code": "A2702623",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2024-06-25"
-    }
+    },
+    "saturday_open": false
   },
   {
     "id": "A2700715",
@@ -22053,7 +22452,8 @@
       "code": "A2700715",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2026-05-26"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2701071",
@@ -22103,7 +22503,8 @@
       "code": "A2701071",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2021-02-18"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2702283",
@@ -22159,7 +22560,8 @@
       "code": "A2702283",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2024-01-23"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "B2700849",
@@ -22218,7 +22620,8 @@
       "code": "B2700849",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2025-04-07"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2701046",
@@ -22275,7 +22678,8 @@
       "code": "A2701046",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2024-01-09"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2701490",
@@ -22333,7 +22737,8 @@
       "code": "A2701490",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2024-09-30"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "E2700356",
@@ -22383,7 +22788,8 @@
       "code": "E2700356",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2021-02-18"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "E2700512",
@@ -22433,7 +22839,8 @@
       "code": "E2700512",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2021-02-18"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2701804",
@@ -22490,7 +22897,8 @@
       "code": "A2701804",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2025-09-29"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "E2700513",
@@ -22540,7 +22948,8 @@
       "code": "E2700513",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2021-02-18"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2700029",
@@ -22593,7 +23002,8 @@
       "code": "A2700029",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2026-01-06"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2701853",
@@ -22651,7 +23061,8 @@
       "code": "A2701853",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2024-09-30"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "B2700734",
@@ -22708,7 +23119,8 @@
       "code": "B2700734",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2023-01-09"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2701378",
@@ -22767,7 +23179,8 @@
       "code": "A2701378",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2024-09-30"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2700744",
@@ -22817,7 +23230,8 @@
       "code": "A2700744",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2026-06-18"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2702338",
@@ -22867,7 +23281,8 @@
       "code": "A2702338",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2024-01-24"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2702909",
@@ -22927,7 +23342,8 @@
       "code": "A2702909",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2024-01-09"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2702729",
@@ -22979,7 +23395,8 @@
       "code": "A2702729",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2024-01-30"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2700130",
@@ -23030,7 +23447,8 @@
       "code": "A2700130",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2024-06-07"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2700334",
@@ -23080,7 +23498,8 @@
       "code": "A2700334",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2024-01-23"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2702896",
@@ -23131,7 +23550,8 @@
       "code": "A2702896",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2025-09-12"
-    }
+    },
+    "saturday_open": false
   },
   {
     "id": "A2702906",
@@ -23185,7 +23605,8 @@
       "code": "A2702906",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2023-09-06"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2701037",
@@ -23236,7 +23657,8 @@
       "code": "A2701037",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2026-03-06"
-    }
+    },
+    "saturday_open": false
   },
   {
     "id": "A2700369",
@@ -23286,7 +23708,8 @@
       "code": "A2700369",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2024-01-09"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "B2700081",
@@ -23344,7 +23767,8 @@
       "code": "B2700081",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2024-04-25"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "B2700531",
@@ -23402,7 +23826,8 @@
       "code": "B2700531",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2023-05-11"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2701401",
@@ -23452,7 +23877,8 @@
       "code": "A2701401",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2025-04-07"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "B2700325",
@@ -23507,7 +23933,8 @@
       "code": "B2700325",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2024-05-24"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "C2701706",
@@ -23558,7 +23985,8 @@
       "code": "C2701706",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2026-04-28"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "B2700215",
@@ -23614,7 +24042,8 @@
       "code": "B2700215",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2023-01-16"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2700642",
@@ -23668,7 +24097,8 @@
       "code": "A2700642",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2024-01-23"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2702464",
@@ -23718,7 +24148,8 @@
       "code": "A2702464",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2021-02-18"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2700641",
@@ -23768,7 +24199,8 @@
       "code": "A2700641",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2025-12-08"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2700350",
@@ -23818,7 +24250,8 @@
       "code": "A2700350",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2024-01-09"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "E2700232",
@@ -23866,7 +24299,8 @@
       "code": "E2700232",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2024-06-25"
-    }
+    },
+    "saturday_open": false
   },
   {
     "id": "A2701167",
@@ -23916,7 +24350,8 @@
       "code": "A2701167",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2021-02-18"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2702230",
@@ -23966,7 +24401,8 @@
       "code": "A2702230",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2024-01-09"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2703033",
@@ -24021,7 +24457,8 @@
       "code": "A2703033",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2024-01-09"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2703060",
@@ -24077,7 +24514,8 @@
       "code": "A2703060",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2026-08-13"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2702821",
@@ -24132,7 +24570,8 @@
       "code": "A2702821",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2026-02-19"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2700101",
@@ -24182,7 +24621,8 @@
       "code": "A2700101",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2023-10-13"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "E2700235",
@@ -24230,7 +24670,8 @@
       "code": "E2700235",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2021-02-18"
-    }
+    },
+    "saturday_open": false
   },
   {
     "id": "A2701596",
@@ -24280,7 +24721,8 @@
       "code": "A2701596",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2025-06-25"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2700408",
@@ -24336,7 +24778,8 @@
       "code": "A2700408",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2024-01-09"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2701547",
@@ -24396,7 +24839,8 @@
       "code": "A2701547",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2026-03-06"
-    }
+    },
+    "saturday_open": false
   },
   {
     "id": "A2701090",
@@ -24446,7 +24890,8 @@
       "code": "A2701090",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2024-01-09"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2702231",
@@ -24498,7 +24943,8 @@
       "code": "A2702231",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2024-01-09"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2700484",
@@ -24548,7 +24994,8 @@
       "code": "A2700484",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2024-01-09"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2702528",
@@ -24604,7 +25051,8 @@
       "code": "A2702528",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2024-01-09"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2701927",
@@ -24661,7 +25109,8 @@
       "code": "A2701927",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2024-10-28"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2700706",
@@ -24713,7 +25162,8 @@
       "code": "A2700706",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2021-02-18"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2702318",
@@ -24769,7 +25219,8 @@
       "code": "A2702318",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2024-01-09"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2702974",
@@ -24827,7 +25278,8 @@
       "code": "A2702974",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2026-02-05"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "B2700491",
@@ -24886,7 +25338,8 @@
       "code": "B2700491",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2021-02-18"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2703067",
@@ -24947,7 +25400,8 @@
       "code": "A2703067",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2024-01-23"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "B2700848",
@@ -25005,7 +25459,8 @@
       "code": "B2700848",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2026-04-28"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2703038",
@@ -25064,7 +25519,8 @@
       "code": "A2703038",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2024-01-09"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2700165",
@@ -25115,7 +25571,8 @@
       "code": "A2700165",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2024-01-23"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2702478",
@@ -25171,7 +25628,8 @@
       "code": "A2702478",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2024-10-07"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2701897",
@@ -25233,7 +25691,8 @@
       "code": "A2701897",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2024-09-30"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2702317",
@@ -25284,7 +25743,8 @@
       "code": "A2702317",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2024-01-23"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2701457",
@@ -25342,7 +25802,8 @@
       "code": "A2701457",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2025-03-11"
-    }
+    },
+    "saturday_open": false
   },
   {
     "id": "B2700761",
@@ -25400,7 +25861,8 @@
       "code": "B2700761",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2022-09-07"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2701867",
@@ -25454,7 +25916,8 @@
       "code": "A2701867",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2025-03-04"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2701109",
@@ -25508,7 +25971,8 @@
       "code": "A2701109",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2024-01-09"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "B2700399",
@@ -25563,7 +26027,8 @@
       "code": "B2700399",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2021-02-18"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2703089",
@@ -25633,7 +26098,8 @@
       "code": "A2703089",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2024-06-28"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2702229",
@@ -25686,7 +26152,8 @@
       "code": "A2702229",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2025-09-01"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2703190",
@@ -25742,7 +26209,8 @@
       "code": "A2703190",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2026-06-18"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2700086",
@@ -25799,7 +26267,8 @@
       "code": "A2700086",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2026-01-06"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2703226",
@@ -25860,7 +26329,8 @@
       "code": "A2703226",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2026-02-09"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2701749",
@@ -25914,7 +26384,8 @@
       "code": "A2701749",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2024-10-28"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2701584",
@@ -25962,7 +26433,8 @@
       "code": "A2701584",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2024-10-15"
-    }
+    },
+    "saturday_open": false
   },
   {
     "id": "A2703239",
@@ -26022,7 +26494,8 @@
       "code": "A2703239",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2026-06-25"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2702970",
@@ -26083,7 +26556,8 @@
       "code": "A2702970",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2026-05-18"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2702551",
@@ -26140,7 +26614,8 @@
       "code": "A2702551",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2024-01-09"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2701805",
@@ -26194,7 +26669,8 @@
       "code": "A2701805",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2024-10-07"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2703228",
@@ -26255,7 +26731,8 @@
       "code": "A2703228",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2026-02-09"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2701860",
@@ -26307,7 +26784,8 @@
       "code": "A2701860",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2024-10-07"
-    }
+    },
+    "saturday_open": false
   },
   {
     "id": "A2700371",
@@ -26358,7 +26836,8 @@
       "code": "A2700371",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2024-01-10"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2702755",
@@ -26411,7 +26890,8 @@
       "code": "A2702755",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2024-01-09"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2701502",
@@ -26469,7 +26949,8 @@
       "code": "A2701502",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2026-05-18"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "B2700210",
@@ -26519,7 +27000,8 @@
       "code": "B2700210",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2021-02-18"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2700591",
@@ -26575,7 +27057,8 @@
       "code": "A2700591",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2024-01-09"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "B2700267",
@@ -26625,7 +27108,8 @@
       "code": "B2700267",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2021-02-18"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2700119",
@@ -26676,7 +27160,8 @@
       "code": "A2700119",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2024-01-09"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "B2700442",
@@ -26734,7 +27219,8 @@
       "code": "B2700442",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2024-04-02"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2701790",
@@ -26784,7 +27270,8 @@
       "code": "A2701790",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2024-01-23"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2701475",
@@ -26842,7 +27329,8 @@
       "code": "A2701475",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2026-05-11"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2702291",
@@ -26894,7 +27382,8 @@
       "code": "A2702291",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2025-01-17"
-    }
+    },
+    "saturday_open": false
   },
   {
     "id": "A2701913",
@@ -26953,7 +27442,8 @@
       "code": "A2701913",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2024-09-30"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2700315",
@@ -27003,7 +27493,8 @@
       "code": "A2700315",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2021-02-18"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2701228",
@@ -27053,7 +27544,8 @@
       "code": "A2701228",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2026-07-06"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "B2700281",
@@ -27111,7 +27603,8 @@
       "code": "B2700281",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2026-07-06"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2703215",
@@ -27163,7 +27656,8 @@
       "code": "A2703215",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2026-01-20"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2702410",
@@ -27219,7 +27713,8 @@
       "code": "A2702410",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2026-01-20"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2703216",
@@ -27267,7 +27762,8 @@
       "code": "A2703216",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2026-02-09"
-    }
+    },
+    "saturday_open": false
   },
   {
     "id": "A2702809",
@@ -27326,7 +27822,8 @@
       "code": "A2702809",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2024-01-31"
-    }
+    },
+    "saturday_open": false
   },
   {
     "id": "A2702801",
@@ -27387,7 +27884,8 @@
       "code": "A2702801",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2024-01-23"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2700424",
@@ -27441,7 +27939,8 @@
       "code": "A2700424",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2026-03-20"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2702630",
@@ -27493,7 +27992,8 @@
       "code": "A2702630",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2024-09-30"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "B2700180",
@@ -27551,7 +28051,8 @@
       "code": "B2700180",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2026-08-13"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2700264",
@@ -27601,7 +28102,8 @@
       "code": "A2700264",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2024-01-09"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2700129",
@@ -27654,7 +28156,8 @@
       "code": "A2700129",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2024-01-09"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "E2700544",
@@ -27704,7 +28207,8 @@
       "code": "E2700544",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2021-02-18"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "B2700147",
@@ -27754,7 +28258,8 @@
       "code": "B2700147",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2021-02-18"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2700238",
@@ -27806,7 +28311,8 @@
       "code": "A2700238",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2024-01-09"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2703144",
@@ -27872,7 +28378,8 @@
       "code": "A2703144",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2024-08-27"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "E2700425",
@@ -27922,7 +28429,8 @@
       "code": "E2700425",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2021-02-18"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2701729",
@@ -27981,7 +28489,8 @@
       "code": "A2701729",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2024-10-15"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2701414",
@@ -28039,7 +28548,8 @@
       "code": "A2701414",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2026-08-13"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "B2700228",
@@ -28097,7 +28607,8 @@
       "code": "B2700228",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2024-05-24"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2701807",
@@ -28149,7 +28660,8 @@
       "code": "A2701807",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2024-09-30"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2701852",
@@ -28202,7 +28714,8 @@
       "code": "A2701852",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2024-09-30"
-    }
+    },
+    "saturday_open": false
   },
   {
     "id": "A2700034",
@@ -28260,7 +28773,8 @@
       "code": "A2700034",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2024-01-09"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2700080",
@@ -28316,7 +28830,8 @@
       "code": "A2700080",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2024-06-07"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2701285",
@@ -28364,7 +28879,8 @@
       "code": "A2701285",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2025-11-24"
-    }
+    },
+    "saturday_open": false
   },
   {
     "id": "A2702857",
@@ -28416,7 +28932,8 @@
       "code": "A2702857",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2024-12-09"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2701351",
@@ -28466,7 +28983,8 @@
       "code": "A2701351",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2021-02-18"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2702423",
@@ -28522,7 +29040,8 @@
       "code": "A2702423",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2024-08-27"
-    }
+    },
+    "saturday_open": false
   },
   {
     "id": "A2702349",
@@ -28580,7 +29099,8 @@
       "code": "A2702349",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2024-10-30"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2701345",
@@ -28636,7 +29156,8 @@
       "code": "A2701345",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2025-06-30"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2702526",
@@ -28689,7 +29210,8 @@
       "code": "A2702526",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2023-07-03"
-    }
+    },
+    "saturday_open": false
   },
   {
     "id": "A2701292",
@@ -28739,7 +29261,8 @@
       "code": "A2701292",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2023-10-13"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2700084",
@@ -28798,7 +29321,8 @@
       "code": "A2700084",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2024-04-08"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2701342",
@@ -28853,7 +29377,8 @@
       "code": "A2701342",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2026-04-28"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2701356",
@@ -28908,7 +29433,8 @@
       "code": "A2701356",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2024-07-01"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2703151",
@@ -28967,7 +29493,8 @@
       "code": "A2703151",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2024-09-12"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2700393",
@@ -29017,7 +29544,8 @@
       "code": "A2700393",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2025-04-28"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2700735",
@@ -29067,7 +29595,8 @@
       "code": "A2700735",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2024-01-09"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "B2700119",
@@ -29125,7 +29654,8 @@
       "code": "B2700119",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2021-02-18"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2701855",
@@ -29173,7 +29703,8 @@
       "code": "A2701855",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2025-03-11"
-    }
+    },
+    "saturday_open": false
   },
   {
     "id": "A2701166",
@@ -29223,7 +29754,8 @@
       "code": "A2701166",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2024-01-10"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2701563",
@@ -29275,7 +29807,8 @@
       "code": "A2701563",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2024-10-15"
-    }
+    },
+    "saturday_open": false
   },
   {
     "id": "A2703195",
@@ -29325,7 +29858,8 @@
       "code": "A2703195",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2026-02-09"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2701700",
@@ -29382,7 +29916,8 @@
       "code": "A2701700",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2024-09-30"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "B2700246",
@@ -29441,7 +29976,8 @@
       "code": "B2700246",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2025-11-24"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2701890",
@@ -29491,7 +30027,8 @@
       "code": "A2701890",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2024-09-30"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2700382",
@@ -29543,7 +30080,8 @@
       "code": "A2700382",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2021-02-18"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2700743",
@@ -29596,7 +30134,8 @@
       "code": "A2700743",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2025-07-29"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2700583",
@@ -29646,7 +30185,8 @@
       "code": "A2700583",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2025-06-09"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2701465",
@@ -29703,7 +30243,8 @@
       "code": "A2701465",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2024-10-07"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2701019",
@@ -29753,7 +30294,8 @@
       "code": "A2701019",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2023-03-03"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2701701",
@@ -29813,7 +30355,8 @@
       "code": "A2701701",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2024-10-29"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2700714",
@@ -29872,7 +30415,8 @@
       "code": "A2700714",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2024-01-10"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2701272",
@@ -29924,7 +30468,8 @@
       "code": "A2701272",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2024-01-24"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2702292",
@@ -29976,7 +30521,8 @@
       "code": "A2702292",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2024-11-04"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "B2700308",
@@ -30035,7 +30581,8 @@
       "code": "B2700308",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2023-12-04"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2701119",
@@ -30085,7 +30632,8 @@
       "code": "A2701119",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2021-02-18"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2702430",
@@ -30135,7 +30683,8 @@
       "code": "A2702430",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2021-07-28"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2702626",
@@ -30196,7 +30745,8 @@
       "code": "A2702626",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2024-01-10"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2701212",
@@ -30251,7 +30801,8 @@
       "code": "A2701212",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2024-01-10"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2701432",
@@ -30308,7 +30859,8 @@
       "code": "A2701432",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2025-07-22"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "B2700906",
@@ -30366,7 +30918,8 @@
       "code": "B2700906",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2024-03-29"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "B2700131",
@@ -30422,7 +30975,8 @@
       "code": "B2700131",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2021-02-18"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2702466",
@@ -30475,7 +31029,8 @@
       "code": "A2702466",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2021-02-18"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2700582",
@@ -30527,7 +31082,8 @@
       "code": "A2700582",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2021-02-18"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2700639",
@@ -30579,7 +31135,8 @@
       "code": "A2700639",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2021-02-18"
-    }
+    },
+    "saturday_open": false
   },
   {
     "id": "A2700206",
@@ -30629,7 +31186,8 @@
       "code": "A2700206",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2024-01-24"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2701304",
@@ -30682,7 +31240,8 @@
       "code": "A2701304",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2021-02-18"
-    }
+    },
+    "saturday_open": false
   },
   {
     "id": "A2700784",
@@ -30734,7 +31293,8 @@
       "code": "A2700784",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2021-02-18"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "B2700295",
@@ -30785,7 +31345,8 @@
       "code": "B2700295",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2021-02-18"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2700982",
@@ -30837,7 +31398,8 @@
       "code": "A2700982",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2024-01-11"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2702786",
@@ -30896,7 +31458,8 @@
       "code": "A2702786",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2024-10-15"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2702788",
@@ -30956,7 +31519,8 @@
       "code": "A2702788",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2024-12-27"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2703035",
@@ -31011,7 +31575,8 @@
       "code": "A2703035",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2026-03-06"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2700312",
@@ -31063,7 +31628,8 @@
       "code": "A2700312",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2024-01-11"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2700991",
@@ -31121,7 +31687,8 @@
       "code": "A2700991",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2025-05-22"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2701211",
@@ -31182,7 +31749,8 @@
       "code": "A2701211",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2024-09-03"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2701398",
@@ -31232,7 +31800,8 @@
       "code": "A2701398",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2024-09-30"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "B2700257",
@@ -31283,7 +31852,8 @@
       "code": "B2700257",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2021-02-18"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "E2700359",
@@ -31333,7 +31903,8 @@
       "code": "E2700359",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2021-02-18"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2702947",
@@ -31383,7 +31954,8 @@
       "code": "A2702947",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2025-05-22"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2700128",
@@ -31433,7 +32005,8 @@
       "code": "A2700128",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2024-01-11"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2701856",
@@ -31483,7 +32056,8 @@
       "code": "A2701856",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2025-03-04"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2702888",
@@ -31542,7 +32116,8 @@
       "code": "A2702888",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2024-01-11"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2701510",
@@ -31601,7 +32176,8 @@
       "code": "A2701510",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2024-10-15"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2700271",
@@ -31657,7 +32233,8 @@
       "code": "A2700271",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2025-03-11"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2700244",
@@ -31713,7 +32290,8 @@
       "code": "A2700244",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2022-04-19"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "E2700055",
@@ -31763,7 +32341,8 @@
       "code": "E2700055",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2021-02-18"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "B2700929",
@@ -31819,7 +32398,8 @@
       "code": "B2700929",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2024-05-24"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2702903",
@@ -31878,7 +32458,8 @@
       "code": "A2702903",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2024-01-11"
-    }
+    },
+    "saturday_open": false
   },
   {
     "id": "A2701360",
@@ -31930,7 +32511,8 @@
       "code": "A2701360",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2022-02-10"
-    }
+    },
+    "saturday_open": false
   },
   {
     "id": "A2701026",
@@ -31986,7 +32568,8 @@
       "code": "A2701026",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2026-03-06"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2700342",
@@ -32038,7 +32621,8 @@
       "code": "A2700342",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2025-12-08"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2701751",
@@ -32088,7 +32672,8 @@
       "code": "A2701751",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2024-10-15"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "B2700793",
@@ -32146,7 +32731,8 @@
       "code": "B2700793",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2026-03-06"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "B2700013",
@@ -32199,7 +32785,8 @@
       "code": "B2700013",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2025-03-04"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2702399",
@@ -32253,7 +32840,8 @@
       "code": "A2702399",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2024-01-24"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2702312",
@@ -32307,7 +32895,8 @@
       "code": "A2702312",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2021-02-18"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "B2700907",
@@ -32367,7 +32956,8 @@
       "code": "B2700907",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2026-07-24"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2702523",
@@ -32424,7 +33014,8 @@
       "code": "A2702523",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2026-05-18"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2702635",
@@ -32479,7 +33070,8 @@
       "code": "A2702635",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2026-07-20"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "B2700553",
@@ -32537,7 +33129,8 @@
       "code": "B2700553",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2024-12-02"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2701564",
@@ -32595,7 +33188,8 @@
       "code": "A2701564",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2024-09-30"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2703143",
@@ -32655,7 +33249,8 @@
       "code": "A2703143",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2025-11-24"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2701806",
@@ -32710,7 +33305,8 @@
       "code": "A2701806",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2025-07-22"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "B2700827",
@@ -32768,7 +33364,8 @@
       "code": "B2700827",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2025-04-28"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "B2700110",
@@ -32824,7 +33421,8 @@
       "code": "B2700110",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2024-04-25"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "E2700213",
@@ -32872,7 +33470,8 @@
       "code": "E2700213",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2021-02-18"
-    }
+    },
+    "saturday_open": false
   },
   {
     "id": "B2700391",
@@ -32930,7 +33529,8 @@
       "code": "B2700391",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2024-09-30"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "B2700951",
@@ -32987,7 +33587,8 @@
       "code": "B2700951",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2026-05-21"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2702886",
@@ -33045,7 +33646,8 @@
       "code": "A2702886",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2024-01-11"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2702891",
@@ -33102,7 +33704,8 @@
       "code": "A2702891",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2026-04-15"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2700187",
@@ -33157,7 +33760,8 @@
       "code": "A2700187",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2025-02-07"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2700370",
@@ -33207,7 +33811,8 @@
       "code": "A2700370",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2021-02-18"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2700565",
@@ -33258,7 +33863,8 @@
       "code": "A2700565",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2024-01-24"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2700704",
@@ -33310,7 +33916,8 @@
       "code": "A2700704",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2021-02-18"
-    }
+    },
+    "saturday_open": false
   },
   {
     "id": "A2703177",
@@ -33373,7 +33980,8 @@
       "code": "A2703177",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2025-09-12"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2701142",
@@ -33427,7 +34035,8 @@
       "code": "A2701142",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2025-07-22"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2701471",
@@ -33486,7 +34095,8 @@
       "code": "A2701471",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2024-10-07"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2702242",
@@ -33542,7 +34152,8 @@
       "code": "A2702242",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2024-09-30"
-    }
+    },
+    "saturday_open": false
   },
   {
     "id": "A2700273",
@@ -33594,7 +34205,8 @@
       "code": "A2700273",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2023-06-19"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2700316",
@@ -33646,7 +34258,8 @@
       "code": "A2700316",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2024-09-23"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "B2700047",
@@ -33704,7 +34317,8 @@
       "code": "B2700047",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2026-08-13"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2702336",
@@ -33754,7 +34368,8 @@
       "code": "A2702336",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2021-02-18"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2702812",
@@ -33806,7 +34421,8 @@
       "code": "A2702812",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2024-01-24"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2701452",
@@ -33862,7 +34478,8 @@
       "code": "A2701452",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2024-09-30"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2700283",
@@ -33926,7 +34543,8 @@
       "code": "A2700283",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2024-01-11"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2702710",
@@ -33983,7 +34601,8 @@
       "code": "A2702710",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2024-01-24"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2702945",
@@ -34031,7 +34650,8 @@
       "code": "A2702945",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2025-03-24"
-    }
+    },
+    "saturday_open": false
   },
   {
     "id": "A2700046",
@@ -34081,7 +34701,8 @@
       "code": "A2700046",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2025-10-13"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "B2700820",
@@ -34139,7 +34760,8 @@
       "code": "B2700820",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2025-12-08"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2703238",
@@ -34192,7 +34814,8 @@
       "code": "A2703238",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2026-04-28"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2703103",
@@ -34252,7 +34875,8 @@
       "code": "A2703103",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2026-03-09"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2700335",
@@ -34302,7 +34926,8 @@
       "code": "A2700335",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2024-01-11"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "E2700022",
@@ -34350,7 +34975,8 @@
       "code": "E2700022",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2025-05-07"
-    }
+    },
+    "saturday_open": false
   },
   {
     "id": "A2701919",
@@ -34406,7 +35032,8 @@
       "code": "A2701919",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2025-03-11"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2702499",
@@ -34458,7 +35085,8 @@
       "code": "A2702499",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2026-07-24"
-    }
+    },
+    "saturday_open": false
   },
   {
     "id": "A2700619",
@@ -34512,7 +35140,8 @@
       "code": "A2700619",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2021-02-18"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2700640",
@@ -34571,7 +35200,8 @@
       "code": "A2700640",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2021-11-01"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2700893",
@@ -34627,7 +35257,8 @@
       "code": "A2700893",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2026-06-23"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2702337",
@@ -34682,7 +35313,8 @@
       "code": "A2702337",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2025-01-15"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2703166",
@@ -34732,7 +35364,8 @@
       "code": "A2703166",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2025-10-26"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2702644",
@@ -34790,7 +35423,8 @@
       "code": "A2702644",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2026-07-24"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2703163",
@@ -34844,7 +35478,8 @@
       "code": "A2703163",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2024-12-09"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "B2700960",
@@ -34902,7 +35537,8 @@
       "code": "B2700960",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2024-10-29"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2701075",
@@ -34961,7 +35597,8 @@
       "code": "A2701075",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2021-02-18"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2701089",
@@ -35011,7 +35648,8 @@
       "code": "A2701089",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2024-01-24"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2700684",
@@ -35061,7 +35699,8 @@
       "code": "A2700684",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2024-01-11"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2702793",
@@ -35121,7 +35760,8 @@
       "code": "A2702793",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2026-03-06"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2703074",
@@ -35181,7 +35821,8 @@
       "code": "A2703074",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2024-01-11"
-    }
+    },
+    "saturday_open": false
   },
   {
     "id": "A2701088",
@@ -35233,7 +35874,8 @@
       "code": "A2701088",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2024-01-11"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2701702",
@@ -35281,7 +35923,8 @@
       "code": "A2701702",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2024-10-07"
-    }
+    },
+    "saturday_open": false
   },
   {
     "id": "A2700702",
@@ -35335,7 +35978,8 @@
       "code": "A2700702",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2024-01-24"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2701503",
@@ -35385,7 +36029,8 @@
       "code": "A2701503",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2024-10-07"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "B2700213",
@@ -35433,7 +36078,8 @@
       "code": "B2700213",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2021-11-17"
-    }
+    },
+    "saturday_open": false
   },
   {
     "id": "E2700357",
@@ -35483,7 +36129,8 @@
       "code": "E2700357",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2021-02-18"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2701594",
@@ -35542,7 +36189,8 @@
       "code": "A2701594",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2024-10-07"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "B2700095",
@@ -35600,7 +36248,8 @@
       "code": "B2700095",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2023-07-21"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2702517",
@@ -35658,7 +36307,8 @@
       "code": "A2702517",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2024-12-27"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2702899",
@@ -35716,7 +36366,8 @@
       "code": "A2702899",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2024-01-24"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2700282",
@@ -35769,7 +36420,8 @@
       "code": "A2700282",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2024-01-24"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2700707",
@@ -35823,7 +36475,8 @@
       "code": "A2700707",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2026-06-05"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2701073",
@@ -35873,7 +36526,8 @@
       "code": "A2701073",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2024-01-11"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "B2700535",
@@ -35931,7 +36585,8 @@
       "code": "B2700535",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2025-05-22"
-    }
+    },
+    "saturday_open": false
   },
   {
     "id": "B2700962",
@@ -35989,7 +36644,8 @@
       "code": "B2700962",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2026-08-13"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2701111",
@@ -36039,7 +36695,8 @@
       "code": "A2701111",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2024-10-07"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2701139",
@@ -36089,7 +36746,8 @@
       "code": "A2701139",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2024-02-05"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "A2701309",
@@ -36143,7 +36801,8 @@
       "code": "A2701309",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2024-09-30"
-    }
+    },
+    "saturday_open": false
   },
   {
     "id": "A2700214",
@@ -36200,7 +36859,8 @@
       "code": "A2700214",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2026-08-13"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "E2700217",
@@ -36248,7 +36908,8 @@
       "code": "E2700217",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2021-02-18"
-    }
+    },
+    "saturday_open": false
   },
   {
     "id": "A2701578",
@@ -36298,7 +36959,8 @@
       "code": "A2701578",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2024-10-07"
-    }
+    },
+    "saturday_open": true
   },
   {
     "id": "B2700280",
@@ -36357,6 +37019,7 @@
       "code": "B2700280",
       "fetched_at": "2026-08-18",
       "org_updated_at": "2026-07-20"
-    }
+    },
+    "saturday_open": true
   }
 ]

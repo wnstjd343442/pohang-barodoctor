@@ -102,6 +102,73 @@ def format_distance_and_time(dist_km):
         walk_mins = round(dist_km / 4 * 60)
         return f"{dist_str} (차로 약 {car_mins}분 / 도보 {walk_mins}분)"
 
+# 포항 주요 생활권/동/읍·면 대표 좌표 (오프라인/빠른 주소 변환용)
+POHANG_DISTRICT_CENTROIDS = [
+    ("흥해읍 (한동대 인근)", 36.103, 129.388, "북구"),
+    ("양덕동", 36.0825, 129.3982, "북구"),
+    ("장량동/장성동", 36.068, 129.378, "북구"),
+    ("두호동 (영일대 인근)", 36.059, 129.375, "북구"),
+    ("창포동", 36.063, 129.362, "북구"),
+    ("우현동", 36.056, 129.355, "북구"),
+    ("중앙동/시내", 36.040, 129.366, "북구"),
+    ("죽도동", 36.035, 129.364, "북구"),
+    ("용흥동", 36.042, 129.349, "북구"),
+    ("상대동/상도동", 36.018, 129.355, "남구"),
+    ("대도동", 36.015, 129.362, "남구"),
+    ("해도동", 36.023, 129.372, "남구"),
+    ("이동 (대이동)", 36.022, 129.336, "남구"),
+    ("대잠동 (시청 인근)", 36.013, 129.348, "남구"),
+    ("효자동 (포항공대 인근)", 36.008, 129.332, "남구"),
+    ("지곡동", 36.019, 129.324, "남구"),
+    ("연일읍", 35.992, 129.348, "남구"),
+    ("오천읍 (문덕)", 35.968, 129.412, "남구"),
+    ("구룡포읍", 35.990, 129.558, "남구")
+]
+
+def get_pohang_readable_address(lat, lng):
+    """위도/경도 좌표를 '포항 북구 흥해읍' 등 읽기 쉬운 도로명/행정동 주소로 변환"""
+    if lat is None or lng is None:
+        return "포항 북구 양덕동 (기본 위치)"
+        
+    try:
+        lat, lng = float(lat), float(lng)
+    except (ValueError, TypeError):
+        return "포항 북구 양덕동 (기본 위치)"
+
+    # 1. OpenStreetMap Nominatim 무료 리버스 지오코딩 시도 (1.5초 타임아웃)
+    try:
+        url = f"https://nominatim.openstreetmap.org/reverse?format=json&lat={lat}&lon={lng}&zoom=17&addressdetails=1"
+        res = requests.get(url, headers={"User-Agent": "PohangBaroDoctor/1.0"}, timeout=1.5)
+        if res.status_code == 200:
+            addr = res.json().get("address", {})
+            borough = addr.get("borough") or addr.get("suburb") or addr.get("city_district") or ""
+            town = addr.get("town") or addr.get("quarter") or addr.get("village") or addr.get("neighbourhood") or ""
+            road = addr.get("road") or ""
+            
+            parts = ["포항"]
+            if borough:
+                parts.append(borough)
+            if town:
+                parts.append(town)
+            if road and road not in parts:
+                parts.append(f"({road})")
+                
+            if len(parts) >= 2:
+                return " ".join(parts)
+    except Exception:
+        pass
+
+    # 2. 오프라인 / 폴백: 포항 내 가장 가까운 동/읍·면 중심점 계산
+    closest_name = "북구 양덕동"
+    min_dist = 9999
+    for name, c_lat, c_lng, gu in POHANG_DISTRICT_CENTROIDS:
+        d = calculate_distance_km(lat, lng, c_lat, c_lng)
+        if d is not None and d < min_dist:
+            min_dist = d
+            closest_name = f"{gu} {name}"
+            
+    return f"포항 {closest_name}"
+
 # 증상 카테고리 정의 및 대안 진료과 매핑
 SYMPTOM_CATEGORIES = {
     "gastro": {
@@ -184,6 +251,27 @@ SYMPTOM_CATEGORIES = {
         "primary_depts": ["소아청소년과", "소아과"],
         "alt_depts": ["이비인후과", "가정의학과", "내과", "응급의학과"],
         "advice": "👶 소아 질환 증상입니다. 소아 전문 진료 의원 및 야간 소아 응급 진료가 가능한 권역응급의료센터를 추천합니다."
+    },
+    "dermatology": {
+        "title": "피부 질환 / 알레르기 / 두드러기 / 가려움",
+        "keywords": ["피부", "여드름", "두드러기", "가려움", "가려워", "습진", "아토피", "알레르기", "알러지", "건선", "흉터", "무좀", "대상포진", "피부과", "피부염", "뾰루지", "발진"],
+        "primary_depts": ["피부과"],
+        "alt_depts": ["가정의학과", "내과"],
+        "advice": "🧴 피부 질환으로 판단됩니다. 피부염, 알레르기 처방 및 피부 전문 치료가 가능한 피부과의원을 추천합니다."
+    },
+    "psychiatry": {
+        "title": "정신건강 / 불안 / 불면 / 스트레스",
+        "keywords": ["우울", "불안", "불면", "잠이안와", "공황", "스트레스", "정신과", "정신건강의학과", "공황장애", "가슴답답불안"],
+        "primary_depts": ["정신건강의학과"],
+        "alt_depts": ["가정의학과", "신경과"],
+        "advice": "🧠 정신건강의학과 전문 상담 및 약물 처방이 가능한 의원을 추천합니다."
+    },
+    "obgyn": {
+        "title": "산부인과 / 여성 질환",
+        "keywords": ["생리", "생리통", "질염", "임신", "여성의원", "산부인과", "부인과", "자궁"],
+        "primary_depts": ["산부인과"],
+        "alt_depts": ["가정의학과", "내과"],
+        "advice": "🌸 여성 질환 및 산부인과 전문 진료가 가능한 의원을 추천합니다."
     }
 }
 
@@ -210,20 +298,22 @@ def analyze_symptom_with_gemini(text):
 
 [임상 분석 지침]
 1. 환자가 호소하는 증상의 의학적 기전과 원인을 추론하여 1순위 추천 진료과(primary_depts, 1~3개)와 대안/응급 진료과(alt_depts, 1~2개)를 결정해.
+   - 예) "피부에 두드러기 나고 가려워" -> primary_depts: ["피부과"], alt_depts: ["가정의학과", "내과"]
    - 예) "어깨가 뻐근하고 팔이 저려" -> primary_depts: ["정형외과", "마취통증의학과", "신경외과"], alt_depts: ["재활의학과", "가정의학과"]
    - 예) "장염 걸렸어 수액 맞고 싶어" -> primary_depts: ["내과", "가정의학과"], alt_depts: ["응급의학과"]
    - 예) "애기가 밤에 열이 39도야" -> primary_depts: ["소아청소년과"], alt_depts: ["응급의학과", "이비인후과"]
    - 예) "발목 삐끗해서 붓고 아파" -> primary_depts: ["정형외과", "마취통증의학과"], alt_depts: ["외과", "재활의학과"]
    - 예) "눈이 충혈되고 뻑뻑해" -> primary_depts: ["안과"], alt_depts: ["내과", "가정의학과"]
-   - 예) "귀가 멍멍하고 이명 들려" -> primary_depts: ["이비인후과"], alt_depts: ["내과"]
-   - 예) "양덕동에 지금 갈 수 있는 병원" -> primary_depts: ["내과", "가정의학과", "이비인후과"], alt_depts: ["응급의학과"]
+   - 예) "치통이 심하고 잇몸이 부었어" -> primary_depts: ["치과"], alt_depts: []
 2. 시공간 및 긴급도 추출:
-   - is_sunday: 사용자가 일요일/주말/휴일 진료를 원하면 true
+   - is_saturday: 토요일 진료 필요 시 true
+   - is_sunday: 일요일 진료 필요 시 true
+   - is_holiday: 공휴일/빨간날/명절/휴일 진료 필요 시 true
    - is_night: 야간, 밤, 저녁, 새벽, 늦게, 5시/6시 이후 등 야간 진료가 필요하면 true
    - is_emergency: 호흡곤란, 극심한 흉통, 대량 출혈 등 24시 응급실 직행 필요 시 true
    - target_district: 포항 지역명(양덕동, 장성동, 장량동, 이동, 효자동, 두호동, 창포동, 흥해읍, 오천읍 등)이 언급되었으면 해당 동 이름, 없으면 null
-3. category_title: 간결하고 전문적인 의학적 증상 요약 제목 (예: "경추부 신경통 및 어깨 근막통증증후군", "급성 위장염 및 탈수 의심")
-4. advice: 환자가 즉시 실천할 수 있는 1~2문장의 전문적 의학 대처 요령 (수액 권고, RICE 요법, 체온 조절, 금식 등)
+3. category_title: 간결하고 전문적인 의학적 증상 요약 제목 (예: "급성 두드러기 및 접촉성 피부염", "경추부 신경통 및 어깨 근막통증증후군")
+4. advice: 환자가 즉시 실천할 수 있는 1~2문장의 전문적 의학 대처 요령
 
 반드시 아래 JSON 포맷으로만 출력해 (설명이나 마크다운 백틱 제외):
 {{
@@ -231,7 +321,9 @@ def analyze_symptom_with_gemini(text):
   "category_title": "증상 요약 제목",
   "primary_depts": ["진료과1", "진료과2"],
   "alt_depts": ["대안진료과1"],
+  "is_saturday": false,
   "is_sunday": false,
+  "is_holiday": false,
   "is_night": false,
   "is_emergency": false,
   "target_district": null,
@@ -245,7 +337,9 @@ def analyze_symptom_with_gemini(text):
   "category_title": "일반 대화",
   "primary_depts": [],
   "alt_depts": [],
+  "is_saturday": false,
   "is_sunday": false,
+  "is_holiday": false,
   "is_night": false,
   "is_emergency": false,
   "target_district": null,
@@ -282,28 +376,35 @@ def analyze_symptom_and_intent(text):
             "alt_depts": [],
             "advice": "",
             "target_date_str": "오늘",
+            "is_saturday": (datetime.now().weekday() == 5),
             "is_sunday": (datetime.now().weekday() == 6),
+            "is_holiday": False,
             "is_night": False,
             "target_district": None
         }
 
     # 2. 날짜 및 시간 키워드 파싱
     today = datetime.now().date()
+    is_saturday = False
     is_sunday = False
+    is_holiday = False
     is_night = False
     target_date_str = "오늘"
     
     if "모레" in text:
         d = today + timedelta(days=2)
         target_date_str = f"{d.month}월 {d.day}일({WEEKDAYS_KR[d.weekday()]})"
+        is_saturday = (d.weekday() == 5)
         is_sunday = (d.weekday() == 6)
     elif "내일" in text:
         d = today + timedelta(days=1)
         target_date_str = f"{d.month}월 {d.day}일({WEEKDAYS_KR[d.weekday()]})"
+        is_saturday = (d.weekday() == 5)
         is_sunday = (d.weekday() == 6)
     elif "오늘" in text or "지금" in text:
         d = today
         target_date_str = f"오늘 {d.month}월 {d.day}일({WEEKDAYS_KR[d.weekday()]})"
+        is_saturday = (d.weekday() == 5)
         is_sunday = (d.weekday() == 6)
     else:
         d = None
@@ -314,6 +415,7 @@ def analyze_symptom_and_intent(text):
                     diff = 7
                 d = today + timedelta(days=diff)
                 target_date_str = f"{name}({d.month}월 {d.day}일)"
+                is_saturday = (target_weekday == 5)
                 is_sunday = (target_weekday == 6)
                 break
         if d is None:
@@ -323,18 +425,24 @@ def analyze_symptom_and_intent(text):
                 try:
                     d = datetime(today.year, month, day).date()
                     target_date_str = f"{month}월 {day}일({WEEKDAYS_KR[d.weekday()]})"
+                    is_saturday = (d.weekday() == 5)
                     is_sunday = (d.weekday() == 6)
                 except ValueError:
                     d = today
                     target_date_str = "오늘"
             else:
                 target_date_str = "오늘"
+                is_saturday = (today.weekday() == 5)
                 is_sunday = (today.weekday() == 6)
                 
+    if any(k in text for k in ["토요일", "토욜", "토요"]):
+        is_saturday = True
+    if any(k in text for k in ["일요일", "일욜", "일요"]):
+        is_sunday = True
+    if any(k in text for k in ["공휴일", "휴일", "빨간날", "명절", "설날", "추석", "광복절", "삼일절", "어린이날", "개천절", "한글날", "크리스마스", "성탄절", "신정"]):
+        is_holiday = True
     if any(k in text for k in ["야간", "밤", "저녁", "새벽", "늦게", "5시", "6시", "7시", "8시", "9시", "24시"]):
         is_night = True
-    if any(k in text for k in ["일요일", "휴일", "주말"]):
-        is_sunday = True
         
     target_district = None
     district_map = {
@@ -360,15 +468,21 @@ def analyze_symptom_and_intent(text):
                 "alt_depts": [],
                 "advice": "",
                 "target_date_str": target_date_str,
+                "is_saturday": is_saturday,
                 "is_sunday": is_sunday,
+                "is_holiday": is_holiday,
                 "is_night": is_night,
                 "target_district": target_district
             }
         
         primary_depts = ai_result.get("primary_depts") or ["내과", "가정의학과"]
         alt_depts = ai_result.get("alt_depts") or ["응급의학과"]
+        if ai_result.get("is_saturday"):
+            is_saturday = True
         if ai_result.get("is_sunday"):
             is_sunday = True
+        if ai_result.get("is_holiday"):
+            is_holiday = True
         if ai_result.get("is_night"):
             is_night = True
         if ai_result.get("target_district"):
@@ -382,7 +496,9 @@ def analyze_symptom_and_intent(text):
             "alt_depts": alt_depts,
             "advice": ai_result.get("advice", "가까운 진료 가능 병의원을 안내합니다."),
             "target_date_str": target_date_str,
+            "is_saturday": is_saturday,
             "is_sunday": is_sunday,
+            "is_holiday": is_holiday,
             "is_night": is_night,
             "target_district": target_district,
             "urgency": ai_result.get("urgency", "routine")
@@ -410,7 +526,9 @@ def analyze_symptom_and_intent(text):
             "alt_depts": cat_info["alt_depts"],
             "advice": cat_info["advice"],
             "target_date_str": target_date_str,
+            "is_saturday": is_saturday,
             "is_sunday": is_sunday,
+            "is_holiday": is_holiday,
             "is_night": is_night,
             "target_district": target_district
         }
@@ -426,7 +544,9 @@ def analyze_symptom_and_intent(text):
             "alt_depts": ["응급의학과"],
             "advice": "신체 불편 증상에 대해 1차 진료가 가능한 가까운 내과/정형외과/가정의학과를 안내합니다.",
             "target_date_str": target_date_str,
+            "is_saturday": is_saturday,
             "is_sunday": is_sunday,
+            "is_holiday": is_holiday,
             "is_night": is_night,
             "target_district": target_district
         }
@@ -439,7 +559,9 @@ def analyze_symptom_and_intent(text):
         "alt_depts": ["응급의학과"],
         "advice": "내 위치 기준 진료 가능한 가까운 포항 병의원을 안내합니다.",
         "target_date_str": target_date_str,
+        "is_saturday": is_saturday,
         "is_sunday": is_sunday,
+        "is_holiday": is_holiday,
         "is_night": is_night,
         "target_district": target_district
     }
@@ -450,9 +572,12 @@ def rank_and_filter_hospitals(hospitals, analysis, user_lat=None, user_lng=None,
         
     primary_depts = set(analysis.get("primary_depts") or [])
     alt_depts = set(analysis.get("alt_depts") or [])
+    is_saturday = analysis.get("is_saturday", False)
     is_sunday = analysis.get("is_sunday", False)
+    is_holiday = analysis.get("is_holiday", False)
     is_night = analysis.get("is_night", False)
     target_district = analysis.get("target_district")
+    is_medical = analysis.get("is_medical_symptom", True)
     
     scored_list = []
     
@@ -460,42 +585,50 @@ def rank_and_filter_hospitals(hospitals, analysis, user_lat=None, user_lng=None,
         if not h.get("is_open_today", True):
             continue
             
-        score = 0
-        match_reasons = []
         h_depts = set(h.get("departments") or [])
-        
         common_primary = h_depts.intersection(primary_depts)
         common_alt = h_depts.intersection(alt_depts)
         is_er = bool(h.get("is_emergency"))
         
+        if is_medical and (primary_depts or alt_depts):
+            if not common_primary and not common_alt and not is_er:
+                continue
+
+        score = 0
+        match_reasons = []
+        
         if common_primary:
-            score += 60
+            score += 70
             match_reasons.append(f"추천 진료과: {', '.join(common_primary)}")
         elif common_alt:
-            score += 40
+            score += 45
             match_reasons.append(f"대안 진료과: {', '.join(common_alt)}")
         elif is_er:
             score += 35
             match_reasons.append("24시간 응급진료")
         else:
-            if any(dept in h_depts for dept in ["내과", "가정의학과", "일반의", "외과"]):
-                score += 15
+            score += 5
+                
+        if is_saturday:
+            if h.get("saturday_open") or is_er:
+                score += 45
+                match_reasons.append("토요일 진료 가능")
             else:
-                score += 5
+                score -= 35
                 
         if is_sunday:
             if h.get("sunday_open") or is_er:
-                score += 40
+                score += 50
                 match_reasons.append("일요일 진료 가능")
             else:
-                score -= 30
+                score -= 40
                 
         if is_night:
             if h.get("night_open") or is_er:
-                score += 35
+                score += 40
                 match_reasons.append("야간/24시간 운영")
             else:
-                score -= 25
+                score -= 30
                 
         if target_district:
             if target_district in (h.get("district") or "") or target_district in (h.get("address") or ""):
@@ -544,9 +677,10 @@ def rank_and_filter_hospitals(hospitals, analysis, user_lat=None, user_lng=None,
     else:
         scored_list.sort(key=lambda x: x["match_score"], reverse=True)
         
-    # 어떤 경우에도 증상이 있는 경우 최소 5곳 이상의 추천 병원을 보장
+    # 만약 해당 특수 진료과로 진료 가능한 개원의가 현재 없는 경우 24시 응급의료센터로만 안전하게 안내
     if not scored_list:
-        scored_list = hospitals[:10]
+        er_hospitals = [h for h in hospitals if h.get("is_emergency")]
+        scored_list = er_hospitals if er_hospitals else hospitals[:5]
         
     return scored_list
 
@@ -692,6 +826,25 @@ def api_chat():
         "user_has_location": bool(user_lat and user_lng),
         "public_data_active": True,
         "is_ai_generated": bool(not ai_error and ai_reply)
+    })
+
+@app.route("/api/reverse-geocode", methods=["GET", "POST", "OPTIONS"])
+@app.route("/reverse-geocode", methods=["GET", "POST", "OPTIONS"])
+def api_reverse_geocode():
+    if request.method == "OPTIONS":
+        return jsonify({"status": "ok"}), 200
+    lat = request.args.get("lat")
+    lng = request.args.get("lng")
+    if not lat or not lng:
+        payload = request.get_json(force=True, silent=True) or {}
+        lat = payload.get("lat")
+        lng = payload.get("lng")
+    address = get_pohang_readable_address(lat, lng)
+    return jsonify({
+        "status": "success",
+        "address": address,
+        "lat": lat,
+        "lng": lng
     })
 
 @app.route("/api/hospitals", methods=["GET"])
