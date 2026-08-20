@@ -359,6 +359,14 @@
     margin-bottom: 6px;
   }
 
+  .hcard-title-wrap {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 6px;
+    flex: 1;
+  }
+
   .hcard-name {
     font-size: 15.5px;
     font-weight: 700;
@@ -1352,14 +1360,15 @@
   function renderHospitalCard(h) {
     let badgesHtml = '';
     
-    // 1. 실시간 진료 상태 뱃지 (가장 첫 번째에 강조 표시)
+    // 1. 실시간 진료 상태 뱃지 (병원명 바로 우측에 배치)
+    let statusBadgeHtml = '';
     const openStatus = getHospitalOpenStatus(h);
     if (openStatus.type === 'er') {
-      badgesHtml += `<span class="meta-tag er-tag">🚨 24시 응급진료</span>`;
+      statusBadgeHtml = `<span class="meta-tag er-tag">🚨 24시 응급진료</span>`;
     } else if (openStatus.isOpen) {
-      badgesHtml += `<span class="meta-tag open-now">${escapeHtml(openStatus.label)}</span>`;
+      statusBadgeHtml = `<span class="meta-tag open-now">${escapeHtml(openStatus.label)}</span>`;
     } else {
-      badgesHtml += `<span class="meta-tag closed">${escapeHtml(openStatus.label)}</span>`;
+      statusBadgeHtml = `<span class="meta-tag closed">${escapeHtml(openStatus.label)}</span>`;
     }
 
     let distBadgeHtml = '';
@@ -1422,7 +1431,10 @@
     return `
       <div class="hcard" data-hid="${escapeHtml(h.id)}">
         <div class="hcard-top">
-          <div class="hcard-name">${escapeHtml(h.name)}</div>
+          <div class="hcard-title-wrap">
+            <span class="hcard-name">${escapeHtml(h.name)}</span>
+            ${statusBadgeHtml}
+          </div>
           <span class="district-badge${isEr}">${escapeHtml(h.district || h.gu || '포항')}</span>
         </div>
 
