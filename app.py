@@ -4,6 +4,7 @@ import json
 import math
 import os
 import re
+import threading
 import time
 import wave
 from datetime import datetime, timedelta, timezone
@@ -65,6 +66,8 @@ def get_all_gemini_api_keys():
 DECODING_KEY = os.environ.get("DATA_GO_KR_DECODING_KEY", "")
 
 _gemini_clients_cache = {}
+_current_gemini_key_index = 0
+_key_lock = threading.Lock()
 
 def get_gemini_client(api_key=None):
     """특정 API 키 또는 기본 키에 대한 Gemini 클라이언트 생성 및 캐싱"""
@@ -82,6 +85,45 @@ def get_gemini_client(api_key=None):
             print(f"Gemini client init error for key {api_key[:8]}...:", e)
             return None
     return _gemini_clients_cache.get(api_key)
+
+def execute_with_gemini_key_rotation(operation_fn):
+    """
+    마지막으로 성공한 Gemini API 키 인덱스부터 시작하여 순환 시도하고,
+    성공한 키 인덱스를 전역에 기억하여 다음 요청 시 바로 그 키를 사용하는 순환 Failover 엔진
+    """
+    global _current_gemini_key_index
+    keys = get_all_gemini_api_keys()
+    if not keys:
+        return None, "Gemini API 키가 설정되지 않았습니다."
+        
+    n_keys = len(keys)
+    with _key_lock:
+        start_idx = _current_gemini_key_index % n_keys
+        
+    last_err = None
+    for step in range(n_keys):
+        curr_idx = (start_idx + step) % n_keys
+        api_key = keys[curr_idx]
+        client = get_gemini_client(api_key)
+        if not client:
+            continue
+            
+        try:
+            result = operation_fn(client, api_key)
+            with _key_lock:
+                _current_gemini_key_index = curr_idx
+            return result, None
+        except Exception as e:
+            last_err = e
+            print(f"[Gemini Key #{curr_idx+1} Failover] error: {e}")
+            continue
+            
+    err_str = str(last_err) if last_err else "API Key Quota Exceeded"
+    if "429" in err_str or "RESOURCE_EXHAUSTED" in err_str:
+        err_msg = "⚠️ Gemini API 모든 무료 사용량 한도에 도달했습니다."
+    else:
+        err_msg = f"⚠️ Gemini API 오류: {err_str[:80]}"
+    return None, err_msg
 
 DB_FILE = os.path.join(os.path.dirname(__file__), "data", "pohang_hospitals_db.json")
 REPORTS_FILE = os.path.join(os.path.dirname(__file__), "data", "reports.json")
@@ -393,26 +435,19 @@ def analyze_symptom_with_gemini(text):
   "advice": ""
 }}"""
 
-    for idx, key in enumerate(keys, 1):
-        client = get_gemini_client(key)
-        if not client:
-            continue
-        try:
-            res = client.models.generate_content(
-                model="gemini-3.6-flash",
-                contents=prompt
-            )
-            raw_text = (res.text or "").strip()
-            raw_text = re.sub(r"^```json\s*", "", raw_text)
-            raw_text = re.sub(r"^```\s*", "", raw_text)
-            raw_text = re.sub(r"\s*```$", "", raw_text).strip()
-            data = json.loads(raw_text)
-            return data
-        except Exception as e:
-            print(f"[Gemini Key #{idx} Failover] symptom analysis error: {e}")
-            continue
-            
-    return None
+    def _do_analyze(client, api_key):
+        res = client.models.generate_content(
+            model="gemini-3.6-flash",
+            contents=prompt
+        )
+        raw_text = (res.text or "").strip()
+        raw_text = re.sub(r"^```json\s*", "", raw_text)
+        raw_text = re.sub(r"^```\s*", "", raw_text)
+        raw_text = re.sub(r"\s*```$", "", raw_text).strip()
+        return json.loads(raw_text)
+
+    data, err = execute_with_gemini_key_rotation(_do_analyze)
+    return data
 
 def analyze_symptom_and_intent(text):
     text_lower = text.lower().strip()
@@ -926,17 +961,10 @@ def generate_gemini_conversational_reply(user_message, analysis, top_hospitals):
         prompt = f"""너는 포항 시민과 학생들을 위한 AI 의료 안내 비서 "포항 바로닥터"야.
 사용자가 "{user_message}"라고 입력했어.
 상투적인 "안녕하세요" 첫인사를 반복하지 말고, 사용자의 말에 짧고 자연스럽게 한 문장으로 반응한 뒤 "어디가 불편하시거나 찾으시는 병원이 있으신가요? (예: 배 아파, 목감기, 일요일 정형외과)"라고 1~2문장으로 간결하게 물어봐줘."""
-        for idx, key in enumerate(keys, 1):
-            client = get_gemini_client(key)
-            if not client:
-                continue
-            try:
-                res = client.models.generate_content(model="gemini-3.6-flash", contents=prompt)
-                return (res.text or "").strip(), None
-            except Exception as e:
-                print(f"[Gemini Key #{idx} Failover] non_medical reply error: {e}")
-                continue
-        return None, "모든 AI API 키 할당량 초과"
+        def _do_non_medical(client, api_key):
+            res = client.models.generate_content(model="gemini-3.6-flash", contents=prompt)
+            return (res.text or "").strip()
+        return execute_with_gemini_key_rotation(_do_non_medical)
         
     hospital_summary = []
     for h in top_hospitals[:4]:
@@ -987,28 +1015,14 @@ def generate_gemini_conversational_reply(user_message, analysis, top_hospitals):
 5. 환자가 진료 전/병원 이동 중 취해야 할 행동 요령(예: 탈수 예방 수액/미온수, RICE 요법, 체온 관리, 금식 여부, 신분증 지참 등)을 1~2문장으로 짚어줘.
 6. 모바일 화면에서 빠르게 읽을 수 있도록 읽기 쉬운 한국어 대화체(3~4문단, 200~250자 내외)로 작성하고 마크다운 볼드(**강조**)를 사용해줘."""
 
-    last_err = None
-    for idx, key in enumerate(keys, 1):
-        client = get_gemini_client(key)
-        if not client:
-            continue
-        try:
-            res = client.models.generate_content(
-                model="gemini-3.6-flash",
-                contents=prompt
-            )
-            return (res.text or "").strip(), None
-        except Exception as e:
-            last_err = e
-            print(f"[Gemini Key #{idx} Failover] reply error: {e}")
-            continue
-            
-    err_str = str(last_err) if last_err else "API Key Quota Exceeded"
-    if "429" in err_str or "RESOURCE_EXHAUSTED" in err_str:
-        err_msg = "⚠️ Gemini API 모든 무료 사용량 한도에 도달했습니다."
-    else:
-        err_msg = f"⚠️ Gemini API 오류: {err_str[:80]}"
-    return None, err_msg
+    def _do_reply(client, api_key):
+        res = client.models.generate_content(
+            model="gemini-3.6-flash",
+            contents=prompt
+        )
+        return (res.text or "").strip()
+
+    return execute_with_gemini_key_rotation(_do_reply)
 
 @app.after_request
 def add_cors_headers(response):
