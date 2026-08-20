@@ -375,34 +375,40 @@ SYMPTOM_CATEGORIES = {
 WEEKDAYS_KR = ["월", "화", "수", "목", "금", "토", "일"]
 WEEKDAY_NAMES = {"월요일": 0, "화요일": 1, "수요일": 2, "목요일": 3, "금요일": 4, "토요일": 5, "일요일": 6}
 
-def analyze_symptom_with_gemini(text):
+def analyze_symptom_with_gemini(text, history=None):
     """
     [AI-First 임상 트리아지 엔진]
-    등록된 모든 Gemini API 키를 순서대로 시도(Failover)하여 안정적인 분석 보장
+    비정형 자연어 및 이전 대화 맥락(History)에서 의학적 증상, 진료과, 방문 시점 조건을 추출
     """
     keys = get_all_gemini_api_keys()
     if not keys:
         return None
         
+    history_text = ""
+    if history and isinstance(history, list):
+        recent_turns = []
+        for turn in history[-6:]:
+            role_name = "환자(사용자)" if turn.get("role") == "user" else "의료AI 비서"
+            content = turn.get("content") or turn.get("message") or ""
+            if content:
+                recent_turns.append(f"- {role_name}: {content[:150]}")
+        if recent_turns:
+            history_text = "[이전 대화 맥락 (이전 환자 호소 증상 및 의사소통 기록 - 반드시 참고하여 맥락을 유지할 것)]\n" + "\n".join(recent_turns) + "\n\n"
+        
     prompt = f"""너는 대한민국 응급의료 및 1차 진료 임상 트리아지(Triage) AI 전문가야.
 사용자가 입력한 자연어 증상이나 병원 탐색 요청을 의학적으로 깊이 있게 분석하고, 가장 적절한 표준 진료과와 긴급도를 판단해줘.
 
-[사용자 입력]
+{history_text}[현재 사용자 최신 입력]
 "{text}"
 
 [선택 가능한 표준 진료과 목록]
 내과, 소아청소년과, 이비인후과, 정형외과, 마취통증의학과, 신경과, 신경외과, 외과, 피부과, 안과, 치과, 비뇨의학과, 산부인과, 정신건강의학과, 재활의학과, 가정의학과, 응급의학과, 흉부외과, 한방내과
 
 [임상 분석 지침]
-1. 환자가 호소하는 증상의 의학적 기전과 원인을 추론하여 1순위 추천 진료과(primary_depts, 1~3개)와 대안/응급 진료과(alt_depts, 1~2개)를 결정해.
-   - 예) "피부에 두드러기 나고 가려워" -> primary_depts: ["피부과"], alt_depts: ["가정의학과", "내과"]
-   - 예) "어깨가 뻐근하고 팔이 저려" -> primary_depts: ["정형외과", "마취통증의학과", "신경외과"], alt_depts: ["재활의학과", "가정의학과"]
-   - 예) "장염 걸렸어 수액 맞고 싶어" -> primary_depts: ["내과", "가정의학과"], alt_depts: ["응급의학과"]
-   - 예) "애기가 밤에 열이 39도야" -> primary_depts: ["소아청소년과"], alt_depts: ["응급의학과", "이비인후과"]
-   - 예) "발목 삐끗해서 붓고 아파" -> primary_depts: ["정형외과", "마취통증의학과"], alt_depts: ["외과", "재활의학과"]
-   - 예) "눈이 충혈되고 뻑뻑해" -> primary_depts: ["안과"], alt_depts: ["내과", "가정의학과"]
-   - 예) "치통이 심하고 잇몸이 부었어" -> primary_depts: ["치과"], alt_depts: []
-2. 시공간 및 긴급도 추출:
+1. 이전 대화 맥락이 있는 경우(예: 이전에 '배 아파'라고 한 뒤 이번에 '난 일요일에 가야돼'라고 한 경우):
+   - 이전 대화에서 호소한 증상('복통/장염/소화기질환')을 그대로 유지하고, 이번 최신 입력의 조건('일요일 진료', is_sunday: true)을 결합해 분석해.
+2. 환자가 호소하는 증상의 의학적 기전과 원인을 추론하여 1순위 추천 진료과(primary_depts, 1~3개)와 대안/응급 진료과(alt_depts, 1~2개)를 결정해.
+3. 시공간 및 긴급도 추출:
    - is_open_now: 지금, 현재, 지금 문 연, 지금 갈 수 있는 등 현재 실시간 진료 가능한 병원을 찾으면 true
    - is_saturday: 토요일 진료 필요 시 true
    - is_sunday: 일요일 진료 필요 시 true
@@ -410,8 +416,8 @@ def analyze_symptom_with_gemini(text):
    - is_night: 야간, 밤, 저녁, 새벽, 늦게, 5시/6시 이후 등 야간 진료가 필요하면 true
    - is_emergency: 호흡곤란, 극심한 흉통, 대량 출혈 등 24시 응급실 직행 필요 시 true
    - target_district: 포항 지역명(양덕동, 장성동, 장량동, 이동, 효자동, 두호동, 창포동, 흥해읍, 오천읍 등)이 언급되었으면 해당 동 이름, 없으면 null
-3. category_title: 간결하고 전문적인 의학적 증상 요약 제목 (예: "급성 두드러기 및 접촉성 피부염", "경추부 신경통 및 어깨 근막통증증후군")
-4. advice: 환자가 즉시 실천할 수 있는 1~2문장의 전문적 의학 대처 요령
+4. category_title: 간결하고 전문적인 의학적 증상 요약 제목 (예: "급성 복통 및 설사", "급성 두드러기 및 접촉성 피부염")
+5. advice: 환자가 즉시 실천할 수 있는 1~2문장의 전문적 의학 대처 요령
 
 반드시 아래 JSON 포맷으로만 출력해 (설명이나 마크다운 백틱 제외):
 {{
@@ -430,7 +436,7 @@ def analyze_symptom_with_gemini(text):
   "advice": "환자 대처 조언"
 }}
 
-단, 사용자의 입력이 완전히 의학과 무관한 단순 인사/장난(예: '안녕', '반가워', '바보')인 경우에만:
+단, 사용자의 입력이 완전히 의학과 무관한 단순 인사/장난(예: '안녕', '반가워', '바보')이고 이전 대화 맥락도 없는 경우에만:
 {{
   "is_medical": false,
   "category_title": "일반 대화",
@@ -461,26 +467,27 @@ def analyze_symptom_with_gemini(text):
     data, err = execute_with_gemini_key_rotation(_do_analyze)
     return data
 
-def analyze_symptom_and_intent(text):
+def analyze_symptom_and_intent(text, history=None):
     text_lower = text.lower().strip()
     
-    # 1. 명백한 비의료 단순 인사/장난 사전 필터링
-    is_pure_non_medical = text_lower in ["바보", "안녕", "안녕하세요", "ㅎㅇ", "하이", "ㅋㅋ", "ㅎㅎ", "테스트", "test"]
-    if is_pure_non_medical:
-        return {
-            "category_key": "non_medical",
-            "is_medical_symptom": False,
-            "category_title": "일반 대화",
-            "primary_depts": [],
-            "alt_depts": [],
-            "advice": "",
-            "target_date_str": "오늘",
-            "is_saturday": (datetime.now().weekday() == 5),
-            "is_sunday": (datetime.now().weekday() == 6),
-            "is_holiday": False,
-            "is_night": False,
-            "target_district": None
-        }
+    # 1. 명백한 비의료 단순 인사/장난 사전 필터링 (이전 대화가 없을 때만)
+    if not history or len(history) == 0:
+        is_pure_non_medical = text_lower in ["바보", "안녕", "안녕하세요", "ㅎㅇ", "하이", "ㅋㅋ", "ㅎㅎ", "테스트", "test"]
+        if is_pure_non_medical:
+            return {
+                "category_key": "non_medical",
+                "is_medical_symptom": False,
+                "category_title": "일반 대화",
+                "primary_depts": [],
+                "alt_depts": [],
+                "advice": "",
+                "target_date_str": "오늘",
+                "is_saturday": (datetime.now().weekday() == 5),
+                "is_sunday": (datetime.now().weekday() == 6),
+                "is_holiday": False,
+                "is_night": False,
+                "target_district": None
+            }
 
     # 2. 날짜 및 시간 키워드 파싱
     today = datetime.now().date()
@@ -583,8 +590,8 @@ def analyze_symptom_and_intent(text):
             target_district = dist_name
             break
 
-    # 3. [AI-First Triage] Gemini 3.6 Flash를 1순위로 실행하여 임상 증상 및 진료과 정밀 분석
-    ai_result = analyze_symptom_with_gemini(text)
+    # 3. [AI-First Triage] Gemini 3.5 Flash-Lite를 1순위로 실행하여 임상 증상 및 진료과 정밀 분석 (이전 대화 맥락 반영)
+    ai_result = analyze_symptom_with_gemini(text, history=history)
     if ai_result:
         if not ai_result.get("is_medical", True):
             return {
@@ -989,8 +996,8 @@ def rank_and_filter_hospitals(hospitals, analysis, user_lat=None, user_lng=None,
     result_list = open_hospitals + closed_hospitals
     return result_list
 
-def generate_gemini_conversational_reply(user_message, analysis, top_hospitals):
-    """Gemini 3.5 Flash-Lite를 활용해 실제 따뜻하고 전문적인 의료 대화 답변 생성 (다중 API 키 Failover 지원)"""
+def generate_gemini_conversational_reply(user_message, analysis, top_hospitals, history=None):
+    """Gemini 3.5 Flash-Lite를 활용해 실제 따뜻하고 전문적인 의료 대화 답변 생성 (다중 API 키 Failover 및 멀티턴 대화 메모리 지원)"""
     keys = get_all_gemini_api_keys()
     if not keys:
         return None, "Gemini API 키가 설정되지 않았습니다."
@@ -1004,6 +1011,17 @@ def generate_gemini_conversational_reply(user_message, analysis, top_hospitals):
             return (res.text or "").strip()
         return execute_with_gemini_key_rotation(_do_non_medical)
         
+    history_text = ""
+    if history and isinstance(history, list):
+        recent_turns = []
+        for turn in history[-4:]:
+            role_name = "사용자(환자)" if turn.get("role") == "user" else "포항 바로닥터"
+            content = turn.get("content") or turn.get("message") or ""
+            if content:
+                recent_turns.append(f"- {role_name}: {content[:150]}")
+        if recent_turns:
+            history_text = "[이전 대화 기록 (이전 질문과 상황을 기억하고 자연스럽게 맥락을 이어줄 것)]\n" + "\n".join(recent_turns) + "\n\n"
+
     is_sunday = analysis.get("is_sunday", False)
     is_saturday = analysis.get("is_saturday", False)
     is_night = analysis.get("is_night", False)
@@ -1050,7 +1068,7 @@ def generate_gemini_conversational_reply(user_message, analysis, top_hospitals):
     
     prompt = f"""너는 포항 시민과 학생들을 위한 따뜻하고 전문적인 AI 의료 트리아지 닥터 "포항 바로닥터"야.
 
-[환자 호소 증상]
+{history_text}[현재 환자 호소 입력]
 "{user_message}"
 
 [의학적 트리아지 분석 결과]
@@ -1064,15 +1082,16 @@ def generate_gemini_conversational_reply(user_message, analysis, top_hospitals):
 
 [답변 작성 가이드]
 1. 불필요한 형식적 첫인사("안녕하세요")는 생략하고, 환자가 겪고 있는 고통/불편에 대해 공감하며 바로 핵심을 말해줘.
-2. 거리를 안내할 때 "약 1.39km", "0.11km" 같은 딱딱한 숫자 거리 표현을 직접 쓰지 말고, "가장 가까운", "바로 인근에 위치한", "가장 빠르게 방문하실 수 있는" 같은 자연스럽고 친근한 표현을 사용해줘.
-3. [시점/요일 안내 기준 - 매우 중요]:
+2. 이전 대화 기록이 있는 경우(예: 이전에 배 아프다고 한 후 '난 일요일에 가야돼'라고 한 경우), 환자의 이전 증상과 상황을 기억하고 자연스럽게 맥락을 이어주며 대답해줘 (예: "아, 일요일 진료를 찾으시는군요! 앞서 말씀하신 복통 증상으로 일요일에 진료 가능한 병원을 안내해 드릴게요.").
+3. 거리를 안내할 때 "약 1.39km", "0.11km" 같은 딱딱한 숫자 거리 표현을 직접 쓰지 말고, "가장 가까운", "바로 인근에 위치한", "가장 빠르게 방문하실 수 있는" 같은 자연스럽고 친근한 표현을 사용해줘.
+4. [시점/요일 안내 기준 - 매우 중요]:
    - 사용자가 '일요일'을 요청한 경우: "일요일에 진료 가능한 가장 가까운 병원은 **[병원명] (일요일 진료시간)**입니다."라고 안내하고, '오늘/지금'이라는 표현을 절대 쓰지 마.
    - 사용자가 '토요일'을 요청한 경우: "토요일에 진료 가능한 가장 가까운 병원은 **[병원명] (토요일 진료시간)**입니다."라고 안내하고, '오늘/지금'이라는 표현을 절대 쓰지 마.
    - 사용자가 특정 요일을 지정하지 않은 일반 질문인 경우: "현재 위치에서 지금 진료 중인 가장 가까운 병원은 **[가장 가까운 병원명] (진료시간)**입니다."라고 안내해줘.
    - 일반 의원이 모두 문을 닫아 24시간 응급실이 안내된 경우: "현재 해당 진료과 주변 의원이 모두 마감/휴진되어 가장 가까운 **24시간 응급실 [병원명]**을 안내해 드립니다."라고 명확히 설명해줘.
-4. 왜 이 진료과({', '.join(analysis.get('primary_depts', []))})를 방문해야 하는지 1문장으로 친절히 설명해줘.
-5. 환자가 진료 전/병원 이동 중 취해야 할 행동 요령(예: 탈수 예방 수액/미온수, RICE 요법, 체온 관리, 금식 여부, 신분증 지참 등)을 1~2문장으로 짚어줘.
-6. 모바일 화면에서 빠르게 읽을 수 있도록 읽기 쉬운 한국어 대화체(3~4문단, 200~250자 내외)로 작성하고 마크다운 볼드(**강조**)를 사용해줘."""
+5. 왜 이 진료과({', '.join(analysis.get('primary_depts', []))})를 방문해야 하는지 1문장으로 친절히 설명해줘.
+6. 환자가 진료 전/병원 이동 중 취해야 할 행동 요령(예: 탈수 예방 수액/미온수, RICE 요법, 체온 관리, 금식 여부, 신분증 지참 등)을 1~2문장으로 짚어줘.
+7. 모바일 화면에서 빠르게 읽을 수 있도록 읽기 쉬운 한국어 대화체(3~4문단, 200~250자 내외)로 작성하고 마크다운 볼드(**강조**)를 사용해줘."""
 
     def _do_reply(client, api_key, model_name):
         res = client.models.generate_content(
@@ -1113,6 +1132,7 @@ def api_chat():
         
     payload = request.get_json(force=True, silent=True) or {}
     message = (payload.get("message") or "").strip()
+    history = payload.get("history", [])
     user_lat = payload.get("lat")
     user_lng = payload.get("lng")
     sort_by = payload.get("sort_by", "recommend")
@@ -1124,14 +1144,14 @@ def api_chat():
         return jsonify({"error": "증상이나 상황을 입력해주세요. (예: 일요일 5시에 장염 걸렸어)"}), 400
 
     hospitals = load_hospitals_db()
-    analysis = analyze_symptom_and_intent(message)
+    analysis = analyze_symptom_and_intent(message, history=history)
     recommended = rank_and_filter_hospitals(hospitals, analysis, user_lat, user_lng, sort_by)
     
     # 상위 추천 병원들
     top_hospitals = recommended[:15]
 
-    # 실제 Gemini 3.6 Flash 대화형 응답 생성 시도
-    ai_reply, ai_error = generate_gemini_conversational_reply(message, analysis, top_hospitals)
+    # 실제 Gemini 3.5 Flash-Lite 대화형 응답 생성 시도 (대화 메모리 반영)
+    ai_reply, ai_error = generate_gemini_conversational_reply(message, analysis, top_hospitals, history=history)
     
     if not ai_reply:
         if not top_hospitals:
