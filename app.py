@@ -188,7 +188,66 @@ def format_distance_and_time(dist_km):
         walk_mins = round(dist_km / 4 * 60)
         return f"{dist_str} (차로 약 {car_mins}분 / 도보 {walk_mins}분)"
 
-# 포항 주요 생활권/동/읍·면 대표 좌표 (오프라인/빠른 주소 변환용)
+# 포항 주요 생활권/동/읍·면 대표 좌표 (오프라인/빠른 주소 변환 및 동별 기준거리 계산용)
+POHANG_DISTRICT_COORDS = {
+    "두호동": (36.059, 129.375),
+    "환호동": (36.069, 129.390),
+    "항구동": (36.052, 129.378),
+    "창포동": (36.063, 129.362),
+    "우현동": (36.056, 129.355),
+    "양덕동": (36.0825, 129.3982),
+    "장성동": (36.072, 129.375),
+    "장량동": (36.075, 129.385),
+    "죽도동": (36.035, 129.364),
+    "중앙동": (36.040, 129.366),
+    "용흥동": (36.042, 129.349),
+    "송도동": (36.039, 129.381),
+    "대도동": (36.015, 129.362),
+    "상도동": (36.018, 129.355),
+    "상대동": (36.018, 129.355),
+    "해도동": (36.023, 129.372),
+    "이동": (36.022, 129.336),
+    "대이동": (36.022, 129.336),
+    "대잠동": (36.013, 129.348),
+    "효자동": (36.008, 129.332),
+    "지곡동": (36.019, 129.324),
+    "흥해읍": (36.103, 129.388),
+    "오천읍": (35.968, 129.412),
+    "연일읍": (35.992, 129.348),
+    "구룡포읍": (35.990, 129.558),
+    "청하면": (36.195, 129.350),
+    "동해면": (35.980, 129.450),
+}
+
+DISTRICT_KEYWORDS = [
+    ("두호동", "두호동"), ("두호", "두호동"),
+    ("환호동", "환호동"), ("환호", "환호동"),
+    ("항구동", "항구동"),
+    ("창포동", "창포동"), ("창포", "창포동"),
+    ("우현동", "우현동"), ("우현", "우현동"),
+    ("양덕동", "양덕동"), ("양덕", "양덕동"),
+    ("장성동", "장성동"), ("장성", "장성동"),
+    ("장량동", "장량동"), ("장량", "장량동"),
+    ("죽도동", "죽도동"), ("죽도", "죽도동"),
+    ("중앙동", "중앙동"), ("시내", "죽도동"),
+    ("용흥동", "용흥동"), ("용흥", "용흥동"),
+    ("송도동", "송도동"), ("송도", "송도동"),
+    ("대도동", "대도동"), ("대도", "대도동"),
+    ("상도동", "상도동"), ("상도", "상도동"),
+    ("상대동", "상대동"), ("상대", "상대동"),
+    ("해도동", "해도동"), ("해도", "해도동"),
+    ("대이동", "대이동"),
+    ("대잠동", "대잠동"), ("대잠", "대잠동"),
+    ("효자동", "효자동"), ("효자", "효자동"),
+    ("지곡동", "지곡동"), ("지곡", "지곡동"),
+    ("이동", "이동"),
+    ("초곡", "흥해읍"), ("이인", "흥해읍"), ("남송", "흥해읍"),
+    ("한동대", "흥해읍"), ("흥해", "흥해읍"),
+    ("문덕", "오천읍"), ("원리", "오천읍"), ("오천", "오천읍"),
+    ("연일", "연일읍"), ("유강", "연일읍"),
+    ("구룡포", "구룡포읍"), ("청하", "청하면"), ("동해면", "동해면")
+]
+
 POHANG_DISTRICT_CENTROIDS = [
     ("흥해읍 남송리", 36.103, 129.388, "북구"),
     ("흥해읍 초곡리", 36.088, 129.345, "북구"),
@@ -212,6 +271,57 @@ POHANG_DISTRICT_CENTROIDS = [
     ("오천읍", 35.968, 129.412, "남구"),
     ("구룡포읍", 35.990, 129.558, "남구")
 ]
+
+DEPT_EXACT_MAP = {
+    "치과": ["치과", "치과의원", "구강", "치주", "보철", "교정", "소아치과", "통합치의학", "치과보존과", "치과보철과", "구강악안면외과"],
+    "피부과": ["피부과", "성형외과"],
+    "성형외과": ["성형외과", "피부과"],
+    "안과": ["안과"],
+    "이비인후과": ["이비인후과"],
+    "정형외과": ["정형외과", "마취통증의학과", "재활의학과", "신경외과"],
+    "마취통증의학과": ["마취통증의학과", "정형외과", "신경외과"],
+    "소아청소년과": ["소아청소년과", "소아과"],
+    "산부인과": ["산부인과"],
+    "비뇨의학과": ["비뇨의학과", "비뇨기과"],
+    "정신건강의학과": ["정신건강의학과", "정신과"],
+    "한의원": ["한방", "침구", "한의원", "한방내과", "한방병원", "한방재활의학과", "사상체질과"],
+    "내과": ["내과", "소화기내과", "순환기내과", "내분비내과", "호흡기내과", "신장내과", "류마티스내과", "가정의학과"],
+    "가정의학과": ["가정의학과", "내과", "일반의"],
+    "외과": ["외과", "정형외과", "신경외과", "흉부외과"]
+}
+
+# 비응급 전문 단독 진료과 (일반 응급실 대형병원으로 대체되면 안 되는 전문 진료과)
+NON_ER_EXCLUSIVE_DEPTS = {"치과", "피부과", "성형외과", "안과", "한의원", "정신건강의학과", "비뇨의학과"}
+
+def matches_department(hospital, target_dept_list):
+    """병원 데이터와 요청 진료과목 간 정밀 동의어/세부전문과 엄격 매칭"""
+    if not target_dept_list:
+        return True
+    h_depts = hospital.get("departments") or []
+    h_name = hospital.get("name", "")
+    h_org = hospital.get("org_type", "")
+    
+    for td in target_dept_list:
+        if td == "치과":
+            if h_org in ["치과의원", "치과병원"] or "치과" in h_name:
+                return True
+            if any(d in ["치과보철과", "치과보존과", "치주과", "구강악안면외과", "소아치과", "치과교정과", "통합치의학과", "구강내과"] for d in h_depts):
+                return True
+        elif td == "한의원":
+            if h_org in ["한의원", "한방병원"] or "한의원" in h_name or "한방" in h_name:
+                return True
+        else:
+            # 치과의원이나 한의원은 일반 의과 진료과목(내과, 정형외과, 피부과 등)에 오매칭되지 않도록 철저히 차단
+            if h_org in ["치과의원", "치과병원", "한의원", "한방병원"]:
+                continue
+            if "치과" in h_name or "한의원" in h_name:
+                continue
+            valid_depts = DEPT_EXACT_MAP.get(td, [td])
+            if any(d in h_depts for d in valid_depts):
+                return True
+            if any(vd in h_name for vd in valid_depts):
+                return True
+    return False
 
 def get_pohang_readable_address(lat, lng):
     """위도/경도 좌표를 공식 역지오코딩 API를 통해 표준 도로명/행정동 주소로 변환 (괄호 제외)"""
@@ -282,9 +392,16 @@ SYMPTOM_CATEGORIES = {
         "alt_depts": ["응급의학과", "소아청소년과"],
         "advice": "🤒 발열/호흡기 증상으로 판단됩니다. 발열 환자 대면 진료 및 신속항원검사가 가능한 병의원을 우선 매칭했습니다. (발열 시 진료 제한 병원은 주의 안내)"
     },
+    "aesthetic_skin": {
+        "title": "피부 시술 / 보톡스 / 필러 / 쁘띠 / 에스테틱 클리닉",
+        "keywords": ["시술", "피부시술", "보톡스", "필러", "리프팅", "토닝", "점빼기", "점", "레이저", "제모", "슈링크", "인모드", "물광", "피부관리", "에스테틱", "피부과시술"],
+        "primary_depts": ["피부과", "성형외과"],
+        "alt_depts": [],
+        "advice": "✨ 피부 및 미용 시술 전문 클리닉입니다. 레이저, 보톡스, 필러 및 쁘띠 시술이 가능한 피부과/성형외과의원을 추천합니다."
+    },
     "skin": {
         "title": "피부 질환 / 알레르기 / 두드러기",
-        "keywords": ["피부", "두드러기", "가려움", "발진", "아토피", "습진", "대상포진", "알레르기", "뾰루지", "여드름", "점", "레이저", "피부과"],
+        "keywords": ["피부", "두드러기", "가려움", "발진", "아토피", "습진", "대상포진", "알레르기", "뾰루지", "여드름", "피부과", "피부염"],
         "primary_depts": ["피부과"],
         "alt_depts": ["내과", "가정의학과"],
         "advice": "🩹 피부 질환 증상으로 판단됩니다. 미용 시술 위주가 아닌 질환/보험치료 전문 피부과 및 알레르기 항히스타민 수액 처방이 가능한 의원을 추천합니다."
@@ -302,17 +419,24 @@ SYMPTOM_CATEGORIES = {
     },
     "ophthalmology": {
         "title": "안과 질환 / 눈 통증 / 충혈",
-        "keywords": ["눈", "충혈", "시력", "안과", "다래끼", "눈물", "뻑뻑", "눈통증", "결막염", "눈아파"],
+        "keywords": ["눈", "충혈", "시력", "안과", "다래끼", "눈물", "뻑뻑", "눈통증", "결막염", "눈아파", "라식", "라섹", "백내장"],
         "primary_depts": ["안과"],
         "alt_depts": ["내과", "가정의학과"],
         "advice": "👁️ 안과 질환으로 판단됩니다. 정밀 시력/안압 검사 및 안약 처방이 가능한 안과의원을 추천합니다."
     },
     "dental": {
-        "title": "치과 질환 / 잇몸 / 치통 / 턱관절",
-        "keywords": ["치아", "이빨", "잇몸", "치통", "사랑니", "턱", "스케일링", "치과", "이아파", "이빨아파"],
+        "title": "치과 질환 / 임플란트 / 스케일링 / 치통",
+        "keywords": ["치아", "이빨", "잇몸", "치통", "사랑니", "턱", "스케일링", "치과", "이아파", "이빨아파", "임플란트", "충치", "발치", "교정", "치열", "턱관절"],
         "primary_depts": ["치과"],
         "alt_depts": [],
-        "advice": "🦷 치과 질환으로 판단됩니다. 발치, 충치 치료 및 턱관절 치료가 가능한 치과의원을 추천합니다."
+        "advice": "🦷 치과 전문 진료입니다. 충치 치료, 발치, 임플란트 및 스케일링이 가능한 치과의원을 추천합니다."
+    },
+    "oriental": {
+        "title": "한방 진료 / 침 / 뜸 / 추나요법",
+        "keywords": ["한의원", "한방", "한방병원", "침", "침맞", "뜸", "부항", "추나", "추나요법", "한약", "보약"],
+        "primary_depts": ["한의원"],
+        "alt_depts": [],
+        "advice": "🌿 한방 전문 진료입니다. 침구 치료, 부항 및 추나요법이 가능한 한의원을 추천합니다."
     },
     "urology": {
         "title": "비뇨기 / 방광염 / 결석 / 요로",
@@ -579,16 +703,21 @@ def analyze_symptom_and_intent(text, history=None):
         is_night = True
         
     target_district = None
-    district_map = {
-        "양덕": "양덕동", "장량": "장량동", "장성": "장량동", "두호": "두호동",
-        "창포": "창포동", "한동대": "흥해읍/한동대", "흥해": "흥해읍/한동대",
-        "초곡": "흥해읍/한동대", "우현": "우현동", "이동": "이동", "효자": "효자동",
-        "지곡": "지곡동", "대이동": "대이동", "오천": "오천읍", "문덕": "오천읍"
-    }
-    for kw, dist_name in district_map.items():
+    for kw, dist_name in DISTRICT_KEYWORDS:
         if kw in text:
             target_district = dist_name
             break
+            
+    # 만약 현재 입력에 특정 동이 없고 이전 대화 기록이 있다면 이전 대화에서 target_district 상속
+    if not target_district and history and isinstance(history, list):
+        for turn in reversed(history[-4:]):
+            c = (turn.get("content") or turn.get("message") or "").strip()
+            for kw, dist_name in DISTRICT_KEYWORDS:
+                if kw in c:
+                    target_district = dist_name
+                    break
+            if target_district:
+                break
 
     # 3. [AI-First Triage] Gemini 3.5 Flash-Lite를 1순위로 실행하여 임상 증상 및 진료과 정밀 분석 (이전 대화 맥락 반영)
     ai_result = analyze_symptom_with_gemini(text, history=history)
@@ -649,12 +778,13 @@ def analyze_symptom_and_intent(text, history=None):
     # 4. [Fallback] 만약 Gemini 일시 오류 시 로컬 키워드 사전 및 진료과 매핑으로 안전하게 폴백
     explicit_depts = []
     dept_checks = [
-        ("내과", ["내과", "소화기내과", "순환기내과"]),
-        ("이비인후과", ["이비인후과", "이비인후"]),
-        ("정형외과", ["정형외과"]),
-        ("치과", ["치과"]),
-        ("안과", ["안과"]),
-        ("피부과", ["피부과"]),
+        ("치과", ["치과", "임플란트", "스케일링", "사랑니", "충치", "치통", "발치"]),
+        ("피부과", ["피부과", "시술", "피부시술", "보톡스", "필러", "리프팅", "토닝", "점빼기", "레이저", "여드름"]),
+        ("성형외과", ["성형외과", "성형", "쌍꺼풀", "코성형"]),
+        ("안과", ["안과", "라식", "라섹", "결막염", "다래끼", "백내장"]),
+        ("이비인후과", ["이비인후과", "이비인후", "비염", "축농증", "중이염"]),
+        ("정형외과", ["정형외과", "도수치료", "물리치료", "깁스", "통증의학과"]),
+        ("마취통증의학과", ["마취통증의학과", "통증의학과"]),
         ("소아청소년과", ["소아청소년과", "소아과"]),
         ("산부인과", ["산부인과", "여성의원"]),
         ("비뇨의학과", ["비뇨의학과", "비뇨기과"]),
@@ -662,7 +792,8 @@ def analyze_symptom_and_intent(text, history=None):
         ("신경외과", ["신경외과"]),
         ("정신건강의학과", ["정신건강의학과", "정신과"]),
         ("외과", ["외과"]),
-        ("한의원", ["한의원", "한방병원"])
+        ("한의원", ["한의원", "한방병원", "한방", "침", "추나", "뜸"]),
+        ("내과", ["내과", "소화기내과", "순환기내과", "내시경"])
     ]
     for dname, kws in dept_checks:
         if any(k in text_lower for k in kws):
@@ -787,125 +918,64 @@ def rank_and_filter_hospitals(hospitals, analysis, user_lat=None, user_lng=None,
     if analysis.get("category_key") == "non_medical":
         return []
         
-    primary_depts = set(analysis.get("primary_depts") or [])
-    alt_depts = set(analysis.get("alt_depts") or [])
+    primary_depts = analysis.get("primary_depts") or []
+    alt_depts = analysis.get("alt_depts") or []
     is_open_now = analysis.get("is_open_now", False)
     is_saturday = analysis.get("is_saturday", False)
     is_sunday = analysis.get("is_sunday", False)
     is_holiday = analysis.get("is_holiday", False)
     is_night = analysis.get("is_night", False)
+    is_late_night = analysis.get("is_late_night", False)
     target_district = analysis.get("target_district")
     is_medical = analysis.get("is_medical_symptom", True)
     
-    is_late_night = analysis.get("is_late_night", False)
+    # 1. 기준 좌표 설정 (사용자가 특정 동을 지정했으면 해당 동 중심 좌표, 아니면 GPS 좌표)
+    ref_lat, ref_lng = user_lat, user_lng
+    if target_district and target_district in POHANG_DISTRICT_COORDS:
+        ref_lat, ref_lng = POHANG_DISTRICT_COORDS[target_district]
+    elif ref_lat is None or ref_lng is None:
+        ref_lat, ref_lng = 36.0825, 129.3982  # 기본 포항 북구 양덕동
+
+    # 2. 비응급 전문 진료과(치과, 피부과/시술, 안과, 한의원, 정신건강의학과 등) 판별
+    is_non_er_specialty = any(d in NON_ER_EXCLUSIVE_DEPTS for d in primary_depts) and not any(d in ["응급의학과", "외과", "내과"] for d in primary_depts)
     
-    scored_list = []
+    candidate_list = []
     
     for h in hospitals:
         if not h.get("is_open_today", True):
             continue
             
-        h_depts = set(h.get("departments") or [])
-        common_primary = h_depts.intersection(primary_depts)
-        common_alt = h_depts.intersection(alt_depts)
+        matches_pri = matches_department(h, primary_depts)
+        matches_alt = matches_department(h, alt_depts)
         is_er = bool(h.get("is_emergency"))
         
         if is_medical and (primary_depts or alt_depts):
-            if not common_primary and not common_alt and not is_er:
-                continue
+            if is_non_er_specialty:
+                if not matches_pri and not matches_alt:
+                    continue
+            else:
+                if not matches_pri and not matches_alt and not is_er:
+                    continue
 
-        score = 0
-        match_reasons = []
-        
-        if common_primary:
-            score += 70
-            match_reasons.append(f"추천 진료과: {', '.join(common_primary)}")
-        elif common_alt:
-            score += 45
-            match_reasons.append(f"대안 진료과: {', '.join(common_alt)}")
-        elif is_er:
-            score += 35
-            match_reasons.append("24시간 응급진료")
-        else:
-            score += 5
-            
-        # 실시간 진료 상태 가중치
-        h_open_now = is_hospital_open_now(h)
-        
-        # 🚨 심야 (밤 9시/10시/11시/새벽 등 일반 의원 마감 시간대)
-        if is_late_night:
-            if is_er:
-                score += 250
-                match_reasons.append("🚨 24시간 응급실 진료 가능")
-            elif h.get("moonlight_clinic"):
-                score += 130
-                match_reasons.append("🌙 달빛어린이병원 (야간)")
-            elif h.get("night_open"):
-                score += 90
-                match_reasons.append("야간 진료")
-            else:
-                score -= 300 # 심야 시간대에는 문 닫은 일반 의원 대폭 감점
-        # 현재 진료중 가중치
-        elif is_open_now:
-            if h_open_now or is_er:
-                score += 100
-                match_reasons.append("현재 진료중")
-            else:
-                score -= 80
-                
-        if is_saturday:
-            if h.get("saturday_open") or is_er:
-                score += 45
-                match_reasons.append("토요일 진료 가능")
-            else:
-                score -= 35
-                
-        if is_sunday:
-            if h.get("sunday_open") or is_er:
-                score += 50
-                match_reasons.append("일요일 진료 가능")
-            else:
-                score -= 40
-                
-        if is_night and not is_late_night:
-            if h.get("night_open") or is_er:
-                score += 40
-                match_reasons.append("야간/24시간 운영")
-            else:
-                score -= 30
-                
+        # 지정 동(target_district) 소속 여부 정밀 판별
+        in_target_district = False
         if target_district:
-            if target_district in (h.get("district") or "") or target_district in (h.get("address") or ""):
-                score += 35
-                match_reasons.append(f"{target_district} 생활권")
-        else:
-            if "양덕동" in (h.get("district") or "") or "장량동" in (h.get("district") or ""):
-                score += 10
-                
+            h_dist = h.get("district") or ""
+            h_addr = h.get("address") or ""
+            in_target_district = (target_district in h_dist or 
+                                  target_district in h_addr or
+                                  (target_district == "이동" and ("대이동" in h_dist or "대잠동" in h_dist)) or
+                                  (target_district == "장성동" and "장량동" in h_dist) or
+                                  (target_district == "장량동" and "장성동" in h_dist))
+                                  
+        # 기준 좌표 기준 거리 계산
         dist_km = None
         dist_text = None
-        if user_lat is not None and user_lng is not None and h.get("lat") and h.get("lng"):
-            dist_km = calculate_distance_km(user_lat, user_lng, h["lat"], h["lng"])
+        if ref_lat is not None and ref_lng is not None and h.get("lat") and h.get("lng"):
+            dist_km = calculate_distance_km(ref_lat, ref_lng, h["lat"], h["lng"])
             dist_text = format_distance_and_time(dist_km)
             
-            if dist_km is not None:
-                if dist_km <= 1.5:
-                    score += 40
-                    match_reasons.append("반경 1.5km 이내")
-                elif dist_km <= 3.0:
-                    score += 25
-                elif dist_km <= 6.0:
-                    score += 10
-                else:
-                    score -= min(25, int(dist_km * 1.5))
-                    
-        if h.get("posaka") == "O":
-            score += 5
-            
-        query = h.get("naver_search_query") or f"{h['name']} 포항"
-        naver_map_url = f"https://map.naver.com/p/search/{requests.utils.quote(query)}"
-        kakao_map_url = f"https://map.kakao.com/link/to/{requests.utils.quote(h['name'])},{h.get('lat')},{h.get('lng')}"
-        
+        # 진료 상태 판별
         if is_sunday:
             if h.get("is_emergency"):
                 open_status = {"is_open": True, "label": "🚨 24시 응급진료", "type": "er"}
@@ -922,13 +992,24 @@ def rank_and_filter_hospitals(hospitals, analysis, user_lat=None, user_lng=None,
                 open_status = {"is_open": True, "label": f"📅 토요일 진료 ({sat_str})", "type": "open"}
             else:
                 open_status = {"is_open": False, "label": "🔴 토요일 휴진", "type": "closed"}
+        elif is_late_night:
+            if is_er:
+                open_status = {"is_open": True, "label": "🚨 24시 응급진료", "type": "er"}
+            elif h.get("moonlight_clinic"):
+                open_status = {"is_open": True, "label": "🌙 달빛어린이병원 (야간)", "type": "open"}
+            else:
+                open_status = get_hospital_open_status_kr(h)
         else:
             open_status = get_hospital_open_status_kr(h)
 
-        scored_list.append({
+        query = h.get("naver_search_query") or f"{h['name']} 포항"
+        naver_map_url = f"https://map.naver.com/p/search/{requests.utils.quote(query)}"
+        kakao_map_url = f"https://map.kakao.com/link/to/{requests.utils.quote(h['name'])},{h.get('lat')},{h.get('lng')}"
+
+        candidate_list.append({
             **h,
-            "match_score": score,
-            "match_reasons": match_reasons,
+            "in_target_district": in_target_district,
+            "matches_primary": matches_pri,
             "distance_km": dist_km,
             "distance_text": dist_text,
             "naver_map_url": naver_map_url,
@@ -938,47 +1019,49 @@ def rank_and_filter_hospitals(hospitals, analysis, user_lat=None, user_lng=None,
             "open_status_type": open_status["type"]
         })
         
-    # 🎯 열려있는 병원(또는 24h 응급실)만 우선 분리
-    open_hospitals = []
-    closed_hospitals = []
-    
-    for item in scored_list:
-        if is_sunday or is_saturday:
-            is_available = bool(item.get("is_open_now") or item.get("is_emergency"))
-        elif is_late_night:
-            is_available = bool(item.get("is_emergency"))
-        elif is_night:
-            is_available = bool(item.get("night_open") or item.get("is_open_now") or item.get("is_emergency"))
+    # 🎯 정렬 우선순위:
+    # 1. target_district 지정 시 해당 동 소속 병원 최우선
+    # 2. 지금 진료 중인 병원 우선
+    # 3. 1차 진료과 일치 병원 우선
+    # 4. 거리(km) 오름차순 정렬
+    def _sort_key(item):
+        is_open = bool(item.get("is_open_now") or item.get("is_emergency"))
+        in_dist = bool(item.get("in_target_district"))
+        dist = item.get("distance_km") if item.get("distance_km") is not None else 9999
+        is_pri = bool(item.get("matches_primary"))
+        
+        if target_district:
+            if in_dist and is_open and is_pri: tier = 0
+            elif in_dist and is_open: tier = 1
+            elif is_open and is_pri: tier = 2
+            elif is_open: tier = 3
+            elif in_dist and is_pri: tier = 4
+            elif in_dist: tier = 5
+            elif is_pri: tier = 6
+            else: tier = 7
         else:
-            is_available = bool(item.get("is_open_now") or item.get("is_emergency"))
-
-        if is_available:
-            open_hospitals.append(item)
-        else:
-            closed_hospitals.append(item)
-            
-    # 🎯 사용자의 현재 위치 기준 가장 가까운 거리(km) 순서로만 순수하게 정렬
-    open_hospitals.sort(key=lambda x: (x.get("distance_km") if x.get("distance_km") is not None else 9999))
-    closed_hospitals.sort(key=lambda x: (x.get("distance_km") if x.get("distance_km") is not None else 9999))
+            if is_open and is_pri: tier = 0
+            elif is_open: tier = 1
+            elif is_pri: tier = 2
+            else: tier = 3
+        return (tier, dist)
+        
+    candidate_list.sort(key=_sort_key)
     
-    # 🚨 만약 현재 열려있는 일반 의원이 1곳도 없다면 ("그게 없으면 응급실이나 해야지"):
-    # 포항 24시간 응급실(ER) 센터들을 가져와 내 위치 기준 가장 가까운 순서대로 최상단에 배치!
-    if not open_hospitals:
+    # 🚨 만약 비응급 전문과가 아닌 일반 응급 상황에서 열려있는 병원이 0개라면: 24h 응급실 폴백
+    has_any_open = any(item.get("is_open_now") or item.get("is_emergency") for item in candidate_list)
+    if not has_any_open and not is_non_er_specialty:
         er_hospitals = []
         for h in hospitals:
             if h.get("is_emergency"):
-                dist_km = None
-                dist_text = None
-                if user_lat is not None and user_lng is not None and h.get("lat") and h.get("lng"):
-                    dist_km = calculate_distance_km(user_lat, user_lng, h["lat"], h["lng"])
-                    dist_text = format_distance_and_time(dist_km)
-                    
+                dist_km = calculate_distance_km(ref_lat, ref_lng, h["lat"], h["lng"]) if (h.get("lat") and h.get("lng")) else None
+                dist_text = format_distance_and_time(dist_km)
                 query = h.get("naver_search_query") or f"{h['name']} 포항"
                 naver_map_url = f"https://map.naver.com/p/search/{requests.utils.quote(query)}"
                 kakao_map_url = f"https://map.kakao.com/link/to/{requests.utils.quote(h['name'])},{h.get('lat')},{h.get('lng')}"
-                
                 er_hospitals.append({
                     **h,
+                    "in_target_district": (target_district in (h.get("district") or "") if target_district else False),
                     "match_score": 100,
                     "match_reasons": ["🚨 24시간 응급의료센터 (야간/휴일 상시대기)"],
                     "distance_km": dist_km,
@@ -990,11 +1073,9 @@ def rank_and_filter_hospitals(hospitals, analysis, user_lat=None, user_lng=None,
                     "open_status_type": "er"
                 })
         er_hospitals.sort(key=lambda x: (x.get("distance_km") if x.get("distance_km") is not None else 9999))
-        open_hospitals = er_hospitals
+        candidate_list = er_hospitals + candidate_list
         
-    # 열려있는 병원(또는 24h 응급실)을 무조건 맨 앞에, 닫힌 병원은 맨 뒤에 배치
-    result_list = open_hospitals + closed_hospitals
-    return result_list
+    return candidate_list
 
 def generate_gemini_conversational_reply(user_message, analysis, top_hospitals, history=None):
     """Gemini 3.5 Flash-Lite를 활용해 실제 따뜻하고 전문적인 의료 대화 답변 생성 (다중 API 키 Failover 및 멀티턴 대화 메모리 지원)"""
@@ -1025,6 +1106,7 @@ def generate_gemini_conversational_reply(user_message, analysis, top_hospitals, 
     is_sunday = analysis.get("is_sunday", False)
     is_saturday = analysis.get("is_saturday", False)
     is_night = analysis.get("is_night", False)
+    target_district = analysis.get("target_district")
     
     hospital_summary = []
     for h in top_hospitals[:4]:
@@ -1052,19 +1134,20 @@ def generate_gemini_conversational_reply(user_message, analysis, top_hospitals, 
                 is_er_fallback = True
             break
             
+    dist_prefix = f"{target_district}에서 " if target_district else "현재 위치에서 "
     closest_info_line = ""
     if closest_open:
         status_label = closest_open.get('open_status_label', '진료중')
         if is_sunday:
-            closest_info_line = f"일요일에 진료 가능한 병원 중 가장 가까운 곳: {closest_open['name']} ({closest_open.get('district', '')}, {status_label})"
+            closest_info_line = f"{dist_prefix}일요일에 진료 가능한 병원 중 가장 가까운 곳: {closest_open['name']} ({closest_open.get('district', '')}, {status_label})"
         elif is_saturday:
-            closest_info_line = f"토요일에 진료 가능한 병원 중 가장 가까운 곳: {closest_open['name']} ({closest_open.get('district', '')}, {status_label})"
+            closest_info_line = f"{dist_prefix}토요일에 진료 가능한 병원 중 가장 가까운 곳: {closest_open['name']} ({closest_open.get('district', '')}, {status_label})"
         elif is_night:
-            closest_info_line = f"야간에 진료 가능한 병원 중 가장 가까운 곳: {closest_open['name']} ({closest_open.get('district', '')}, {status_label})"
+            closest_info_line = f"{dist_prefix}야간에 진료 가능한 병원 중 가장 가까운 곳: {closest_open['name']} ({closest_open.get('district', '')}, {status_label})"
         elif is_er_fallback:
-            closest_info_line = f"현재 주변 일반 의원은 모두 진료가 마감/휴진 상태이므로, 즉시 방문 가능한 24시간 응급의료센터 중 가장 가까운 곳: {closest_open['name']} ({closest_open.get('district', '')}, {status_label})"
+            closest_info_line = f"{dist_prefix}주변 일반 의원은 모두 진료가 마감/휴진 상태이므로, 즉시 방문 가능한 24시간 응급의료센터 중 가장 가까운 곳: {closest_open['name']} ({closest_open.get('district', '')}, {status_label})"
         else:
-            closest_info_line = f"현재 환자 위치에서 지금 진료 중인 가장 가까운 병원: {closest_open['name']} ({closest_open.get('district', '')}, {status_label})"
+            closest_info_line = f"{dist_prefix}지금 진료 중인 가장 가까운 병원: {closest_open['name']} ({closest_open.get('district', '')}, {status_label})"
     
     prompt = f"""너는 포항 시민과 학생들을 위한 따뜻하고 전문적인 AI 의료 트리아지 닥터 "포항 바로닥터"야.
 
@@ -1082,15 +1165,16 @@ def generate_gemini_conversational_reply(user_message, analysis, top_hospitals, 
 
 [답변 작성 가이드]
 1. 불필요한 형식적 첫인사("안녕하세요")는 생략하고, 환자가 겪고 있는 고통/불편에 대해 공감하며 바로 핵심을 말해줘.
-2. 이전 대화 기록이 있는 경우(예: 이전에 배 아프다고 한 후 '난 일요일에 가야돼'라고 한 경우), 환자의 이전 증상과 상황을 기억하고 자연스럽게 맥락을 이어주며 대답해줘 (예: "아, 일요일 진료를 찾으시는군요! 앞서 말씀하신 복통 증상으로 일요일에 진료 가능한 병원을 안내해 드릴게요.").
-3. 거리를 안내할 때 "약 1.39km", "0.11km" 같은 딱딱한 숫자 거리 표현을 직접 쓰지 말고, "가장 가까운", "바로 인근에 위치한", "가장 빠르게 방문하실 수 있는" 같은 자연스럽고 친근한 표현을 사용해줘.
-4. [시점/요일 안내 기준 - 매우 중요]:
+2. 이전 대화 기록이 있는 경우, 환자의 이전 질문과 상황을 기억하고 자연스럽게 맥락을 이어주며 대답해줘.
+3. [시점/요일 및 위치 안내 기준 - 매우 중요]:
+   - 사용자가 특정 동(예: '두호동', '양덕동', '이동', '효자동' 등)을 요청한 경우: "{target_district or '해당 지역'}에서 현재 진료 가능한 가장 가까운 병원은 **[병원명] (진료시간)**입니다."라고 안내하고, 해당 동 내 병원을 우선 추천해줘.
    - 사용자가 '일요일'을 요청한 경우: "일요일에 진료 가능한 가장 가까운 병원은 **[병원명] (일요일 진료시간)**입니다."라고 안내하고, '오늘/지금'이라는 표현을 절대 쓰지 마.
    - 사용자가 '토요일'을 요청한 경우: "토요일에 진료 가능한 가장 가까운 병원은 **[병원명] (토요일 진료시간)**입니다."라고 안내하고, '오늘/지금'이라는 표현을 절대 쓰지 마.
-   - 사용자가 특정 요일을 지정하지 않은 일반 질문인 경우: "현재 위치에서 지금 진료 중인 가장 가까운 병원은 **[가장 가까운 병원명] (진료시간)**입니다."라고 안내해줘.
+   - 일반 질문인 경우: "현재 위치에서 지금 진료 중인 가장 가까운 병원은 **[가장 가까운 병원명] (진료시간)**입니다."라고 안내해줘.
    - 일반 의원이 모두 문을 닫아 24시간 응급실이 안내된 경우: "현재 해당 진료과 주변 의원이 모두 마감/휴진되어 가장 가까운 **24시간 응급실 [병원명]**을 안내해 드립니다."라고 명확히 설명해줘.
+4. 거리를 안내할 때 "약 1.39km", "0.11km" 같은 딱딱한 숫자 거리 표현을 직접 쓰지 말고, "가장 가까운", "바로 인근에 위치한", "가장 빠르게 방문하실 수 있는" 같은 자연스럽고 친근한 표현을 사용해줘.
 5. 왜 이 진료과({', '.join(analysis.get('primary_depts', []))})를 방문해야 하는지 1문장으로 친절히 설명해줘.
-6. 환자가 진료 전/병원 이동 중 취해야 할 행동 요령(예: 탈수 예방 수액/미온수, RICE 요법, 체온 관리, 금식 여부, 신분증 지참 등)을 1~2문장으로 짚어줘.
+6. 환자가 진료 전/병원 이동 중 취해야 할 행동 요령(예: 신분증 지참, 예약/전화 문의, 사전 관리 등)을 1~2문장으로 짚어줘.
 7. 모바일 화면에서 빠르게 읽을 수 있도록 읽기 쉬운 한국어 대화체(3~4문단, 200~250자 내외)로 작성하고 마크다운 볼드(**강조**)를 사용해줘."""
 
     def _do_reply(client, api_key, model_name):
