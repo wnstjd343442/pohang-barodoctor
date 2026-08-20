@@ -33,23 +33,55 @@ def _ensure_ffmpeg_on_path():
 
 _ensure_ffmpeg_on_path()
 
-GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY", "")
+def get_all_gemini_api_keys():
+    """환경변수에 등록된 모든 Gemini API 키를 순서대로 탐색하여 리스트로 반환 (Failover 지원)"""
+    keys = []
+    candidates = [
+        os.environ.get("GEMINI_API_KEY1", ""),
+        os.environ.get("GEMINI_API_KEY_1", ""),
+        os.environ.get("GEMINI_API_KEY2", ""),
+        os.environ.get("GEMINI_API_KEY_2", ""),
+        os.environ.get("GEMINI_API_KEY3", ""),
+        os.environ.get("GEMINI_API_KEY_3", ""),
+        os.environ.get("GEMINI_API_KEY4", ""),
+        os.environ.get("GEMINI_API_KEY_4", ""),
+        os.environ.get("GEMINI_API_KEY", ""),
+        os.environ.get("GOOGLE_API_KEY", "")
+    ]
+    seen = set()
+    for k in candidates:
+        if k and k.strip() and k.strip() not in seen:
+            seen.add(k.strip())
+            keys.append(k.strip())
+            
+    for i in range(5, 11):
+        k = os.environ.get(f"GEMINI_API_KEY{i}") or os.environ.get(f"GEMINI_API_KEY_{i}")
+        if k and k.strip() and k.strip() not in seen:
+            seen.add(k.strip())
+            keys.append(k.strip())
+            
+    return keys
+
 DECODING_KEY = os.environ.get("DATA_GO_KR_DECODING_KEY", "")
 
-_gemini_client = None
+_gemini_clients_cache = {}
 
-def get_gemini_client():
-    global _gemini_client
-    if not GEMINI_API_KEY:
-        return None
-    if _gemini_client is None:
+def get_gemini_client(api_key=None):
+    """특정 API 키 또는 기본 키에 대한 Gemini 클라이언트 생성 및 캐싱"""
+    if not api_key:
+        all_keys = get_all_gemini_api_keys()
+        if not all_keys:
+            return None
+        api_key = all_keys[0]
+        
+    if api_key not in _gemini_clients_cache:
         try:
             from google import genai
-            _gemini_client = genai.Client(api_key=GEMINI_API_KEY)
+            _gemini_clients_cache[api_key] = genai.Client(api_key=api_key)
         except Exception as e:
-            print("Gemini client init error:", e)
-            _gemini_client = None
-    return _gemini_client
+            print(f"Gemini client init error for key {api_key[:8]}...:", e)
+            return None
+    return _gemini_clients_cache.get(api_key)
 
 DB_FILE = os.path.join(os.path.dirname(__file__), "data", "pohang_hospitals_db.json")
 REPORTS_FILE = os.path.join(os.path.dirname(__file__), "data", "reports.json")
@@ -292,10 +324,10 @@ WEEKDAY_NAMES = {"월요일": 0, "화요일": 1, "수요일": 2, "목요일": 3,
 def analyze_symptom_with_gemini(text):
     """
     [AI-First 임상 트리아지 엔진]
-    사용자의 자연어 텍스트에서 신체 증상, 의학적 원인, 1차/대안 추천 진료과, 긴급도, 대처 조언, 시공간 조건을 정밀 분석
+    등록된 모든 Gemini API 키를 순서대로 시도(Failover)하여 안정적인 분석 보장
     """
-    client = get_gemini_client()
-    if not client:
+    keys = get_all_gemini_api_keys()
+    if not keys:
         return None
         
     prompt = f"""너는 대한민국 응급의료 및 1차 진료 임상 트리아지(Triage) AI 전문가야.
@@ -361,20 +393,26 @@ def analyze_symptom_with_gemini(text):
   "advice": ""
 }}"""
 
-    try:
-        res = client.models.generate_content(
-            model="gemini-3.6-flash",
-            contents=prompt
-        )
-        raw_text = (res.text or "").strip()
-        raw_text = re.sub(r"^```json\s*", "", raw_text)
-        raw_text = re.sub(r"^```\s*", "", raw_text)
-        raw_text = re.sub(r"\s*```$", "", raw_text).strip()
-        data = json.loads(raw_text)
-        return data
-    except Exception as e:
-        print("Gemini symptom analysis error:", e)
-        return None
+    for idx, key in enumerate(keys, 1):
+        client = get_gemini_client(key)
+        if not client:
+            continue
+        try:
+            res = client.models.generate_content(
+                model="gemini-3.6-flash",
+                contents=prompt
+            )
+            raw_text = (res.text or "").strip()
+            raw_text = re.sub(r"^```json\s*", "", raw_text)
+            raw_text = re.sub(r"^```\s*", "", raw_text)
+            raw_text = re.sub(r"\s*```$", "", raw_text).strip()
+            data = json.loads(raw_text)
+            return data
+        except Exception as e:
+            print(f"[Gemini Key #{idx} Failover] symptom analysis error: {e}")
+            continue
+            
+    return None
 
 def analyze_symptom_and_intent(text):
     text_lower = text.lower().strip()
@@ -768,20 +806,26 @@ def rank_and_filter_hospitals(hospitals, analysis, user_lat=None, user_lng=None,
     return scored_list
 
 def generate_gemini_conversational_reply(user_message, analysis, top_hospitals):
-    """Gemini 3.6 Flash를 활용해 실제 따뜻하고 전문적인 의료 대화 답변 생성 (할루시네이션 방지 엄격 적용)"""
-    client = get_gemini_client()
-    if not client:
+    """Gemini 3.6 Flash를 활용해 실제 따뜻하고 전문적인 의료 대화 답변 생성 (다중 API 키 Failover 지원)"""
+    keys = get_all_gemini_api_keys()
+    if not keys:
         return None, "Gemini API 키가 설정되지 않았습니다."
         
     if analysis.get("category_key") == "non_medical":
         prompt = f"""너는 포항 시민과 학생들을 위한 AI 의료 안내 비서 "포항 바로닥터"야.
 사용자가 "{user_message}"라고 입력했어.
 상투적인 "안녕하세요" 첫인사를 반복하지 말고, 사용자의 말에 짧고 자연스럽게 한 문장으로 반응한 뒤 "어디가 불편하시거나 찾으시는 병원이 있으신가요? (예: 배 아파, 목감기, 일요일 정형외과)"라고 1~2문장으로 간결하게 물어봐줘."""
-        try:
-            res = client.models.generate_content(model="gemini-3.6-flash", contents=prompt)
-            return (res.text or "").strip(), None
-        except Exception as e:
-            return None, "AI 토큰 소진"
+        for idx, key in enumerate(keys, 1):
+            client = get_gemini_client(key)
+            if not client:
+                continue
+            try:
+                res = client.models.generate_content(model="gemini-3.6-flash", contents=prompt)
+                return (res.text or "").strip(), None
+            except Exception as e:
+                print(f"[Gemini Key #{idx} Failover] non_medical reply error: {e}")
+                continue
+        return None, "모든 AI API 키 할당량 초과"
         
     hospital_summary = []
     for h in top_hospitals[:4]:
@@ -811,20 +855,28 @@ def generate_gemini_conversational_reply(user_message, analysis, top_hospitals):
 4. 아래 추천 병원 목록 중에서 적절한 병원 1~2곳을 자연스럽게 언급하며 진료시간 확인 및 방문을 권유해줘.
 5. 모바일 화면에서 빠르게 읽을 수 있도록 읽기 쉬운 한국어 대화체(3~4문단, 200~250자 내외)로 작성하고 마크다운 볼드(**강조**)를 적절히 사용해줘."""
 
-    try:
-        res = client.models.generate_content(
-            model="gemini-3.6-flash",
-            contents=prompt
-        )
-        return (res.text or "").strip(), None
-    except Exception as e:
-        err_str = str(e)
-        if "429" in err_str or "RESOURCE_EXHAUSTED" in err_str:
-            err_msg = "⚠️ Gemini API 무료 사용량 한도에 일시 도달하여 공공데이터 분석 모드로 즉시 전환합니다."
-        else:
-            err_msg = f"⚠️ Gemini API 오류: {err_str[:80]}"
-        print("Gemini generate error:", e)
-        return None, err_msg
+    last_err = None
+    for idx, key in enumerate(keys, 1):
+        client = get_gemini_client(key)
+        if not client:
+            continue
+        try:
+            res = client.models.generate_content(
+                model="gemini-3.6-flash",
+                contents=prompt
+            )
+            return (res.text or "").strip(), None
+        except Exception as e:
+            last_err = e
+            print(f"[Gemini Key #{idx} Failover] reply error: {e}")
+            continue
+            
+    err_str = str(last_err) if last_err else "API Key Quota Exceeded"
+    if "429" in err_str or "RESOURCE_EXHAUSTED" in err_str:
+        err_msg = "⚠️ Gemini API 모든 무료 사용량 한도에 도달했습니다."
+    else:
+        err_msg = f"⚠️ Gemini API 오류: {err_str[:80]}"
+    return None, err_msg
 
 @app.after_request
 def add_cors_headers(response):
