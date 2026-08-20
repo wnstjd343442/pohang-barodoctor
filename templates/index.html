@@ -432,6 +432,24 @@
     align-items: center;
     gap: 2px;
   }
+  .meta-tag.open-now {
+    background: #ecfdf5;
+    color: #047857;
+    border: 1px solid #6ee7b7;
+    font-weight: 700;
+  }
+  .meta-tag.closed {
+    background: #fef2f2;
+    color: #dc2626;
+    border: 1px solid #fca5a5;
+    font-weight: 600;
+  }
+  .meta-tag.er-tag {
+    background: #fff1f2;
+    color: #e11d48;
+    border: 1px solid #fda4af;
+    font-weight: 700;
+  }
   .meta-tag.posaka {
     background: var(--badge-posaka-bg);
     color: var(--badge-posaka-text);
@@ -674,7 +692,19 @@
     align-items: center;
     justify-content: center;
     box-shadow: 0 2px 8px var(--primary-glow);
-    transition: all 0.2s;
+    transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+    user-select: none;
+    -webkit-user-select: none;
+  }
+  #sendBtn:hover:not(:disabled) {
+    background: var(--primary-hover);
+    transform: translateY(-1px);
+  }
+  #sendBtn:active:not(:disabled) {
+    transform: scale(0.92);
+    background: var(--primary-dark);
   }
   #sendBtn:disabled { opacity: 0.5; cursor: default; }
 
@@ -916,6 +946,7 @@
   <div class="controls-bar">
     <!-- Quick Filter Toggles -->
     <div class="filter-toggles-wrap">
+      <button class="filter-toggle-btn" id="filterOpenNowBtn" data-filter="open_now">🟢 현재 진료중</button>
       <button class="filter-toggle-btn" id="filterSaturdayBtn" data-filter="saturday">📅 토요일 진료</button>
       <button class="filter-toggle-btn" id="filterSundayBtn" data-filter="sunday">☀️ 일요일 진료</button>
       <button class="filter-toggle-btn" id="filterHolidayBtn" data-filter="holiday">🚩 공휴일 진료</button>
@@ -1163,12 +1194,6 @@
     return fallbackAddr;
   }
 
-    // 3. 로컬 폴백 (절대 실패 방지용)
-    const fallbackAddr = getLocalPohangAddress(lat, lng);
-    gpsStatusText.textContent = `내 위치: ${fallbackAddr}`;
-    return fallbackAddr;
-  }
-
   function requestUserLocation() {
     if ('geolocation' in navigator) {
       gpsStatusText.textContent = '내 위치 확인 중...';
@@ -1198,12 +1223,39 @@
   requestUserLocation();
 
   const activeFilters = {
+    open_now: false,
     saturday: false,
     sunday: false,
     holiday: false,
     night: false,
     er: false
   };
+
+  function getHospitalOpenStatus(h, customDate = new Date()) {
+    if (h.is_emergency) {
+      return { isOpen: true, label: '🚨 24시 응급진료', type: 'er' };
+    }
+    const dayMap = ['sun', 'mon', 'tue', 'wed', 'thu', 'fri', 'sat'];
+    const dayKey = dayMap[customDate.getDay()];
+    const hoursStr = h.hours ? h.hours[dayKey] : null;
+    if (!hoursStr || hoursStr.includes('휴') || hoursStr === 'null') {
+      return { isOpen: false, label: '🔴 오늘 휴진', type: 'closed' };
+    }
+    try {
+      const parts = String(hoursStr).split('~');
+      if (parts.length === 2) {
+        const [sh, sm] = parts[0].trim().split(':').map(Number);
+        const [eh, em] = parts[1].trim().split(':').map(Number);
+        const currM = customDate.getHours() * 60 + customDate.getMinutes();
+        if (currM >= (sh * 60 + (sm || 0)) && currM < (eh * 60 + (em || 0))) {
+          return { isOpen: true, label: `🟢 현재 진료중 (~${parts[1].trim()})`, type: 'open' };
+        } else {
+          return { isOpen: false, label: `🔴 진료종료 (${hoursStr})`, type: 'closed' };
+        }
+      }
+    } catch(e) {}
+    return { isOpen: false, label: `⏰ ${h.hours_summary || '진료시간 문의'}`, type: 'unknown' };
+  }
 
   document.querySelectorAll('.filter-toggle-btn').forEach(btn => {
     btn.addEventListener('click', () => {
@@ -1300,6 +1352,16 @@
   function renderHospitalCard(h) {
     let badgesHtml = '';
     
+    // 1. 실시간 진료 상태 뱃지 (가장 첫 번째에 강조 표시)
+    const openStatus = getHospitalOpenStatus(h);
+    if (openStatus.type === 'er') {
+      badgesHtml += `<span class="meta-tag er-tag">🚨 24시 응급진료</span>`;
+    } else if (openStatus.isOpen) {
+      badgesHtml += `<span class="meta-tag open-now">${escapeHtml(openStatus.label)}</span>`;
+    } else {
+      badgesHtml += `<span class="meta-tag closed">${escapeHtml(openStatus.label)}</span>`;
+    }
+
     let distBadgeHtml = '';
     if (h.district) {
       distBadgeHtml = `<div class="distance-badge">📍 <strong>${escapeHtml(h.district)}</strong></div>`;
@@ -1323,7 +1385,6 @@
       seenBadges.add('일요일');
       seenBadges.add('토요일');
       seenBadges.add('공휴일');
-      badgesHtml += `<span class="meta-tag fever-possible">🚨 24시간 응급실</span>`;
     } else {
       if (h.sunday_open) {
         seenBadges.add('일요일');
@@ -1440,6 +1501,8 @@
 
     // 활성화된 필터 조건 적용
     allHospitals = sourceHospitals.filter(h => {
+      const openStatus = getHospitalOpenStatus(h);
+      if (activeFilters.open_now && !openStatus.isOpen) return false;
       if (activeFilters.saturday && !(h.saturday_open || h.is_emergency)) return false;
       if (activeFilters.sunday && !(h.sunday_open || h.is_emergency)) return false;
       if (activeFilters.holiday && !(h.holiday_open || h.is_emergency)) return false;
@@ -1550,14 +1613,13 @@
     const text = (customText || inputEl.value).trim();
     if (!text) return;
 
-    // 모바일 가상 키보드 즉시 내리기
+    // 모바일 가상 키보드 닫기
     inputEl.blur();
 
     isProcessing = true;
     addUserBubble(text);
     if (!customText) inputEl.value = '';
     sendBtn.disabled = true;
-    inputEl.disabled = true;
 
     const typingRow = addTyping();
 
@@ -1598,13 +1660,24 @@
       if (typingRow && typingRow.parentNode) typingRow.remove();
       isProcessing = false;
       sendBtn.disabled = false;
-      inputEl.disabled = false;
     }
   }
 
-  sendBtn.addEventListener('click', () => handleSend());
+  // 즉시 반응형 전송 버튼 리스너 (터치 지연 및 가상 키보드 밀림 완벽 방지)
+  sendBtn.addEventListener('pointerdown', (e) => {
+    e.preventDefault();
+    handleSend();
+  });
+  sendBtn.addEventListener('click', (e) => {
+    e.preventDefault();
+    handleSend();
+  });
+
   inputEl.addEventListener('keydown', (e) => {
-    if (e.key === 'Enter') handleSend();
+    if (e.key === 'Enter' && !e.isComposing) {
+      e.preventDefault();
+      handleSend();
+    }
   });
   inputEl.addEventListener('focus', () => {
     setTimeout(() => scrollToBottom(), 300);

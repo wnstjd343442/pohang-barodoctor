@@ -6,7 +6,7 @@ import os
 import re
 import time
 import wave
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from io import BytesIO
 
 import requests
@@ -317,6 +317,7 @@ def analyze_symptom_with_gemini(text):
    - 예) "눈이 충혈되고 뻑뻑해" -> primary_depts: ["안과"], alt_depts: ["내과", "가정의학과"]
    - 예) "치통이 심하고 잇몸이 부었어" -> primary_depts: ["치과"], alt_depts: []
 2. 시공간 및 긴급도 추출:
+   - is_open_now: 지금, 현재, 지금 문 연, 지금 갈 수 있는 등 현재 실시간 진료 가능한 병원을 찾으면 true
    - is_saturday: 토요일 진료 필요 시 true
    - is_sunday: 일요일 진료 필요 시 true
    - is_holiday: 공휴일/빨간날/명절/휴일 진료 필요 시 true
@@ -332,6 +333,7 @@ def analyze_symptom_with_gemini(text):
   "category_title": "증상 요약 제목",
   "primary_depts": ["진료과1", "진료과2"],
   "alt_depts": ["대안진료과1"],
+  "is_open_now": false,
   "is_saturday": false,
   "is_sunday": false,
   "is_holiday": false,
@@ -348,6 +350,7 @@ def analyze_symptom_with_gemini(text):
   "category_title": "일반 대화",
   "primary_depts": [],
   "alt_depts": [],
+  "is_open_now": false,
   "is_saturday": false,
   "is_sunday": false,
   "is_holiday": false,
@@ -396,6 +399,7 @@ def analyze_symptom_and_intent(text):
 
     # 2. 날짜 및 시간 키워드 파싱
     today = datetime.now().date()
+    is_open_now = any(k in text for k in ["지금", "현재", "문 연", "문연", "문 연곳", "문연곳", "진료중", "지금갈", "갈수있는", "갈 수 있는"])
     is_saturday = False
     is_sunday = False
     is_holiday = False
@@ -479,6 +483,7 @@ def analyze_symptom_and_intent(text):
                 "alt_depts": [],
                 "advice": "",
                 "target_date_str": target_date_str,
+                "is_open_now": is_open_now,
                 "is_saturday": is_saturday,
                 "is_sunday": is_sunday,
                 "is_holiday": is_holiday,
@@ -488,6 +493,8 @@ def analyze_symptom_and_intent(text):
         
         primary_depts = ai_result.get("primary_depts") or ["내과", "가정의학과"]
         alt_depts = ai_result.get("alt_depts") or ["응급의학과"]
+        if ai_result.get("is_open_now"):
+            is_open_now = True
         if ai_result.get("is_saturday"):
             is_saturday = True
         if ai_result.get("is_sunday"):
@@ -507,6 +514,7 @@ def analyze_symptom_and_intent(text):
             "alt_depts": alt_depts,
             "advice": ai_result.get("advice", "가까운 진료 가능 병의원을 안내합니다."),
             "target_date_str": target_date_str,
+            "is_open_now": is_open_now,
             "is_saturday": is_saturday,
             "is_sunday": is_sunday,
             "is_holiday": is_holiday,
@@ -537,6 +545,7 @@ def analyze_symptom_and_intent(text):
             "alt_depts": cat_info["alt_depts"],
             "advice": cat_info["advice"],
             "target_date_str": target_date_str,
+            "is_open_now": is_open_now,
             "is_saturday": is_saturday,
             "is_sunday": is_sunday,
             "is_holiday": is_holiday,
@@ -555,6 +564,7 @@ def analyze_symptom_and_intent(text):
             "alt_depts": ["응급의학과"],
             "advice": "신체 불편 증상에 대해 1차 진료가 가능한 가까운 내과/정형외과/가정의학과를 안내합니다.",
             "target_date_str": target_date_str,
+            "is_open_now": is_open_now,
             "is_saturday": is_saturday,
             "is_sunday": is_sunday,
             "is_holiday": is_holiday,
@@ -570,6 +580,7 @@ def analyze_symptom_and_intent(text):
         "alt_depts": ["응급의학과"],
         "advice": "내 위치 기준 진료 가능한 가까운 포항 병의원을 안내합니다.",
         "target_date_str": target_date_str,
+        "is_open_now": is_open_now,
         "is_saturday": is_saturday,
         "is_sunday": is_sunday,
         "is_holiday": is_holiday,
@@ -577,12 +588,60 @@ def analyze_symptom_and_intent(text):
         "target_district": target_district
     }
 
+def is_hospital_open_now(h, now_dt=None):
+    """한국 시간(KST) 기준 현재 시각에 진료 중인지 판별"""
+    if h.get("is_emergency"):
+        return True
+    if not now_dt:
+        now_dt = datetime.now(timezone(timedelta(hours=9)))
+        
+    day_keys = ["mon", "tue", "wed", "thu", "fri", "sat", "sun"]
+    day_key = day_keys[now_dt.weekday()]
+    hours = h.get("hours", {})
+    h_str = hours.get(day_key)
+    if not h_str or "휴" in str(h_str):
+        return False
+    try:
+        start_s, end_s = str(h_str).split("~")
+        sh, sm = map(int, start_s.strip().split(":"))
+        eh, em = map(int, end_s.strip().split(":"))
+        curr_m = now_dt.hour * 60 + now_dt.minute
+        return (sh * 60 + sm <= curr_m < eh * 60 + em)
+    except Exception:
+        return False
+
+def get_hospital_open_status_kr(h, now_dt=None):
+    """한국 시간(KST) 기준 현재 진료 상태 텍스트 반환"""
+    if h.get("is_emergency"):
+        return {"is_open": True, "label": "🚨 24시 응급진료", "type": "er"}
+    if not now_dt:
+        now_dt = datetime.now(timezone(timedelta(hours=9)))
+        
+    day_keys = ["mon", "tue", "wed", "thu", "fri", "sat", "sun"]
+    day_key = day_keys[now_dt.weekday()]
+    hours = h.get("hours", {})
+    h_str = hours.get(day_key)
+    if not h_str or "휴" in str(h_str):
+        return {"is_open": False, "label": "🔴 오늘 휴진", "type": "closed"}
+    try:
+        start_s, end_s = str(h_str).split("~")
+        sh, sm = map(int, start_s.strip().split(":"))
+        eh, em = map(int, end_s.strip().split(":"))
+        curr_m = now_dt.hour * 60 + now_dt.minute
+        if sh * 60 + sm <= curr_m < eh * 60 + em:
+            return {"is_open": True, "label": f"🟢 현재 진료중 (~{end_s.strip()})", "type": "open"}
+        else:
+            return {"is_open": False, "label": f"🔴 진료종료 ({h_str})", "type": "closed"}
+    except Exception:
+        return {"is_open": False, "label": f"⏰ 진료시간: {h.get('hours_summary', '문의')}", "type": "unknown"}
+
 def rank_and_filter_hospitals(hospitals, analysis, user_lat=None, user_lng=None, sort_by="recommend"):
     if analysis.get("category_key") == "non_medical":
         return []
         
     primary_depts = set(analysis.get("primary_depts") or [])
     alt_depts = set(analysis.get("alt_depts") or [])
+    is_open_now = analysis.get("is_open_now", False)
     is_saturday = analysis.get("is_saturday", False)
     is_sunday = analysis.get("is_sunday", False)
     is_holiday = analysis.get("is_holiday", False)
@@ -619,6 +678,15 @@ def rank_and_filter_hospitals(hospitals, analysis, user_lat=None, user_lng=None,
             match_reasons.append("24시간 응급진료")
         else:
             score += 5
+            
+        # 현재 진료중 가중치
+        h_open_now = is_hospital_open_now(h)
+        if is_open_now:
+            if h_open_now:
+                score += 75
+                match_reasons.append("현재 진료중")
+            else:
+                score -= 60
                 
         if is_saturday:
             if h.get("saturday_open") or is_er:
@@ -673,6 +741,7 @@ def rank_and_filter_hospitals(hospitals, analysis, user_lat=None, user_lng=None,
         naver_map_url = f"https://map.naver.com/p/search/{requests.utils.quote(query)}"
         kakao_map_url = f"https://map.kakao.com/link/to/{requests.utils.quote(h['name'])},{h.get('lat')},{h.get('lng')}"
         
+        open_status = get_hospital_open_status_kr(h)
         scored_list.append({
             **h,
             "match_score": score,
@@ -680,7 +749,10 @@ def rank_and_filter_hospitals(hospitals, analysis, user_lat=None, user_lng=None,
             "distance_km": dist_km,
             "distance_text": dist_text,
             "naver_map_url": naver_map_url,
-            "kakao_map_url": kakao_map_url
+            "kakao_map_url": kakao_map_url,
+            "is_open_now": open_status["is_open"],
+            "open_status_label": open_status["label"],
+            "open_status_type": open_status["type"]
         })
         
     if sort_by == "distance" and user_lat is not None:
@@ -863,7 +935,12 @@ def api_reverse_geocode():
 def api_hospitals():
     district = request.args.get("district", "").strip()
     tag = request.args.get("tag", "").strip()
+    open_now_only = request.args.get("open_now", "").lower() == "true"
+    saturday_only = request.args.get("saturday", "").lower() == "true"
     sunday_only = request.args.get("sunday", "").lower() == "true"
+    holiday_only = request.args.get("holiday", "").lower() == "true"
+    night_only = request.args.get("night", "").lower() == "true"
+    er_only = request.args.get("er", "").lower() == "true"
     posaka_only = request.args.get("posaka", "").lower() == "true"
     user_lat = request.args.get("lat")
     user_lng = request.args.get("lng")
@@ -875,7 +952,17 @@ def api_hospitals():
     for h in hospitals:
         if district and district not in (h.get("district") or "") and district not in (h.get("address") or ""):
             continue
+        if open_now_only and not is_hospital_open_now(h):
+            continue
+        if saturday_only and not (h.get("saturday_open") or h.get("is_emergency")):
+            continue
         if sunday_only and not (h.get("sunday_open") or h.get("is_emergency")):
+            continue
+        if holiday_only and not (h.get("holiday_open") or h.get("is_emergency")):
+            continue
+        if night_only and not (h.get("night_open") or h.get("is_emergency")):
+            continue
+        if er_only and not h.get("is_emergency"):
             continue
         if posaka_only and h.get("posaka") != "O":
             continue
