@@ -104,36 +104,38 @@ def format_distance_and_time(dist_km):
 
 # 포항 주요 생활권/동/읍·면 대표 좌표 (오프라인/빠른 주소 변환용)
 POHANG_DISTRICT_CENTROIDS = [
-    ("흥해읍 (한동대 인근)", 36.103, 129.388, "북구"),
+    ("흥해읍 남송리", 36.103, 129.388, "북구"),
+    ("흥해읍 초곡리", 36.088, 129.345, "북구"),
+    ("흥해읍 이인리", 36.072, 129.341, "북구"),
     ("양덕동", 36.0825, 129.3982, "북구"),
-    ("장량동/장성동", 36.068, 129.378, "북구"),
-    ("두호동 (영일대 인근)", 36.059, 129.375, "북구"),
+    ("장량동", 36.068, 129.378, "북구"),
+    ("두호동", 36.059, 129.375, "북구"),
     ("창포동", 36.063, 129.362, "북구"),
     ("우현동", 36.056, 129.355, "북구"),
-    ("중앙동/시내", 36.040, 129.366, "북구"),
+    ("중앙동", 36.040, 129.366, "북구"),
     ("죽도동", 36.035, 129.364, "북구"),
     ("용흥동", 36.042, 129.349, "북구"),
-    ("상대동/상도동", 36.018, 129.355, "남구"),
+    ("상대동", 36.018, 129.355, "남구"),
     ("대도동", 36.015, 129.362, "남구"),
     ("해도동", 36.023, 129.372, "남구"),
-    ("이동 (대이동)", 36.022, 129.336, "남구"),
-    ("대잠동 (시청 인근)", 36.013, 129.348, "남구"),
-    ("효자동 (포항공대 인근)", 36.008, 129.332, "남구"),
+    ("대이동", 36.022, 129.336, "남구"),
+    ("대잠동", 36.013, 129.348, "남구"),
+    ("효자동", 36.008, 129.332, "남구"),
     ("지곡동", 36.019, 129.324, "남구"),
     ("연일읍", 35.992, 129.348, "남구"),
-    ("오천읍 (문덕)", 35.968, 129.412, "남구"),
+    ("오천읍", 35.968, 129.412, "남구"),
     ("구룡포읍", 35.990, 129.558, "남구")
 ]
 
 def get_pohang_readable_address(lat, lng):
-    """위도/경도 좌표를 공식 역지오코딩 API를 통해 건물명/도로명/행정동 주소로 정밀 변환"""
+    """위도/경도 좌표를 공식 역지오코딩 API를 통해 표준 도로명/행정동 주소로 변환 (괄호 제외)"""
     if lat is None or lng is None:
-        return "포항시 북구 양덕동 (기본 위치)"
+        return "포항시 북구 양덕동"
         
     try:
         lat, lng = float(lat), float(lng)
     except (ValueError, TypeError):
-        return "포항시 북구 양덕동 (기본 위치)"
+        return "포항시 북구 양덕동"
 
     # 1. OpenStreetMap Nominatim 정밀 리버스 지오코딩 API 호출 (zoom=18)
     try:
@@ -142,7 +144,6 @@ def get_pohang_readable_address(lat, lng):
         if res.status_code == 200:
             data = res.json()
             addr = data.get("address") or {}
-            name = data.get("name") or addr.get("amenity") or addr.get("building") or addr.get("university") or addr.get("railway") or ""
             city = addr.get("city") or addr.get("county") or addr.get("province") or "포항시"
             borough = addr.get("borough") or addr.get("city_district") or ""
             town = addr.get("town") or addr.get("quarter") or addr.get("suburb") or addr.get("village") or addr.get("neighbourhood") or ""
@@ -162,12 +163,9 @@ def get_pohang_readable_address(lat, lng):
                 else:
                     parts.append(road)
                     
-            main_addr = " ".join(parts)
-            if name and name not in main_addr:
-                main_addr = f"{main_addr} ({name})"
-                
-            if main_addr.strip():
-                return main_addr.strip()
+            main_addr = " ".join(parts).strip()
+            if main_addr:
+                return main_addr
     except Exception as e:
         print("Nominatim API error:", e)
 

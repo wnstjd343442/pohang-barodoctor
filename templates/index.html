@@ -1068,48 +1068,32 @@
   let lastResultData = null;
   let lastResultListRow = null;
 
-  const HEUNGHAE_SUB_AREAS = [
-    { name: '북구 흥해읍 한동대학교 캠퍼스', lat: 36.102, lng: 129.387, maxR: 0.012 },
-    { name: '북구 흥해읍 남송리 (한동대 인근)', lat: 36.105, lng: 129.395, maxR: 0.015 },
-    { name: '북구 흥해읍 초곡지구 (초곡리)', lat: 36.088, lng: 129.345, maxR: 0.016 },
-    { name: '북구 흥해읍 포항역 KTX (이인지구)', lat: 36.072, lng: 129.341, maxR: 0.016 },
-    { name: '북구 흥해읍 학천리/달전', lat: 36.065, lng: 129.330, maxR: 0.016 },
-    { name: '북구 흥해읍내 (옥성/마산리)', lat: 36.111, lng: 129.352, maxR: 0.018 },
-    { name: '북구 흥해읍 곡강리/칠포', lat: 36.135, lng: 129.400, maxR: 0.025 },
-    { name: '북구 흥해읍 용한리/영일만항', lat: 36.115, lng: 129.430, maxR: 0.025 }
-  ];
-
   const POHANG_DISTRICT_POINTS = [
-    ...HEUNGHAE_SUB_AREAS,
+    { name: '북구 흥해읍 남송리', lat: 36.103, lng: 129.388 },
+    { name: '북구 흥해읍 초곡리', lat: 36.088, lng: 129.345 },
+    { name: '북구 흥해읍 이인리', lat: 36.072, lng: 129.341 },
+    { name: '북구 흥해읍 옥성리', lat: 36.111, lng: 129.352 },
     { name: '북구 양덕동', lat: 36.0825, lng: 129.3982 },
-    { name: '북구 장량동/장성동', lat: 36.068, lng: 129.378 },
-    { name: '북구 두호동 (영일대)', lat: 36.059, lng: 129.375 },
+    { name: '북구 장량동', lat: 36.068, lng: 129.378 },
+    { name: '북구 두호동', lat: 36.059, lng: 129.375 },
     { name: '북구 창포동', lat: 36.063, lng: 129.362 },
     { name: '북구 우현동', lat: 36.056, lng: 129.355 },
-    { name: '북구 중앙동/시내', lat: 36.040, lng: 129.366 },
+    { name: '북구 중앙동', lat: 36.040, lng: 129.366 },
     { name: '북구 죽도동', lat: 36.035, lng: 129.364 },
     { name: '북구 용흥동', lat: 36.042, lng: 129.349 },
-    { name: '남구 상대동/상도동', lat: 36.018, lng: 129.355 },
+    { name: '남구 상대동', lat: 36.018, lng: 129.355 },
     { name: '남구 대도동', lat: 36.015, lng: 129.362 },
     { name: '남구 해도동', lat: 36.023, lng: 129.372 },
-    { name: '남구 대이동/이동', lat: 36.022, lng: 129.336 },
-    { name: '남구 대잠동 (시청 인근)', lat: 36.013, lng: 129.348 },
-    { name: '남구 효자동 (포항공대)', lat: 36.008, lng: 129.332 },
+    { name: '남구 대이동', lat: 36.022, lng: 129.336 },
+    { name: '남구 대잠동', lat: 36.013, lng: 129.348 },
+    { name: '남구 효자동', lat: 36.008, lng: 129.332 },
     { name: '남구 지곡동', lat: 36.019, lng: 129.324 },
     { name: '남구 연일읍', lat: 35.992, lng: 129.348 },
-    { name: '남구 오천읍 (문덕)', lat: 35.968, lng: 129.412 },
+    { name: '남구 오천읍', lat: 35.968, lng: 129.412 },
     { name: '남구 구룡포읍', lat: 35.990, lng: 129.558 }
   ];
 
   function getLocalPohangAddress(lat, lng) {
-    // 1. 흥해읍 세부 권역 정밀 매칭
-    for (const h of HEUNGHAE_SUB_AREAS) {
-      const d = Math.hypot(lat - h.lat, lng - h.lng);
-      if (d <= (h.maxR || 0.015)) {
-        return `포항시 ${h.name}`;
-      }
-    }
-    // 2. 전체 포항 행정동 매칭
     let closest = '북구 양덕동';
     let minD = 9999;
     for (const p of POHANG_DISTRICT_POINTS) {
@@ -1130,7 +1114,6 @@
       if (res.ok) {
         const data = await res.json();
         const a = data.address || {};
-        const name = data.name || a.amenity || a.building || a.university || a.office || a.railway || '';
         const city = a.city || a.county || a.province || '포항시';
         const borough = a.borough || a.city_district || '';
         const town = a.town || a.quarter || a.suburb || a.village || a.neighbourhood || '';
@@ -1149,15 +1132,10 @@
           }
         }
 
-        let mainAddr = parts.join(' ');
-        if (name && !mainAddr.includes(name)) {
-          mainAddr = `${mainAddr} (${name})`;
-        }
-
-        if (mainAddr && mainAddr.trim().length > 2) {
-          const finalAddr = mainAddr.trim();
-          gpsStatusText.textContent = `내 위치: ${finalAddr}`;
-          return finalAddr;
+        let mainAddr = parts.join(' ').trim();
+        if (mainAddr && mainAddr.length > 2) {
+          gpsStatusText.textContent = `내 위치: ${mainAddr}`;
+          return mainAddr;
         }
       }
     } catch (e) {
@@ -1170,13 +1148,20 @@
       if (res.ok) {
         const data = await res.json();
         if (data.address && data.address.trim()) {
-          gpsStatusText.textContent = `내 위치: ${data.address}`;
-          return data.address;
+          const cleanAddr = data.address.trim();
+          gpsStatusText.textContent = `내 위치: ${cleanAddr}`;
+          return cleanAddr;
         }
       }
     } catch (e) {
       console.warn('백엔드 역지오코딩 API 조회 실패:', e);
     }
+
+    // 3. 로컬 폴백 (절대 실패 방지용)
+    const fallbackAddr = getLocalPohangAddress(lat, lng);
+    gpsStatusText.textContent = `내 위치: ${fallbackAddr}`;
+    return fallbackAddr;
+  }
 
     // 3. 로컬 폴백 (절대 실패 방지용)
     const fallbackAddr = getLocalPohangAddress(lat, lng);
