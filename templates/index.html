@@ -1917,7 +1917,8 @@
     recognition.onresult = (event) => {
       const transcript = event.results[0][0].transcript;
       inputEl.value = transcript;
-      handleSend(transcript);
+      inputEl.focus();
+      showToast('🎙️ 음성이 입력되었습니다. 확인 후 전송(↑)을 눌러주세요.');
     };
 
     recognition.onerror = (event) => {
