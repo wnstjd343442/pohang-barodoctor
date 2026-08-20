@@ -1055,19 +1055,91 @@
   let lastResultData = null;
   let lastResultListRow = null;
 
+  const POHANG_DISTRICT_POINTS = [
+    { name: '북구 흥해읍 (한동대 인근)', lat: 36.103, lng: 129.388 },
+    { name: '북구 양덕동', lat: 36.0825, lng: 129.3982 },
+    { name: '북구 장량동/장성동', lat: 36.068, lng: 129.378 },
+    { name: '북구 두호동 (영일대)', lat: 36.059, lng: 129.375 },
+    { name: '북구 창포동', lat: 36.063, lng: 129.362 },
+    { name: '북구 우현동', lat: 36.056, lng: 129.355 },
+    { name: '북구 중앙동/시내', lat: 36.040, lng: 129.366 },
+    { name: '북구 죽도동', lat: 36.035, lng: 129.364 },
+    { name: '북구 용흥동', lat: 36.042, lng: 129.349 },
+    { name: '남구 상대동/상도동', lat: 36.018, lng: 129.355 },
+    { name: '남구 대도동', lat: 36.015, lng: 129.362 },
+    { name: '남구 해도동', lat: 36.023, lng: 129.372 },
+    { name: '남구 대이동/이동', lat: 36.022, lng: 129.336 },
+    { name: '남구 대잠동 (시청 인근)', lat: 36.013, lng: 129.348 },
+    { name: '남구 효자동 (포항공대)', lat: 36.008, lng: 129.332 },
+    { name: '남구 지곡동', lat: 36.019, lng: 129.324 },
+    { name: '남구 연일읍', lat: 35.992, lng: 129.348 },
+    { name: '남구 오천읍 (문덕)', lat: 35.968, lng: 129.412 },
+    { name: '남구 구룡포읍', lat: 35.990, lng: 129.558 }
+  ];
+
+  function getLocalPohangAddress(lat, lng) {
+    let closest = '북구 양덕동';
+    let minD = 9999;
+    for (const p of POHANG_DISTRICT_POINTS) {
+      const d = Math.hypot(lat - p.lat, lng - p.lng);
+      if (d < minD) {
+        minD = d;
+        closest = p.name;
+      }
+    }
+    return `포항시 ${closest}`;
+  }
+
   async function updateAddressFromCoords(lat, lng) {
+    // 1. 브라우저에서 직접 OpenStreetMap Nominatim 비동기 역지오코딩 조회
     try {
-      const res = await fetch(`/api/reverse-geocode?lat=${lat}&lng=${lng}`);
-      const data = await res.json();
-      if (data.address) {
-        gpsStatusText.textContent = `내 위치: ${data.address}`;
-        return data.address;
+      const nomUrl = `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&zoom=17&addressdetails=1`;
+      const res = await fetch(nomUrl, { headers: { 'Accept-Language': 'ko' } });
+      if (res.ok) {
+        const data = await res.json();
+        const a = data.address || {};
+        const city = a.city || a.county || a.province || '포항시';
+        const borough = a.borough || a.city_district || '';
+        const town = a.town || a.quarter || a.neighbourhood || a.village || a.suburb || '';
+        const road = a.road || '';
+        
+        let parts = [];
+        if (city && !city.includes('대한민국')) parts.push(city);
+        if (borough && !parts.includes(borough)) parts.push(borough);
+        if (town && !parts.includes(town)) parts.push(town);
+        
+        let addrStr = parts.join(' ');
+        if (road && !addrStr.includes(road)) {
+          addrStr += ` (${road})`;
+        }
+        if (addrStr && addrStr.trim().length > 2) {
+          const finalAddr = addrStr.trim();
+          gpsStatusText.textContent = `내 위치: ${finalAddr}`;
+          return finalAddr;
+        }
       }
     } catch (e) {
-      console.warn('역지오코딩 오류:', e);
+      console.warn('Nominatim 클라이언트 직접 조회 실패:', e);
     }
-    gpsStatusText.textContent = `내 위치: 포항 (GPS 실시간)`;
-    return '포항 (GPS 실시간)';
+
+    // 2. 백엔드 /api/reverse-geocode 호출
+    try {
+      const res = await fetch(`/api/reverse-geocode?lat=${lat}&lng=${lng}`);
+      if (res.ok) {
+        const data = await res.json();
+        if (data.address && data.address.trim()) {
+          gpsStatusText.textContent = `내 위치: ${data.address}`;
+          return data.address;
+        }
+      }
+    } catch (e) {
+      console.warn('백엔드 역지오코딩 API 조회 실패:', e);
+    }
+
+    // 3. 포항 로컬 중심점 즉시 매핑 (절대 실패하지 않음)
+    const fallbackAddr = getLocalPohangAddress(lat, lng);
+    gpsStatusText.textContent = `내 위치: ${fallbackAddr}`;
+    return fallbackAddr;
   }
 
   function requestUserLocation() {
@@ -1086,12 +1158,12 @@
           userCoords.lat = 36.0825;
           userCoords.lng = 129.3982;
           userCoords.isGpsReal = false;
-          gpsStatusText.textContent = '내 위치: 포항 북구 양덕동 (기본 위치)';
+          gpsStatusText.textContent = '내 위치: 포항시 북구 양덕동 (기본 위치)';
         },
         { enableHighAccuracy: true, timeout: 6000 }
       );
     } else {
-      gpsStatusText.textContent = '내 위치: 포항 북구 양덕동 (기본 위치)';
+      gpsStatusText.textContent = '내 위치: 포항시 북구 양덕동 (기본 위치)';
     }
   }
 

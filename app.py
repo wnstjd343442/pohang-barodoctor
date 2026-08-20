@@ -126,35 +126,40 @@ POHANG_DISTRICT_CENTROIDS = [
 ]
 
 def get_pohang_readable_address(lat, lng):
-    """위도/경도 좌표를 '포항 북구 흥해읍' 등 읽기 쉬운 도로명/행정동 주소로 변환"""
+    """위도/경도 좌표를 '포항시 북구 흥해읍' 등 읽기 쉬운 도로명/행정동 주소로 변환"""
     if lat is None or lng is None:
-        return "포항 북구 양덕동 (기본 위치)"
+        return "포항시 북구 양덕동 (기본 위치)"
         
     try:
         lat, lng = float(lat), float(lng)
     except (ValueError, TypeError):
-        return "포항 북구 양덕동 (기본 위치)"
+        return "포항시 북구 양덕동 (기본 위치)"
 
-    # 1. OpenStreetMap Nominatim 무료 리버스 지오코딩 시도 (1.5초 타임아웃)
+    # 1. OpenStreetMap Nominatim 무료 리버스 지오코딩 시도 (2.0초 타임아웃)
     try:
         url = f"https://nominatim.openstreetmap.org/reverse?format=json&lat={lat}&lon={lng}&zoom=17&addressdetails=1"
-        res = requests.get(url, headers={"User-Agent": "PohangBaroDoctor/1.0"}, timeout=1.5)
+        res = requests.get(url, headers={"User-Agent": "PohangBaroDoctor/1.0", "Accept-Language": "ko"}, timeout=2.0)
         if res.status_code == 200:
             addr = res.json().get("address", {})
-            borough = addr.get("borough") or addr.get("suburb") or addr.get("city_district") or ""
-            town = addr.get("town") or addr.get("quarter") or addr.get("village") or addr.get("neighbourhood") or ""
+            city = addr.get("city") or addr.get("county") or addr.get("province") or "포항시"
+            borough = addr.get("borough") or addr.get("city_district") or ""
+            town = addr.get("town") or addr.get("quarter") or addr.get("neighbourhood") or addr.get("village") or addr.get("suburb") or ""
             road = addr.get("road") or ""
             
-            parts = ["포항"]
-            if borough:
+            parts = []
+            if city and "대한민국" not in city:
+                parts.append(city)
+            if borough and borough not in parts:
                 parts.append(borough)
-            if town:
+            if town and town not in parts:
                 parts.append(town)
-            if road and road not in parts:
-                parts.append(f"({road})")
                 
-            if len(parts) >= 2:
-                return " ".join(parts)
+            addr_str = " ".join(parts)
+            if road and road not in addr_str:
+                addr_str += f" ({road})"
+                
+            if addr_str.strip():
+                return addr_str.strip()
     except Exception:
         pass
 
@@ -167,7 +172,7 @@ def get_pohang_readable_address(lat, lng):
             min_dist = d
             closest_name = f"{gu} {name}"
             
-    return f"포항 {closest_name}"
+    return f"포항시 {closest_name}"
 
 # 증상 카테고리 정의 및 대안 진료과 매핑
 SYMPTOM_CATEGORIES = {
