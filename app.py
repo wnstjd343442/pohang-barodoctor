@@ -87,11 +87,12 @@ def get_gemini_client(api_key=None):
     return _gemini_clients_cache.get(api_key)
 
 GEMINI_FALLBACK_MODELS = [
-    "gemini-3.6-flash",
-    "gemini-flash-latest",
     "gemini-3.5-flash-lite",
-    "gemini-3.7-flash",
-    "gemini-3.1-flash-lite"
+    "gemini-flash-lite-latest",
+    "gemini-3.1-flash-lite",
+    "gemini-flash-latest",
+    "gemini-3.6-flash",
+    "gemini-3.7-flash"
 ]
 
 def execute_with_gemini_key_rotation(operation_fn):
@@ -1304,7 +1305,7 @@ def api_stt():
         audio_b64 = base64.b64encode(wav_bytes).decode("ascii")
 
         interaction = client.interactions.create(
-            model="gemini-3.6-flash",
+            model="gemini-3.5-flash-lite",
             input=[
                 {"type": "text", "text": "다음 음성을 한국어 텍스트로 정확하게 변환해줘. 부가 설명 없이 인식된 텍스트만 출력해."},
                 {"type": "audio", "data": audio_b64, "mime_type": "audio/wav"},
