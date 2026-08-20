@@ -1055,8 +1055,19 @@
   let lastResultData = null;
   let lastResultListRow = null;
 
+  const HEUNGHAE_SUB_AREAS = [
+    { name: '북구 흥해읍 한동대학교 캠퍼스', lat: 36.102, lng: 129.387, maxR: 0.012 },
+    { name: '북구 흥해읍 남송리 (한동대 인근)', lat: 36.105, lng: 129.395, maxR: 0.015 },
+    { name: '북구 흥해읍 초곡지구 (초곡리)', lat: 36.088, lng: 129.345, maxR: 0.016 },
+    { name: '북구 흥해읍 포항역 KTX (이인지구)', lat: 36.072, lng: 129.341, maxR: 0.016 },
+    { name: '북구 흥해읍 학천리/달전', lat: 36.065, lng: 129.330, maxR: 0.016 },
+    { name: '북구 흥해읍내 (옥성/마산리)', lat: 36.111, lng: 129.352, maxR: 0.018 },
+    { name: '북구 흥해읍 곡강리/칠포', lat: 36.135, lng: 129.400, maxR: 0.025 },
+    { name: '북구 흥해읍 용한리/영일만항', lat: 36.115, lng: 129.430, maxR: 0.025 }
+  ];
+
   const POHANG_DISTRICT_POINTS = [
-    { name: '북구 흥해읍 (한동대 인근)', lat: 36.103, lng: 129.388 },
+    ...HEUNGHAE_SUB_AREAS,
     { name: '북구 양덕동', lat: 36.0825, lng: 129.3982 },
     { name: '북구 장량동/장성동', lat: 36.068, lng: 129.378 },
     { name: '북구 두호동 (영일대)', lat: 36.059, lng: 129.375 },
@@ -1078,6 +1089,14 @@
   ];
 
   function getLocalPohangAddress(lat, lng) {
+    // 1. 흥해읍 세부 권역 정밀 매칭
+    for (const h of HEUNGHAE_SUB_AREAS) {
+      const d = Math.hypot(lat - h.lat, lng - h.lng);
+      if (d <= (h.maxR || 0.015)) {
+        return `포항시 ${h.name}`;
+      }
+    }
+    // 2. 전체 포항 행정동 매칭
     let closest = '북구 양덕동';
     let minD = 9999;
     for (const p of POHANG_DISTRICT_POINTS) {
@@ -1091,29 +1110,39 @@
   }
 
   async function updateAddressFromCoords(lat, lng) {
-    // 1. 브라우저에서 직접 OpenStreetMap Nominatim 비동기 역지오코딩 조회
+    // 1. 브라우저에서 직접 OpenStreetMap Nominatim 정밀 역지오코딩 API 호출 (zoom=18)
     try {
-      const nomUrl = `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&zoom=17&addressdetails=1`;
+      const nomUrl = `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&zoom=18&addressdetails=1`;
       const res = await fetch(nomUrl, { headers: { 'Accept-Language': 'ko' } });
       if (res.ok) {
         const data = await res.json();
         const a = data.address || {};
+        const name = data.name || a.amenity || a.building || a.university || a.office || a.railway || '';
         const city = a.city || a.county || a.province || '포항시';
         const borough = a.borough || a.city_district || '';
-        const town = a.town || a.quarter || a.neighbourhood || a.village || a.suburb || '';
+        const town = a.town || a.quarter || a.suburb || a.village || a.neighbourhood || '';
         const road = a.road || '';
-        
+        const houseNum = a.house_number || '';
+
         let parts = [];
         if (city && !city.includes('대한민국')) parts.push(city);
         if (borough && !parts.includes(borough)) parts.push(borough);
         if (town && !parts.includes(town)) parts.push(town);
-        
-        let addrStr = parts.join(' ');
-        if (road && !addrStr.includes(road)) {
-          addrStr += ` (${road})`;
+        if (road && !parts.includes(road)) {
+          if (houseNum) {
+            parts.push(`${road} ${houseNum}`);
+          } else {
+            parts.push(road);
+          }
         }
-        if (addrStr && addrStr.trim().length > 2) {
-          const finalAddr = addrStr.trim();
+
+        let mainAddr = parts.join(' ');
+        if (name && !mainAddr.includes(name)) {
+          mainAddr = `${mainAddr} (${name})`;
+        }
+
+        if (mainAddr && mainAddr.trim().length > 2) {
+          const finalAddr = mainAddr.trim();
           gpsStatusText.textContent = `내 위치: ${finalAddr}`;
           return finalAddr;
         }
@@ -1136,7 +1165,7 @@
       console.warn('백엔드 역지오코딩 API 조회 실패:', e);
     }
 
-    // 3. 포항 로컬 중심점 즉시 매핑 (절대 실패하지 않음)
+    // 3. 로컬 폴백 (절대 실패 방지용)
     const fallbackAddr = getLocalPohangAddress(lat, lng);
     gpsStatusText.textContent = `내 위치: ${fallbackAddr}`;
     return fallbackAddr;

@@ -126,7 +126,7 @@ POHANG_DISTRICT_CENTROIDS = [
 ]
 
 def get_pohang_readable_address(lat, lng):
-    """위도/경도 좌표를 '포항시 북구 흥해읍' 등 읽기 쉬운 도로명/행정동 주소로 변환"""
+    """위도/경도 좌표를 공식 역지오코딩 API를 통해 건물명/도로명/행정동 주소로 정밀 변환"""
     if lat is None or lng is None:
         return "포항시 북구 양덕동 (기본 위치)"
         
@@ -135,16 +135,19 @@ def get_pohang_readable_address(lat, lng):
     except (ValueError, TypeError):
         return "포항시 북구 양덕동 (기본 위치)"
 
-    # 1. OpenStreetMap Nominatim 무료 리버스 지오코딩 시도 (2.0초 타임아웃)
+    # 1. OpenStreetMap Nominatim 정밀 리버스 지오코딩 API 호출 (zoom=18)
     try:
-        url = f"https://nominatim.openstreetmap.org/reverse?format=json&lat={lat}&lon={lng}&zoom=17&addressdetails=1"
-        res = requests.get(url, headers={"User-Agent": "PohangBaroDoctor/1.0", "Accept-Language": "ko"}, timeout=2.0)
+        url = f"https://nominatim.openstreetmap.org/reverse?format=json&lat={lat}&lon={lng}&zoom=18&addressdetails=1"
+        res = requests.get(url, headers={"User-Agent": "PohangBaroDoctor/1.0", "Accept-Language": "ko"}, timeout=3.0)
         if res.status_code == 200:
-            addr = res.json().get("address", {})
+            data = res.json()
+            addr = data.get("address") or {}
+            name = data.get("name") or addr.get("amenity") or addr.get("building") or addr.get("university") or addr.get("railway") or ""
             city = addr.get("city") or addr.get("county") or addr.get("province") or "포항시"
             borough = addr.get("borough") or addr.get("city_district") or ""
-            town = addr.get("town") or addr.get("quarter") or addr.get("neighbourhood") or addr.get("village") or addr.get("suburb") or ""
+            town = addr.get("town") or addr.get("quarter") or addr.get("suburb") or addr.get("village") or addr.get("neighbourhood") or ""
             road = addr.get("road") or ""
+            house_num = addr.get("house_number") or ""
             
             parts = []
             if city and "대한민국" not in city:
@@ -153,15 +156,20 @@ def get_pohang_readable_address(lat, lng):
                 parts.append(borough)
             if town and town not in parts:
                 parts.append(town)
+            if road and road not in parts:
+                if house_num:
+                    parts.append(f"{road} {house_num}")
+                else:
+                    parts.append(road)
+                    
+            main_addr = " ".join(parts)
+            if name and name not in main_addr:
+                main_addr = f"{main_addr} ({name})"
                 
-            addr_str = " ".join(parts)
-            if road and road not in addr_str:
-                addr_str += f" ({road})"
-                
-            if addr_str.strip():
-                return addr_str.strip()
-    except Exception:
-        pass
+            if main_addr.strip():
+                return main_addr.strip()
+    except Exception as e:
+        print("Nominatim API error:", e)
 
     # 2. 오프라인 / 폴백: 포항 내 가장 가까운 동/읍·면 중심점 계산
     closest_name = "북구 양덕동"
