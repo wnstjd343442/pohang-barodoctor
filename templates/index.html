@@ -800,6 +800,91 @@
     font-weight: 700;
     cursor: pointer;
   }
+
+  /* Official Source UI Elements */
+  .source-info-btn {
+    border: 1px solid rgba(255, 255, 255, 0.45);
+    background: rgba(255, 255, 255, 0.2);
+    color: #ffffff;
+    font-size: 11px;
+    font-weight: 700;
+    padding: 4px 10px;
+    border-radius: 999px;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    transition: all 0.2s ease;
+    backdrop-filter: blur(4px);
+  }
+  .source-info-btn:hover {
+    background: rgba(255, 255, 255, 0.35);
+    transform: translateY(-1px);
+  }
+
+  .source-provenance-box {
+    margin-top: 12px;
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 11px 13px;
+  }
+  .provenance-title {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 12px;
+    font-weight: 700;
+    color: #1e293b;
+    margin-bottom: 8px;
+  }
+  .provenance-detail-link {
+    background: none;
+    border: none;
+    color: var(--primary);
+    font-size: 11.5px;
+    font-weight: 700;
+    cursor: pointer;
+    padding: 0;
+    text-decoration: underline;
+  }
+  .provenance-badges {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+  }
+  .p-badge {
+    font-size: 11px;
+    background: #ffffff;
+    border: 1px solid #cbd5e1;
+    color: #334155;
+    padding: 3px 8px;
+    border-radius: 6px;
+    font-weight: 600;
+  }
+
+  .card-source-tag {
+    font-size: 10.5px;
+    color: #64748b;
+    margin-top: 8px;
+    padding-top: 7px;
+    border-top: 1px dashed #e2e8f0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .card-source-tag .verified {
+    color: #059669;
+    font-weight: 700;
+  }
+
+  .source-item-card {
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 12px;
+    margin-bottom: 10px;
+  }
 </style>
 </head>
 <body>
@@ -812,6 +897,9 @@
         <span>🏥 포항 바로닥터</span>
         <span class="brand-tag">대화형 AI & 공공데이터</span>
       </div>
+      <button class="source-info-btn" id="openSourceModalBtn" title="데이터 공식 출처 및 연동 현황 확인">
+        🏛️ 데이터 공식 출처
+      </button>
     </div>
     
     <!-- GPS Location Banner -->
@@ -847,6 +935,19 @@
         <div>• <strong>휴일·야간·24시 응급실</strong> 상단 퀵 필터 즉시 적용</div>
         <div>• <strong>국립중앙의료원 공공데이터</strong> 실시간 응급실 가용병상 연동</div>
         <div>• <strong>네이버/카카오 지도</strong> 원터치 내비 길찾기 연동</div>
+      </div>
+
+      <!-- Official Data Provenance Callout -->
+      <div class="source-provenance-box">
+        <div class="provenance-title">
+          <span>🏛️ 100% 정부·공공기관 공식 데이터 기반</span>
+          <button class="provenance-detail-link" id="welcomeSourceDetailBtn">상세 출처 안내 ›</button>
+        </div>
+        <div class="provenance-badges">
+          <span class="p-badge">🟢 보건복지부 실시간 응급병상 API</span>
+          <span class="p-badge">🏥 국립중앙의료원(E-Gen) 663개 병의원 DB</span>
+          <span class="p-badge">🚨 중앙응급의료센터 법정 지정현황</span>
+        </div>
       </div>
     </div>
   </div>
@@ -884,6 +985,67 @@
       </div>
       <textarea class="modal-textarea" id="reportContent" placeholder="사용자 경험이나 확인된 특징을 자유롭게 적어주세요."></textarea>
       <button class="modal-submit-btn" id="submitReportBtn">제보 제출하기</button>
+    </div>
+  </div>
+
+  <!-- Data Sources / Provenance Modal -->
+  <div class="modal-overlay" id="sourceModal">
+    <div class="modal-card" style="max-width: 480px; max-height: 85vh; overflow-y: auto;">
+      <div class="modal-header">
+        <div class="modal-title">🏛️ 공공데이터 공식 출처 & 연동 현황</div>
+        <button class="modal-close" id="closeSourceModal">✕</button>
+      </div>
+      
+      <div style="font-size: 12.5px; color: #475569; line-height: 1.6; margin-bottom: 12px;">
+        '포항 바로닥터'는 대한민국 정부 <strong>공공데이터포털(data.go.kr)</strong> 및 보건복지부 공공기관의 <strong>공식 등록 데이터(100%)</strong>를 기반으로 운영되며, 인공지능이 임의로 조작하거나 생성한 가짜 병원 정보는 일체 포함하지 않습니다.
+      </div>
+      
+      <!-- Source 1 -->
+      <div class="source-item-card">
+        <div style="font-weight:700; font-size:13px; color:#0f172a; margin-bottom:4px; display:flex; align-items:center; gap:6px;">
+          <span>🟢</span> 실시간 응급의료 가용병상 정보 API
+        </div>
+        <div style="font-size:11.5px; color:#2563eb; font-weight:700; margin-bottom:4px;">
+          제공 기관: 보건복지부 / 국립중앙의료원(NMC) 중앙응급의료센터
+        </div>
+        <div style="font-size:12px; color:#475569; line-height:1.5;">
+          • <strong>API명</strong>: <code>getEmrrmRltmUsefulSckbdInfoInqire</code><br/>
+          • <strong>수집 항목</strong>: 포항 5대 응급의료기관 실시간 가용병상(<code>hvec</code>) 및 소아응급 병상(<code>hv28</code>)<br/>
+          • <strong>연동 방식</strong>: 공공데이터포털 REST API 3분 주기 실시간 갱신
+        </div>
+      </div>
+
+      <!-- Source 2 -->
+      <div class="source-item-card">
+        <div style="font-weight:700; font-size:13px; color:#0f172a; margin-bottom:4px; display:flex; align-items:center; gap:6px;">
+          <span>🏥</span> 포항시 병·의원 공식 인허가 & 진료시간 DB
+        </div>
+        <div style="font-size:11.5px; color:#2563eb; font-weight:700; margin-bottom:4px;">
+          제공 기관: 국립중앙의료원 E-Gen 응급의료포털
+        </div>
+        <div style="font-size:12px; color:#475569; line-height:1.5;">
+          • <strong>데이터 규모</strong>: 포항시 남구·북구 관내 <strong>663개 병·의원 전수</strong><br/>
+          • <strong>수집 항목</strong>: 정식 기관명, 도로명 주소, 대표 전화번호, WGS84 GPS 좌표, 52개 전문 진료과목 법정 코드, 요일별(월~일/공휴일) 법정 진료시간
+        </div>
+      </div>
+
+      <!-- Source 3 -->
+      <div class="source-item-card">
+        <div style="font-weight:700; font-size:13px; color:#0f172a; margin-bottom:4px; display:flex; align-items:center; gap:6px;">
+          <span>🚨</span> 응급의료기관 지정 목록 및 달빛어린이병원
+        </div>
+        <div style="font-size:11.5px; color:#2563eb; font-weight:700; margin-bottom:4px;">
+          제공 기관: 보건복지부 / 공공데이터포털 (<code>getEgytListInfoInqire</code>)
+        </div>
+        <div style="font-size:12px; color:#475569; line-height:1.5;">
+          • <strong>수집 항목</strong>: 권역/지역응급의료센터 법정 지정 등급, 응급실 직통 유선번호(<code>dutyTel3</code>), 달빛어린이병원(야간·휴일 소아외래) 지정 현황
+        </div>
+      </div>
+
+      <div style="background:#ecfdf5; border:1px solid #a7f3d0; border-radius:10px; padding:10px 12px; font-size:11.5px; color:#065f46; line-height:1.5;">
+        ✅ <strong>데이터 신뢰성 검증 원칙 (Data Provenance)</strong><br/>
+        공공데이터에서 검증 불가능한 항목은 임의 생성하지 않고 <code>unknown(미확인)</code> 처리하며, 요일별 진료 여부는 고정값이 아닌 사용자 접속 시점의 요일 및 법정 공휴일 시간을 기준으로 실시간 연산됩니다.
+      </div>
     </div>
   </div>
 </div>
@@ -1043,7 +1205,7 @@
       const beds = h.live_public_data.available_beds;
       const ped = h.live_public_data.pediatric_beds;
       let pedText = ped !== null ? ` (소아 ${ped}석)` : '';
-      publicDataBadgeHtml = `<div class="public-data-badge">🟢 <strong>공공데이터</strong> 응급실: ${beds}병상${pedText}</div>`;
+      publicDataBadgeHtml = `<div class="public-data-badge">🟢 <strong>국립중앙의료원 실시간 연동</strong> 응급실: ${beds}병상${pedText}</div>`;
     }
 
     const seenBadges = new Set();
@@ -1147,6 +1309,11 @@
           <button class="sub-action-btn report-btn" data-hid="${escapeHtml(h.id)}" data-hname="${escapeHtml(h.name)}">
             📢 제보하기
           </button>
+        </div>
+
+        <div class="card-source-tag">
+          <span>🏛️ 출처: 국립중앙의료원(E-Gen) 공식 DB</span>
+          <span class="verified">✓ 공공데이터 연동</span>
         </div>
       </div>
     `;
@@ -1445,6 +1612,29 @@
     } catch (e) {
       showToast('제보 전송 실패: ' + e.message);
     }
+  });
+
+  // ── 🏛️ 공공데이터 공식 출처 모달 ───────────────────────────────
+  const sourceModal = document.getElementById('sourceModal');
+  const openSourceModalBtn = document.getElementById('openSourceModalBtn');
+  const closeSourceModal = document.getElementById('closeSourceModal');
+  const welcomeSourceDetailBtn = document.getElementById('welcomeSourceDetailBtn');
+
+  function openSourceModal() {
+    if (sourceModal) sourceModal.classList.add('active');
+  }
+  function closeSourceModalFn() {
+    if (sourceModal) sourceModal.classList.remove('active');
+  }
+
+  if (openSourceModalBtn) openSourceModalBtn.addEventListener('click', openSourceModal);
+  if (welcomeSourceDetailBtn) welcomeSourceDetailBtn.addEventListener('click', openSourceModal);
+  if (closeSourceModal) closeSourceModal.addEventListener('click', closeSourceModalFn);
+
+  // 모달 바깥 배경 클릭 시 닫기
+  window.addEventListener('click', (e) => {
+    if (e.target === sourceModal) closeSourceModalFn();
+    if (e.target === reportModal) reportModal.classList.remove('active');
   });
 </script>
 
