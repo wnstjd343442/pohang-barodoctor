@@ -1572,5 +1572,6 @@ def handle_custom_404(e):
     return render_template("index.html")
 
 if __name__ == "__main__":
+    port = int(os.environ.get("PORT", 5000))
     # host="0.0.0.0"으로 열어야 같은 와이파이의 다른 기기(휴대폰 등)에서 접속 가능
-    app.run(debug=True, port=5000, host="0.0.0.0")
+    app.run(debug=True, port=port, host="0.0.0.0")
